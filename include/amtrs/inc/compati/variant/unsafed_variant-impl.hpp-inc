@@ -1,0 +1,137 @@
+﻿/*-
+ * Copyright (c) 2017 Isao Shibuya
+ * Released under the MIT license
+ * http://opensource.org/licenses/mit-license.php 
+ */
+// ************************************************************************
+// 内部実装
+// ************************************************************************
+AMTRS_IMPLEMENTS_BEGIN(unsafed_variant)
+template<class... Types>
+union	union_val;				// Prototype.
+
+
+template<class Type, class... Types>
+union	union_val<Type, Types...>
+{
+	union_val(){}
+	~union_val(){}
+	template<class OrderT>       OrderT& get(typename std::enable_if< std::is_same<OrderT, Type>::value>::type* = 0)       noexcept { return m_value;                        }
+	template<class OrderT>       OrderT& get(typename std::enable_if<!std::is_same<OrderT, Type>::value>::type* = 0)       noexcept { return m_other.template get<OrderT>(); }
+	template<class OrderT> const OrderT& get(typename std::enable_if< std::is_same<OrderT, Type>::value>::type* = 0) const noexcept { return m_value;                        }
+	template<class OrderT> const OrderT& get(typename std::enable_if<!std::is_same<OrderT, Type>::value>::type* = 0) const noexcept { return m_other.template get<OrderT>(); }
+	template<class F> void execute(std::size_t _index, F _callback)
+	{
+		if (_index == 0)
+		{
+			_callback(m_value);
+		}
+		else
+		{
+			m_other.execute(_index - 1, std::forward<F>(_callback));
+		}
+	}
+
+	template<class F> void execute(std::size_t _index, F _callback) const
+	{
+		if (_index == 0)
+		{
+			_callback(m_value);
+		}
+		else
+		{
+			m_other.execute(_index - 1, std::forward<F>(_callback));
+		}
+	}
+
+	template<class R, class F> R compare(std::size_t _index, F _callback) const
+	{
+		if (_index == 0)
+		{
+			return	_callback(m_value);
+		}
+		else
+		{
+			return	m_other.template compare<R>(_index - 1, std::forward<F>(_callback));
+		}
+	}
+
+	Type					m_value;
+	union_val<Types...>		m_other;
+};
+
+template<class Type>
+union	union_val<Type>
+{
+	union_val(){}
+	~union_val(){}
+	template<class OrderT>       Type& get()       noexcept { return m_value; }
+	template<class OrderT> const Type& get() const noexcept { return m_value; }
+	template<class F> void execute(std::size_t _index, F _callback)
+	{
+		if (_index == 0)
+		{
+			_callback(m_value);
+		}
+	}
+
+	template<class F> void execute(std::size_t _index, F _callback) const
+	{
+		if (_index == 0)
+		{
+			_callback(m_value);
+		}
+	}
+
+	template<class R, class F> R compare(std::size_t _index, F _callback) const
+	{
+		if (_index == 0)
+		{
+			return	_callback(m_value);
+		}
+		return	{};
+	}
+
+	Type					m_value;
+};
+
+
+
+
+
+template<class Operation>
+struct	conditions__can_operation
+{
+	template<class T> auto operator () (std::in_place_type_t<T>)
+		-> decltype(std::declval<Operation>()(), std::true_type{});
+};
+
+template<class...>
+struct	enable_operation_type;
+
+template<class Ope, class Type, class... Types>
+struct	enable_operation_type<Ope, Type, Types...>
+{
+	using	type	= typename std::conditional<
+						is_match_conditions<Type, Ope>::value,
+						Type,
+						typename enable_operation_type<Ope, Types...>::type
+					>::type;
+	static constexpr std::size_t	count	= (is_match_conditions<Type, Ope>::value ? 1 : 0)
+											+ enable_operation_type<Ope, Types...>::count;
+};
+
+template<class Ope, class Type>
+struct	enable_operation_type<Ope, Type>
+{
+	using	type	= typename std::conditional<
+						is_match_conditions<Type, Ope>::value,
+						Type,
+						void
+					>::type;
+	static constexpr std::size_t	count = is_match_conditions<Type, Ope>::value ? 1 : 0;
+
+};
+
+
+AMTRS_IMPLEMENTS_END(unsafed_variant)

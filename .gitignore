@@ -1,32 +1,59 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
+.hg
+.hgignore
+.git
+._*
+a.out
+*.lock
 *.exe
-*.out
-*.app
+*.log
+out/
+_packages
+
+# Android/gradle
+*.iml
+.idea/workspace.xml
+.idea/libraries
+.DS_Store
+build
+captures
+.externalNativeBuild
+taskHistory/
+fileHashes/
+
+# Android OSS
+android/docs/*
+android/share/*
+*.pc
+*.la
+android-*-toolchain/
+
+
+# Win32/VC
+Debug
+.vs
+*.filters
+*.user
+*.pdb
+*.tlog
+*.lastbuildstate
+*.obj
+*.iobj
+*.idb
+*.ipdb
+Debug/*.res
+Release/*.res
+
+# ios/XCode
+project.xcworkspace
+.xcodeproj
+*.xcarchive/
+xcuserdata
+Pods/
+Podfile.lock
+adhoc/
+
+pack.exe
+
+# examples
+libs/common/libamtrs/examples/waveform/out_*.bmp
+work

@@ -1,0 +1,3 @@
+﻿#ifndef	__libamtrs__bitmaps__bitmap_linux__hpp
+#define	__libamtrs__bitmaps__bitmap_linux__hpp
+#endif
