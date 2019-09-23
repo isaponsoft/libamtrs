@@ -1,0 +1,27 @@
+/*-
+ * Copyright (c) 2017 Isao Shibuya
+ * Released under the MIT license
+ * http://opensource.org/licenses/mit-license.php 
+ */
+#ifndef	__libamtrs__main__hpp
+#define	__libamtrs__main__hpp
+#include "../amtrs.hpp"
+#include "../application/@"
+
+#if		AMTRS_CURRENT_PLATFORM == AMTRS_PLATFORM_WIN32
+	#include "main-win32.hpp"
+#endif
+
+#if		AMTRS_CURRENT_PLATFORM == AMTRS_PLATFORM_WINRT
+	#include "main-winrt.hpp"
+#endif
+
+#if		AMTRS_CURRENT_PLATFORM == AMTRS_PLATFORM_ANDROID
+	#include "main-android.hpp"
+#endif
+
+#if		AMTRS_CURRENT_PLATFORM == AMTRS_PLATFORM_IOS
+	#include "main-ios.hpp"
+#endif
+
+#endif

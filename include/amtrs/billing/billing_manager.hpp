@@ -1,7 +1,7 @@
 #ifndef	__libamtrs__billing__billing_manager__hpp
 #define	__libamtrs__billing__billing_manager__hpp
 #include <string>
-#include "../iterator.hpp"
+#include "../iterator/@"
 #include "def.hpp"
 #include "enum.hpp"
 AMTRS_BILLING_NAMESPACE_BEGIN

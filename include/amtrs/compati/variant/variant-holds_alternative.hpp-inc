@@ -1,0 +1,10 @@
+﻿/*-
+ * Copyright (c) 2017 Isao Shibuya
+ * Released under the MIT license
+ * http://opensource.org/licenses/mit-license.php 
+ */
+template <class T, class... Types>
+constexpr bool holds_alternative(const variant<Types...>& _v) noexcept
+{
+	return	_v.index() == unsafed_variant<Types...>::index(std::in_place_type_t<T>{});
+}

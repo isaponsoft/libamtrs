@@ -8,8 +8,8 @@
 
 #include <android_native_app_glue.h>
 #include "def.hpp"
-#include "../../logging.hpp"
-#include "../../java.hpp"
+#include "../../logging/@"
+#include "../../java/@"
 #include "../../java/android/app/Activity.hpp"
 #include "../../java/jp/libamtrs/AmtrsActivity.hpp"
 

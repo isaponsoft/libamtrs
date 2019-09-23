@@ -1,8 +1,8 @@
 ﻿#ifndef	__toyoukebime__font_manager__hpp
 #define	__toyoukebime__font_manager__hpp
 #include <unordered_map>
-#include <amtrs/graphics.hpp>
-#include <amtrs/utility.hpp>
+#include <amtrs/graphics/@>
+#include <amtrs/utility/@>
 #include "tyuk-def.hpp"
 #include "singleton_creater.hpp"
 TYUK_NAMESPACE_BEGIN

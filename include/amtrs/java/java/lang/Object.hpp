@@ -1,7 +1,7 @@
 ﻿#ifndef	__libamtrs__java__java__lang__Object__hpp
 #define	__libamtrs__java__java__lang__Object__hpp
-#include "../../../java.hpp"
-#include "../../../string.hpp"
+#include "../../@"
+#include "../../../string/@"
 #include "../../def.hpp"
 AMTRS_JAVA_CLASSES_NAMESPACE_BEGIN
 namespace java::lang {

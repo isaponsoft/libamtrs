@@ -1,6 +1,6 @@
 ﻿#ifndef	__libamtrs__java__jc__java__lang__hpp
 #define	__libamtrs__java__jc__java__lang__hpp
-#include "../../string.hpp"
+#include "../../string/@"
 #include "../def.hpp"
 #include "lang/Object.hpp"
 #include "lang/CharSequence.hpp"

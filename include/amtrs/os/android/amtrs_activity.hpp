@@ -10,7 +10,7 @@
 #include <tuple>
 #include "android_app.hpp"
 #include "cpu.hpp"
-#include "../../application.hpp"
+#include "../../application/@"
 #include "../../java/jp/libamtrs/AmtrsActivity.hpp"
 
 AMTRS_NAMESPACE_BEGIN
