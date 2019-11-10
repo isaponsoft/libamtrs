@@ -1,6 +1,6 @@
 #ifndef	__passion__vmbytecode__hpp
 #define	__passion__vmbytecode__hpp
-#include <amtrs/logging.hpp>
+#include <amtrs/logging/@>
 #include "def.hpp"
 #include "vmfunction.hpp"
 #include "vmopecode.hpp"

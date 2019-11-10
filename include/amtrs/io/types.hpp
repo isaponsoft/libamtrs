@@ -7,15 +7,5 @@
 #define	__libamtrs__io__types__hpp
 #include "def.hpp"
 AMTRS_IO_NAMESPACE_BEGIN
-
-
-enum class	seek_origin
-{
-	so_begin,
-	so_cur,
-	so_end,
-};
-
-
 AMTRS_IO_NAMESPACE_END
 #endif

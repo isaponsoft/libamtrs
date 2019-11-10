@@ -1,8 +1,8 @@
 ﻿#ifndef	__passion__inc__def__hpp
 #define	__passion__inc__def__hpp
-#include <amtrs/variant.hpp>
-#include <amtrs/shared_buffer.hpp>
-#include <amtrs/logging.hpp>
+#include <amtrs/variant/@>
+#include <amtrs/memory/shared_buffer.hpp>
+#include <amtrs/logging/@>
 #include "../def.hpp"
 PASSION_NAMESPACE_BEGIN
 PASSION_NAMESPACE_END

@@ -5,7 +5,7 @@
 #include <UIKit/UIKit.h>
 #include <atomic>
 #include <iostream>
-#include "../../iostream.hpp"
+#include "../iostream/@"
 AMTRS_NAMESPACE_BEGIN
 
 

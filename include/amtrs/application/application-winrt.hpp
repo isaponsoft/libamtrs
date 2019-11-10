@@ -149,20 +149,20 @@ private:
 
 
 
-inline filesystem::path application::cache_dir() const
+inline std::string application::cache_dir() const
 {
 	return	".";
 }
 
 
-inline filesystem::path application::documents_dir() const
+inline std::string application::documents_dir() const
 {
 	return	{};
 }
 
 
 
-inline filesystem::path application::files_dir(bool _external) const
+inline std::string application::files_dir(bool _external) const
 {
 	(void)_external;
 	return	".";

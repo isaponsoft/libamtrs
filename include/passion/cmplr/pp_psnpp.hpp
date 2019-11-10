@@ -1,7 +1,6 @@
 ﻿#ifndef	__passion__pp_psnpp__hpp
 #define	__passion__pp_psnpp__hpp
-#include <amtrs/filesystem.hpp>
-#include <amtrs/io.hpp>
+#include <amtrs/filesystem/@>
 #include "def.hpp"
 #include "types.hpp"
 #include "../err/error.hpp"
@@ -325,13 +324,13 @@ private:
 		_in.skip(token_type::SPACE);
 
 		auto	filename	= removeQuotation(_in.str());
-		auto	dir			= filesystem::path(_in.name().c_str()).parent_path();
-		auto	filepath	= dir/filename;
+		auto	dir			= (std::string)filesystem::parent_path((std::string_view)_in.name());
+		auto	filepath	= dir+"/"+filename;
 		++_in;
 		
 		tokenbuffer	tb;
-		auto		source	= io::readall<std::string, io::fio>(filepath.string().c_str());
-		TextReader	reader({source, filepath.string(), 1});
+		auto		source	= filesystem::file_get_contents<std::string>((std::string_view)filepath);
+		TextReader	reader({source, filepath, 1});
 		reader.setCommentEnable(false);
 		for (;;)
 		{

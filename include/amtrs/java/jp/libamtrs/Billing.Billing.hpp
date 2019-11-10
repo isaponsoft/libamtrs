@@ -6,9 +6,12 @@
 #ifndef	__libamtrs__android__java_classes__jp_libamtrs_Billing_Billing__hpp
 #define	__libamtrs__android__java_classes__jp_libamtrs_Billing_Billing__hpp
 #include <amtrs/java/java/util/List.hpp>
+#include <amtrs/java/com/android/billingclient/api/Purchase.hpp>
 #include <amtrs/java/com/android/billingclient/api/PurchasesUpdatedListener.hpp>
+#include <amtrs/java/com/android/billingclient/api/SkuDetails.hpp>
 #include <amtrs/java/android/app/Activity.hpp>
 AMTRS_JAVA_CLASSES_NAMESPACE_BEGIN
+
 
 namespace android::app {
 struct	Activity;
@@ -16,16 +19,42 @@ struct	Activity;
 
 namespace jp::libamtrs::Billing {
 
-struct	SkuDetails;
 
 // https://developer.android.com/reference/android/app/FragmentActivity
 AMTRS_JAVA_DEFINE_CLASS(Billing, com::android::billingclient::api::PurchasesUpdatedListener)
 {
-	using	Activity	= android::app::Activity;
-	using	List		= java::util::List;
-	using	String		= java::lang::String;
+	using	Activity		= android::app::Activity;
+	using	List			= java::util::List;
+	using	String			= java::lang::String;
+	using	Purchase		= com::android::billingclient::api::Purchase;
+	using	SkuDetails		= com::android::billingclient::api::SkuDetails;
 
 	AMTRS_JAVA_CLASS_SIGNATURE("jp/libamtrs/Billing/Billing");
+
+
+	AMTRS_JAVA_DEFINE_CLASS(Info, java::lang::Object)
+	{
+		using	Purchase		= com::android::billingclient::api::Purchase;
+		using	SkuDetails		= com::android::billingclient::api::SkuDetails;
+
+		AMTRS_JAVA_CLASS_SIGNATURE("jp/libamtrs/Billing/Billing/Info");
+
+		AMTRS_JAVA_DEFINE_STATIC_MEMBER
+		{
+			AMTRS_JAVA_STATICS_BASIC;
+		};
+
+
+		// 動的メソッドと動的フィールド
+		AMTRS_JAVA_DEFINE_DYNAMICS_MEMBER
+		{
+			AMTRS_JAVA_DYNAMICS_BASIC;
+
+
+			AMTRS_JAVA_DEFINE_FIELD(SkuDetails,	details)
+			AMTRS_JAVA_DEFINE_FIELD(Purchase,	purcase)
+		};
+	};
 
 
 	// クラスメソッドとクラスフィールド
@@ -47,6 +76,11 @@ AMTRS_JAVA_DEFINE_CLASS(Billing, com::android::billingclient::api::PurchasesUpda
 
 		// Billingｈ接続を開始します。
 		AMTRS_JAVA_DEFINE_METHOD(startConnection
+			, void()
+		)
+
+		// Billingｈ接続を終了します。
+		AMTRS_JAVA_DEFINE_METHOD(endConnection
 			, void()
 		)
 

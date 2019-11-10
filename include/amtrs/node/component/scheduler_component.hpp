@@ -57,6 +57,15 @@ public:
 	schede_dispatcher_type* get_root_scheduler() const noexcept { return mRootScheduler; }
 
 
+	scheduler_component()
+	{
+		this->add_created([this]()
+		{
+			this->on_created();
+		});
+	}
+
+
 	~scheduler_component()
 	{
 		unschedule_all();
@@ -190,7 +199,25 @@ public:
 	}
 
 
+
+	// ========================================================================
+	//! create時のコールバックを追加します。
+	// ------------------------------------------------------------------------
+	//! on_created() 
+	// ------------------------------------------------------------------------
+	template<class Callback>
+	void add_created(Callback&& _callback)
+	{
+		this->schedule_once([cb = std::move(_callback)](float){ cb(); });
+	}
+
 protected:
+	virtual void on_created()
+	{
+		mCreated	= true;
+	}
+
+
 	void set_root_scheduler(schede_dispatcher_type* _scheduler)
 	{
 		if (_scheduler)
@@ -217,6 +244,7 @@ protected:
 private:
 	schede_dispatcher_type*			mRootScheduler		= nullptr;
 	std::list<ref<schedule_type>>	mSchedules;
+	bool							mCreated	= false;
 };
 
 

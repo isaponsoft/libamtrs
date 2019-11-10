@@ -3,7 +3,7 @@
 #import <StoreKit/StoreKit.h>
 #include <map>
 #include <vector>
-#include <amtrs/logging.hpp>
+#include <amtrs/logging/@>
 #include "def.hpp"
 @interface	libamtrs_BillingController
 			: UIViewController<SKProductsRequestDelegate, SKPaymentTransactionObserver>
@@ -191,7 +191,7 @@ inline extern void billing_manager::loadSkuDetails(std::function<void(sku_detail
 // ========================================================================
 //! 課金システムとの接続を解除する。
 // ------------------------------------------------------------------------
-void billing_manager::disconnect()
+inline extern void billing_manager::disconnect()
 {
 	static_cast<billing_manager_ios::interface*>(mInterface.get())->disconnect();
 }

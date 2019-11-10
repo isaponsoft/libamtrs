@@ -15,10 +15,10 @@ private:
 	using	PurchasesUpdatedListener	= java::classes::com::android::billingclient::api::PurchasesUpdatedListener;
 	using	SkuDetails					= java::classes::com::android::billingclient::api::SkuDetails;
 	using	Billing						= java::classes::jp::libamtrs::Billing::Billing;
+	using	Info						= Billing::Info;
 	using	ArrayList					= java::classes::java::util::ArrayList;
 	using	List						= java::classes::java::util::List;
 	using	String						= java::classes::java::lang::String;
-
 
 	class	interface
 			: public billing_manager::interface_base
@@ -41,9 +41,24 @@ private:
 
 		void connect(std::function<void(status _status)> _callback)
 		{
-			mConnected			= false;
 			mConnectCallback	= std::move(_callback);
+			if (mConnected)
+			{
+				if (mConnectCallback)
+				{
+					mConnectCallback(mLastConnectStatus);
+				}
+				return;
+			}
+
+			mConnected			= false;
 			java::jobj<Billing>(mBilling).startConnection();
+
+			if (java::has_exception())
+			{
+				printf("exception");
+				return;
+			}
 		}
 
 		void purchase(std::function<void(status _status, purchase_result const* _details, size_t _detailsCount)> _callback, std::string_view _sku)
@@ -71,6 +86,7 @@ private:
 		void disconnect()
 		{
 			mConnected	= false;
+			java::jobj<Billing>(mBilling).endConnection();
 		}
 
 	
@@ -148,15 +164,43 @@ private:
 			int							sizeOf	= _details.size();
 			for (int i = 0; i < sizeOf; ++i)
 			{
-				auto		o	= _details.get((jint)i);
-				auto		s	= java::jobj<SkuDetails>(o);
+				auto		inf	= java::jobj<Info>(_details.get((jint)i));
+				auto		dtl	= inf.get_details();
+				auto		p	= inf.get_purcase();
 
+				#if		DEBUG
+				{
+					auto	jsn	= std::to_string((jstring)dtl.toString().get());
+					AMTRS_TRACE_LOG("%s", jsn.c_str());
+				}
+				#endif
+
+
+				auto		s	= java::jobj<SkuDetails>(dtl);
 				sku_detail	d;
 				d.identify		= std::to_string((jstring)s.getSku().get());
 				d.price			= std::to_string((jstring)s.getPrice().get());
 				d.priceCurrency	= std::to_string((jstring)s.getPriceCurrencyCode().get());
-				d.rewarded		= s.isRewarded();
+				d.rewarded		= false;
+				if (p != nullptr)
+				{
+					d.rewarded		= p.getPurchaseState() == 1;
+				}
+/*				
+
+				switch (p.getPurchaseState())
+				{
+					case 0 :	r.state	= purchase_status::unspecified;		break;		// Purchase.PurchaseState.UNSPECIFIED_STATE
+					case 1 :	r.state	= purchase_status::purchased;		break;		// Purchase.PurchaseState.PURCHASED
+					case 2 :	r.state	= purchase_status::pending;			break;		// Purchase.PurchaseState.PENDING
+					default:	break;
+				}
+*/
+auto		x	= std::to_string((jstring)s.getSubscriptionPeriod().get());
+AMTRS_TRACE_LOG("id='%s', subpreriod='%s', reward='%d'", d.identify.c_str(), x.c_str(), (int)d.rewarded);
+
 				details.push_back(std::move(d));
+
 			}
 			if (mDetailsCallback)
 			{
@@ -166,23 +210,27 @@ private:
 
 		void onStartFinished(int _responseCode)
 		{
-			status	st	= status::success;
+			status	mLastConnectStatus	= status::success;
 			switch (_responseCode)
 			{
-				case 0 : st = status::success;			break;
-				case 1 : st = status::network_error;	break;
-				case 2 : st = status::network_error;	break;
-				case 3 : st = status::unsupported;		break;
-				case 4 : st = status::network_error;	break;
-				case 5 : st = status::network_error;	break;
-				case 6 : st = status::unkown_error;		break;
-				case 7 : st = status::network_error;	break;
-				case 8 : st = status::network_error;	break;
-				default: st = status::unkown_error;		break;
+				case 0 : mLastConnectStatus = status::success;			break;
+				case 1 : mLastConnectStatus = status::network_error;	break;
+				case 2 : mLastConnectStatus = status::network_error;	break;
+				case 3 : mLastConnectStatus = status::unsupported;		break;
+				case 4 : mLastConnectStatus = status::network_error;	break;
+				case 5 : mLastConnectStatus = status::network_error;	break;
+				case 6 : mLastConnectStatus = status::unkown_error;		break;
+				case 7 : mLastConnectStatus = status::network_error;	break;
+				case 8 : mLastConnectStatus = status::network_error;	break;
+				default: mLastConnectStatus = status::unkown_error;		break;
+			}
+			if (mLastConnectStatus == status::success)
+			{
+				mConnected = true;
 			}
 			if (mConnectCallback)
 			{
-				mConnectCallback(st);
+				mConnectCallback(mLastConnectStatus);
 			}
 		}
 
@@ -192,8 +240,8 @@ private:
 		std::function<void(status _status, purchase_result const* _details, size_t _detailsCount)>	mPurchaseCallback;
 		std::string																					mLastPurchaseSku;
 		bool																						mConnected	= false;
+		status																						mLastConnectStatus	= status::unkown_error;
 	};
-
 
 
 	static interface** get_instance()

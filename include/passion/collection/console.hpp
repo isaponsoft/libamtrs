@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <sstream>
 #include <string>
-#include <amtrs/system.hpp>
+#include <amtrs/system/@>
 #include "../psnvm.hpp"
 PASSION_NAMESPACE_BEGIN namespace collection {
 

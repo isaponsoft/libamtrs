@@ -32,214 +32,189 @@ either expressed or implied, of the libamtrs project.
 #include "def.hpp"
 AMTRS_NAMESPACE_BEGIN
 
+template<class...>
+struct	ref_traits;
 
-template<class T, class CounterT = std::atomic<T>>
-class	basic_ref_object
+class	ref_count
 {
-	using	counter			= CounterT;
 public:
-	using	counter_type	= T;
-
-	basic_ref_object() = default;
+	ref_count() = default;
 
 	// カウンターは移動もコピーもしない
-	basic_ref_object(basic_ref_object&& _r) {}
-	basic_ref_object(const basic_ref_object& _r) {}
-	basic_ref_object& operator = (basic_ref_object&& _r) { return *this; }
-	basic_ref_object& operator = (const basic_ref_object& _r) { return *this; }
+	ref_count(ref_count&& _r) {}
+	ref_count(const ref_count& _r) {}
+	ref_count& operator = (ref_count&& _r) { return *this; }
+	ref_count& operator = (const ref_count& _r) { return *this; }
 
-	virtual ~basic_ref_object() = default;
-
-	void add_ref() const
+	void add_ref()
 	{
 		++mUsingCount;
 	}
 
-
-	void dec_ref() const
+	bool dec_ref()
 	{
-		if ((--mUsingCount) == 0)
+		return	dec_ref(0);
+	}
+
+	bool dec_ref(int)
+	{
+		return	(--mUsingCount) == 0;
+	}
+
+
+	std::size_t use_count() const noexcept
+	{
+		return	mUsingCount.load();
+	}
+
+
+private:
+	mutable std::atomic<std::size_t>	mUsingCount	= 0;
+};
+
+
+
+//! 標準の ref_traits に対応する参照カウンタ
+class	ref_object : public ref_count
+{
+public:
+	virtual ~ref_object() = default;
+
+
+	void dec_ref()
+	{
+		if (dec_ref(0))
 		{
 			delete	this;
 		}
 	}
 
-	counter_type use_count() const noexcept
+	bool dec_ref(int)
 	{
-		return	mUsingCount.load();
-	}
-
-protected:
-	mutable counter			mUsingCount	= 0;
-
-};
-
-
-
-
-class	ref_object
-		: public basic_ref_object<std::size_t>
-{
-	using	_base_ref_type		= basic_ref_object<std::size_t>;
-public:
-	using	_base_ref_type::_base_ref_type;
-
-
-private:
-	using	_base_ref_type::mUsingCount;
-};
-
-
-
-template<class P>
-class	basic_ref_container
-{
-public:
-	using	value_type	= typename std::remove_pointer<P>::type;
-	using	pointer		= P;
-	using	reference	= value_type&;
-
-	constexpr basic_ref_container()
-		: p(nullptr)
-	{}
-
-
-	constexpr basic_ref_container(pointer _ptr)
-		: p(_ptr)
-	{
-		if (p)
-		{
-			p->add_ref();
-		}
-	}
-
-
-	constexpr basic_ref_container(const basic_ref_container& _r)
-		: p(_r.p)
-	{
-		if (p)
-		{
-			p->add_ref();
-		}
-	}
-
-
-	constexpr basic_ref_container(basic_ref_container&& _r)
-		: p(_r.p)
-	{
-		_r.p	= nullptr;
-	}
-
-
-	~basic_ref_container()
-	{
-		if (p)
-		{
-			p->dec_ref();
-			p	= nullptr;
-		}
-	}
-
-	pointer get() const noexcept
-	{
-		return	p;
-	}
-
-	void set(pointer _ptr) const noexcept
-	{
-		p	= _ptr;
-	}
-
-	pointer release() noexcept
-	{
-		pointer	retval(p);
-		p	= nullptr;
-		return	retval;
-	}
-
-	bool empty() const noexcept
-	{
-		return	p == nullptr;
-	}
-
-	void swap(basic_ref_container& _b)
-	{
-		std::swap(p, _b.p);
-	}
-
-	bool operator == (pointer _ptr) const noexcept
-	{
-		return	p == _ptr;
-	}
-
-	bool operator == (const basic_ref_container& _r) const noexcept
-	{
-		return	p == _r.p;
+		return	ref_count::dec_ref(0);
 	}
 
 private:
-	pointer	p;
+	template<class...>
+	friend	struct	ref_traits;
 };
 
 
-template<class T, class Container = basic_ref_container<T>>
+
+
+template<class T>
+struct	ref_traits<T*>
+{
+	using	object_type	= T*;
+	using	pointer		= T*;
+	using	reference	= T&;
+
+	constexpr void construct(object_type& _o)
+	{
+		_o	= nullptr;
+	}
+
+	constexpr void construct(object_type& _o, object_type const& _s)
+	{
+		_o	= _s;
+		if (_o)
+		{
+			_o->add_ref();
+		}
+	}
+
+	constexpr void construct(object_type& _o, object_type&& _s)
+	{
+		_o	= _s;
+		_s	= nullptr;
+	}
+
+	constexpr void destruct(object_type& _o)
+	{
+		if (_o)
+		{
+			_o->dec_ref();
+			_o	= nullptr;
+		}
+	}
+
+	constexpr object_type release(object_type& _o)
+	{
+		object_type	r(_o);
+		_o	= nullptr;
+		return	r;
+	}
+
+	constexpr bool empty(object_type const& _o)
+	{
+		return	_o == nullptr;
+	}
+};
+
+
+template<class T, class Traits = ref_traits<T>>
 class	basic_ref
 {
-	using	container	= Container;
+	using	traits_type	= Traits;
 public:
-	using	value_type	= typename container::value_type;
-	using	pointer		= typename container::pointer;
-	using	reference	= typename container::reference;
+	using	object_type	= typename traits_type::object_type;
+	using	pointer		= typename traits_type::pointer;
+	using	reference	= typename traits_type::reference;
 
 
-	constexpr basic_ref() = default;
+	constexpr basic_ref()
+	{
+		traits_type{}.construct(mRef);
+	}
 
 	//! assign
 	constexpr basic_ref(pointer _ptr)
-		: mRef(_ptr)
-	{}
+	{
+		object_type	tmp(_ptr);
+		traits_type{}.construct(mRef, tmp);
+	}
 
 	//! copy
 	constexpr basic_ref(const basic_ref& _r)
-		: mRef(_r.mRef)
-	{}
+	{
+		traits_type{}.construct(mRef, _r.mRef);
+	}
 
 	//! move
 	constexpr basic_ref(basic_ref&& _r)
-		: mRef(std::move(_r.mRef))
-	{}
+	{
+		traits_type{}.construct(mRef, std::move(_r.mRef));
+	}
 
 	//! assign
 	template<class ST, class SC>
 	constexpr basic_ref(const basic_ref<ST, SC>& _r)
-		: mRef(_r.get())
-	{}
+	{
+		object_type	w(_r.mRef);
+		traits_type{}.construct(mRef, w);
+	}
 
 	//! assign-move
 	template<class ST, class SC>
 	constexpr basic_ref(basic_ref<ST, SC>&& _r)
-		: mRef(_r.get())
 	{
-		_r.clear();
+		object_type	w(_r.release());
+		traits_type{}.construct(mRef, std::move(w));
+	}
+
+	~basic_ref()
+	{
+		clear();
 	}
 
 
-	//! 参照を増やさずにリファレンスを生成します。
-	static basic_ref make(pointer _ptr)
-	{
-		basic_ref retval;
-		retval.mRef.set(_ptr);
-		return retval;
-	}
-
-
-	constexpr reference operator * () const { return *mRef.get(); }
-	constexpr pointer operator -> () const noexcept { return mRef.get(); }
-	constexpr operator pointer () const noexcept { return mRef.get(); }
-	constexpr bool empty() const noexcept { return mRef.empty(); }
-	constexpr void clear() noexcept { mRef.~container(); }
-	constexpr pointer release() noexcept { return mRef.release(); }
-	constexpr pointer get() const noexcept { return mRef.get(); }
+	constexpr reference operator * () const { return *mRef; }
+	constexpr pointer operator -> () const noexcept { return mRef; }
+	constexpr operator pointer () const noexcept { return mRef; }
+	constexpr bool empty() const noexcept { return traits_type{}.empty(mRef); }
+	constexpr void clear() noexcept { traits_type{}.destruct(mRef); }
+	constexpr pointer release() noexcept { return traits_type{}.release(mRef); }
+	constexpr pointer get() const noexcept { return mRef; }
 
 
 	constexpr basic_ref& operator = (const std::nullptr_t)
@@ -253,57 +228,60 @@ public:
 	{
 		if (*this != _ptr)
 		{
-			container	tmp(std::move(mRef));
-			new (&mRef) container(_ptr);
+			basic_ref	tmp(std::move(*this));
+			object_type	w(_ptr);
+			traits_type{}.construct(mRef, w);
 		}
 		return	*this;
 	}
 
-	constexpr basic_ref& operator = (const basic_ref& _right)
+	constexpr basic_ref& operator = (const basic_ref& _r)
 	{
-		if (*this != _right)
+		if (*this != _r)
 		{
-			container	tmp(std::move(mRef));
-			new (&mRef) container(_right.mRef);
+			basic_ref	tmp(std::move(*this));
+			traits_type{}.construct(mRef, _r.mRef);
 		}
 		return	*this;
 	}
 
-	constexpr basic_ref& operator = (basic_ref&& _right)
+	constexpr basic_ref& operator = (basic_ref&& _r)
 	{
-		if (*this == _right)
+		if (*this == _r)
 		{
-			_right.clear();
+			_r.clear();
 		}
 		else
 		{
-			container	tmp(std::move(mRef));
-			new (&mRef) container(std::move(_right.mRef));
+			basic_ref	tmp(std::move(*this));
+			traits_type{}.construct(mRef, std::move(_r.mRef));
 		}
 		return	*this;
 	}
 
 
 	template<typename _ST, class SC>
-	constexpr basic_ref& operator = (const basic_ref<_ST, SC>& _right)
+	constexpr basic_ref& operator = (const basic_ref<_ST, SC>& _r)
 	{
-		if (mRef.get() != _right.get())
+		if (mRef != _r.get())
 		{
-			container	tmp(std::move(mRef));
-			new (&mRef) container(_right.mRef.get());
+			basic_ref	tmp(std::move(*this));
+			object_type	w(_r.mRef);
+			traits_type{}.construct(mRef, w);
 		}
 		return	*this;
 	}
 
 	template<typename _ST, class SC>
-	constexpr basic_ref& operator = (basic_ref<_ST, SC>&& _right)
+	constexpr basic_ref& operator = (basic_ref<_ST, SC>&& _r)
 	{
-		if (mRef.get() != _right.get())
+		if (mRef != _r.get())
 		{
-			container	tmp(std::move(mRef));
-			new (&mRef) container(_right.mRef.get());
+			basic_ref	tmp(std::move(*this));
+			object_type	w(_r.release());
+			traits_type{}.construct(mRef, std::move(w));
 		}
-		_right.clear();
+		_r.clear();
 		return	*this;
 	}
 
@@ -314,11 +292,11 @@ public:
 
 	constexpr bool operator == (pointer _ptr) const noexcept { return mRef == _ptr; }
 	constexpr bool operator != (pointer _ptr) const noexcept { return !(mRef == _ptr); }
-	constexpr bool operator == (const basic_ref& _right) const noexcept { return mRef == _right.mRef; }
-	constexpr bool operator != (const basic_ref& _right) const noexcept { return !(mRef == _right.mRef); }
+	constexpr bool operator == (const basic_ref& _r) const noexcept { return mRef == _r.mRef; }
+	constexpr bool operator != (const basic_ref& _r) const noexcept { return !(mRef == _r.mRef); }
 
 private:
-	container	mRef;
+	object_type	mRef;
 
 	template<class, class>
 	friend	class	basic_ref;

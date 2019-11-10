@@ -121,7 +121,7 @@ protected:
 		align_items();
 	}
 
-	virtual void on_children_transform_change(node_type* _child) override
+	virtual void on_children_transform_change(typename _base_type::transform_component* _child) override
 	{
 		_base_type::on_children_transform_change(_child);
 		align_items();

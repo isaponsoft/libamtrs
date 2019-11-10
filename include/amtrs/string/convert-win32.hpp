@@ -30,7 +30,7 @@ either expressed or implied, of the libamtrs project.
 #define	__libamtrs__string__convert_win32__hpp
 #include <string>
 #include <stdlib.h>
-#include "../../os/win32/windows.hpp"
+#include "../os/win32/windows.hpp"
 #include "def.hpp"
 AMTRS_NAMESPACE_BEGIN
 

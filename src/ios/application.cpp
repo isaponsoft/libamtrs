@@ -5,7 +5,7 @@
  */
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#include <amtrs/inc/application/application.hpp>
+#include <amtrs/application/@>
 
 
 struct	ios_application_status

@@ -7,6 +7,7 @@ a.out
 *.exe
 *.log
 out/
+tmp/
 _packages
 
 # Android/gradle

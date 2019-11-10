@@ -113,6 +113,7 @@ template<endian E, class V>
 constexpr V decode(V _value) noexcept { return bitswap_if<E>(_value); }
 
 
+
 } // endian_util
 AMTRS_NAMESPACE_END
 #endif

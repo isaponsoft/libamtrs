@@ -28,8 +28,10 @@ either expressed or implied, of the libamtrs project.
 ******************************************************************************/
 #ifndef	__libamtrs__crypto__hpp
 #define	__libamtrs__crypto__hpp
-#include <algorithm>
 #include "../amtrs.hpp"
 #include "def.hpp"
 #include "aes.hpp"
+#include "crc32.hpp"
+#include "md5.hpp"
+#include "sha256.hpp"
 #endif

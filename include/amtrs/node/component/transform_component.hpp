@@ -40,74 +40,78 @@ template<class T, class Traits>
 struct	transform_component
 		: public transform<T>
 {
-	using	_transform_type	= transform<T>;
 	using	this_type		= transform_component<T, Traits>;
 public:
 	using	node_type		= basic_node<T, Traits>;
 
-	using	coordinate		= transform<T>;
-	using	value_type		= typename coordinate::value_type;
-	using	position_type	= typename coordinate::position_type;
-	using	scale_type		= typename coordinate::scale_type;
-	using	rotate_type		= typename coordinate::rotate_type;
-	using	matrix_type		= typename coordinate::matrix_type;
-	using	size_type		= typename coordinate::size_type;
-	using	box_type		= typename coordinate::box_type;
-	using	bounds_type		= typename coordinate::box_type;
+	using	transform_type	= transform<T>;
+	using	value_type		= typename transform_type::value_type;
+	using	position_type	= typename transform_type::position_type;
+	using	scale_type		= typename transform_type::scale_type;
+	using	rotate_type		= typename transform_type::rotate_type;
+	using	matrix_type		= typename transform_type::matrix_type;
+	using	size_type		= typename transform_type::size_type;
+	using	box_type		= typename transform_type::box_type;
+	using	bounds_type		= typename transform_type::box_type;
 
-	transform_component(node_type* _owner = nullptr, transform_component* _parent = nullptr)
-		: mOwner(_owner)
-		, mParentTransform(_parent)
-	{}
 
 	node_type* set_position(position_type _pos)
 	{
-		_transform_type::set_position(_pos);
+		transform_type::set_position(_pos);
 		return	static_cast<node_type*>(this);
 	}
 
 
 	node_type* set_scale(scale_type _scale)
 	{
-		_transform_type::set_scale(_scale);
+		transform_type::set_scale(_scale);
 		return	static_cast<node_type*>(this);
 	}
 
 
 	node_type* set_size(size_type _size)
 	{
-		_transform_type::set_size(_size);
+		transform_type::set_size(_size);
 		return	static_cast<node_type*>(this);
 	}
 
 	node_type* set_width(value_type _size)
 	{
-		_transform_type::set_width(_size);
+		transform_type::set_width(_size);
 		return	static_cast<node_type*>(this);
 	}
 
 	node_type* set_height(value_type _size)
 	{
-		_transform_type::set_height(_size);
+		transform_type::set_height(_size);
 		return	static_cast<node_type*>(this);
 	}
 
 	node_type* set_pivot(position_type _pos)
 	{
-		_transform_type::set_pivot(_pos);
+		transform_type::set_pivot(_pos);
 		return	static_cast<node_type*>(this);
 	}
 
 	node_type* set_rotate(rotate_type _rotate) noexcept
 	{
-		_transform_type::set_rotate(_rotate);
+		transform_type::set_rotate(_rotate);
 		return	static_cast<node_type*>(this);
 	}
 
-	using	_transform_type::pivot;
-	using	_transform_type::position;
-	using	_transform_type::scale;
-	using	_transform_type::size;
+
+	bounds_type bounds() const noexcept
+	{
+		return	bounds_type(
+					this->position() - (position_type)(this->size() * this->pivot()),
+					this->size()
+				);
+	}
+
+	using	transform_type::pivot;
+	using	transform_type::position;
+	using	transform_type::scale;
+	using	transform_type::size;
 
 
 	// ==============================================================
@@ -115,7 +119,7 @@ public:
 	// --------------------------------------------------------------
 	const matrix_type& local_matrix() const noexcept
 	{
-		return	_transform_type::to_matrix();
+		return	transform_type::to_matrix();
 	}
 
 	// ==============================================================
@@ -148,19 +152,12 @@ public:
 
 
 protected:
-	void initialize(node_type* _owner, transform_component* _parent)
-	{
-		mOwner				= _owner;
-		mParentTransform	= _parent;
-	}
-
-
 	transform_component* get_parent_transform()
 	{
 		return	mParentTransform;
 	}
 
-	using	_transform_type::on_size_change;
+	using	transform_type::on_size_change;
 
 
 	// ==============================================================
@@ -174,12 +171,12 @@ protected:
 		return	world_matrix();
 	}
 
-	virtual void on_children_transform_change(node_type*)
+	virtual void on_children_transform_change(transform_component*)
 	{}
 
 	virtual void on_coordinate_modify() override
 	{
-		_transform_type::on_coordinate_modify();
+		transform_type::on_coordinate_modify();
 		update_world();
 	}
 
@@ -188,7 +185,7 @@ protected:
 	{
 		if (mParentTransform)
 		{
-			mParentTransform->on_children_transform_change(mOwner);
+			mParentTransform->on_children_transform_change(this);
 		}
 		mWorldModified	= true;
 	}
@@ -200,7 +197,6 @@ protected:
 private:
 	mutable bool			mWorldModified		= true;
 	mutable matrix_type		mWorldMatirx;
-	node_type*				mOwner				= nullptr;
 	transform_component*	mParentTransform	= nullptr;
 };
 

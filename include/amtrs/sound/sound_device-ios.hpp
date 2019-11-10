@@ -3,7 +3,7 @@
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #include <AudioToolbox/AudioToolbox.h>
-#include "../logging.hpp"
+#include "../logging/@"
 #include "def.hpp"
 AMTRS_NAMESPACE_BEGIN
 
@@ -17,9 +17,10 @@ class	sound_buffer_ios
 public:
 	static constexpr ALuint		nosource	= static_cast<ALuint>(-1);
 
-	sound_buffer_ios(sound_device_ios* _device, std::size_t _bytesSize)
+	sound_buffer_ios(sound_device_ios* _device, const sound_format& _format, std::size_t _bytesSize)
 		: mDevice(_device)
 		, mBufferSize(_bytesSize)
+		, mFormat(_format)
 	{}
 
 	~sound_buffer_ios()
@@ -37,8 +38,21 @@ public:
 private:
 	void initialize(const void* _buffer)
 	{
+		int	alfmt	= AL_FORMAT_MONO8;
+		if (mFormat.channels == 1)
+		{
+			alfmt	= mFormat.bitsParSamples == 8
+					? AL_FORMAT_MONO8
+					: AL_FORMAT_MONO16;
+		}
+		else
+		{
+			alfmt	= mFormat.bitsParSamples == 8
+					? AL_FORMAT_STEREO8
+					: AL_FORMAT_STEREO16;
+		}
 		alGenBuffers(1, &mBuffer);
-		alBufferData(mBuffer, AL_FORMAT_STEREO16, _buffer, static_cast<ALsizei>(mBufferSize), 44100);
+		alBufferData(mBuffer, alfmt, _buffer, static_cast<ALsizei>(mBufferSize), (int)mFormat.samplesParSecond);
 	}
 
 	void release()
@@ -53,7 +67,7 @@ private:
 	sound_device_ios*	mDevice		= nullptr;
     ALuint				mBuffer		= nosource;
 	std::size_t			mBufferSize	= 0;
-
+	sound_format		mFormat;
 
 	friend	sound_device_ios;
 	friend	sound_player_ios;
@@ -120,7 +134,7 @@ public:
 
 
 private:
-	void initialize()
+	void initialize(const sound_format& _format)
 	{
 		alGenSources(1, &mSource);		
 	}
@@ -165,10 +179,10 @@ public:
 	// ========================================================================
 	//! プレイヤーを生成します。
 	// ------------------------------------------------------------------------
-	virtual ref<sound_player> create_player(sound_stream_type _stream) override
+	virtual ref<sound_player> create_player(const sound_format& _format, sound_stream_type _stream) override
 	{
 		ref<sound_player_ios>	retval	= new sound_player_ios(this);
-		retval->initialize();
+		retval->initialize(_format);
 		return	retval;
 	}
 
@@ -178,9 +192,9 @@ public:
 	// ------------------------------------------------------------------------
 	//! バッファのサイズを設定できます。
 	// ------------------------------------------------------------------------
-	virtual ref<sound_buffer> create_buffer(std::size_t _bytesSize) override
+	virtual ref<sound_buffer> create_buffer(const sound_format& _format, std::size_t _bytesSize) override
 	{
-		ref<sound_buffer_ios>	buff	= new sound_buffer_ios(this, _bytesSize);
+		ref<sound_buffer_ios>	buff	= new sound_buffer_ios(this, _format, _bytesSize);
 		std::vector<char>		zero(_bytesSize);
 		for (auto& c : zero) { c = 0; }
 
@@ -199,9 +213,9 @@ public:
 	}
 
 
-	virtual ref<sound_buffer> create_buffer(const void* _pcmdata, std::size_t _bytesSize) override
+	virtual ref<sound_buffer> create_buffer(const sound_format& _format, const void* _pcmdata, std::size_t _bytesSize) override
 	{
-		ref<sound_buffer_ios>	buff	= new sound_buffer_ios(this, _bytesSize);
+		ref<sound_buffer_ios>	buff	= new sound_buffer_ios(this, _format, _bytesSize);
 		buff->initialize(_pcmdata);
 		return	buff;
 	}

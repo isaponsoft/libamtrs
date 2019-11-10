@@ -4,7 +4,7 @@
 #include <string>
 #include <cstddef>
 #include <thread>
-#include <amtrs/process.hpp>
+#include <amtrs/process/@>
 #include "../psnvm.hpp"
 PASSION_NAMESPACE_BEGIN namespace collection {
 

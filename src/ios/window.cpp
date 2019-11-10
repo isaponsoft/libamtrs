@@ -5,10 +5,10 @@
  */
 #import <UIKit/UIKit.h>
 #include <map>
-#include <amtrs/inc/window/window.hpp>
-#include <amtrs/inc/window/dialog_textinput.hpp>
-#include <amtrs/inc/window/dialog_timeinput.hpp>
-#include <amtrs/inc/window/dialog_datetime.hpp>
+#include <amtrs/window/window.hpp>
+#include <amtrs/window/dialog_textinput.hpp>
+#include <amtrs/window/dialog_timeinput.hpp>
+#include <amtrs/window/dialog_datetime.hpp>
 
 
 

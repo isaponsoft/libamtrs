@@ -5,6 +5,6 @@
  */
 #ifndef	__libamtrs__process__hpp
 #define	__libamtrs__process__hpp
-#include "inc/process/def.hpp"
-#include "inc/process/run.hpp"
+#include "def.hpp"
+#include "run.hpp"
 #endif

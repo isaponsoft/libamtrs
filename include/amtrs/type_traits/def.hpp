@@ -6,5 +6,5 @@
 #ifndef __libamtrs__type_traits__def__hpp
 #define __libamtrs__type_traits__def__hpp
 #include <type_traits>
-#include "../../amtrs.hpp"
+#include "../amtrs.hpp"
 #endif

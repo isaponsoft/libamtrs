@@ -30,21 +30,15 @@ either expressed or implied, of the libamtrs project.
 #define	__libamtrs__node__node_trats__hpp
 #include "../amtrs.hpp"
 #include "../g3d/@"
-#include "component/scheduler_component.hpp"
+#include "@fwd.hpp"
 AMTRS_NAMESPACE_BEGIN
 
 
-
 template<class T, class... Args>
-struct	node_trits
+struct	node_traits
 {
-	using	traits_type	= node_trits<T, Args...>;
+	using	traits_type	= node_traits<T, Args...>;
 	using	node_type	= basic_node<T, traits_type>;
-
-	struct	director : ref_object
-	{
-		using	node_type		= basic_node<T, node_trits>;
-	};
 
 	using	draw_argument	= g3d::device*;
 	using	render_argument	= g3d::device*;

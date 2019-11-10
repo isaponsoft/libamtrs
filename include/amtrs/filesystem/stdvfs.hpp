@@ -28,6 +28,8 @@ either expressed or implied, of the libamtrs project.
 ******************************************************************************/
 #ifndef __libamtrs__filesystem__stdvfs__hpp
 #define __libamtrs__filesystem__stdvfs__hpp
+#include <fstream>
+#include <sys/stat.h>
 #include "vfs.hpp"
 AMTRS_FILESYSTEM_NAMESPACE_BEGIN
 
@@ -65,14 +67,57 @@ private:
 protected:
 	stdvfs() {}
 
-	virtual file_status    on_status    (const path& _path, std::error_code& _ec) const override { return stdfs::status    (_path, _ec); }
-	virtual std::uintmax_t on_file_size (const path& _path, std::error_code& _ec) const override { return stdfs::file_size (_path, _ec); }
-	virtual bool		   on_remove    (const path& _path, std::error_code& _ec) const override { return stdfs::remove    (_path, _ec); }
-	virtual std::uintmax_t on_remove_all(const path& _path, std::error_code& _ec) const override { return stdfs::remove_all(_path, _ec); }
+	virtual file_status on_status(path_type _path, std::error_code& _ec) const override
+	{
+		struct stat	st;
+		std::string	p(_path);
+		if (::stat(p.c_str(), &st))
+		{
+			// ファイルが見つからなかった
+			return	file_status(file_type::not_found);
+		}
 
+		// file type.
+		file_status		retval;
+		retval.type
+		(
+			S_ISREG (st.st_mode) ? file_type::regular   :
+			S_ISDIR (st.st_mode) ? file_type::directory :
+			S_ISLNK (st.st_mode) ? file_type::symlink   :
+			S_ISBLK (st.st_mode) ? file_type::block     :
+			S_ISCHR (st.st_mode) ? file_type::character :
+			S_ISFIFO(st.st_mode) ? file_type::fifo      :
+			S_ISSOCK(st.st_mode) ? file_type::socket    :
+						   file_type::unknown
+		);
+		return	retval;
+	}
+
+
+	virtual std::uintmax_t on_file_size (path_type _path, std::error_code& _ec) const override
+	{
+		struct stat	st;
+		std::string	p(_path);
+		if (::stat(p.c_str(), &st))
+		{
+			return	0;
+		}
+		return	st.st_size;
+	}
+
+
+	virtual bool on_remove(path_type _path, std::error_code& _ec) const override
+	{
+		return false;
+	}
+
+	virtual std::uintmax_t on_remove_all(path_type _path, std::error_code& _ec) const override
+	{
+		return 0;
+	}
 
 	
-	virtual ios::iovstream on_open(const path& _path, std::error_code& _ec) override
+	virtual ios::iovstream on_open(path_type _path, std::error_code& _ec) override
 	{
 		struct	vfsstreambuf
 				: public ios::iovstream::vstreambuf::streamif
@@ -112,7 +157,7 @@ protected:
 		};
 
 		ios::iovstream	retval;
-		std::ifstream	fin(_path.string(), std::ios::binary);
+		std::ifstream	fin((std::string)_path, std::ios::binary);
 		if (fin.is_open())
 		{
 			retval	= ios::iovstream(ios::iovstream::vstreambuf(new vfsstreambuf(std::move(fin))));

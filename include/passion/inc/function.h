@@ -9,7 +9,7 @@
 #pragma	warning(push)
 #pragma	warning(disable:4190)
 #endif
-#include "../../amtrs/string.hpp"
+#include "../../amtrs/string/@"
 PASSION_EXTERN_C_BEGIN
 struct	passion_function;
 struct	passion_context;

@@ -29,7 +29,7 @@ either expressed or implied, of the libamtrs project.
 #ifndef	__libamtrs__web__web_ios__hpp
 #define	__libamtrs__web__web_ios__hpp
 #import <UIKit/UIKit.h>
-#include "../../amtrs.hpp"
+#include "../amtrs.hpp"
 AMTRS_NAMESPACE_BEGIN
 
 struct	web

@@ -2,6 +2,7 @@
 #define	__libamtrs__sound__pcm__hpp
 #include <vector>
 #include "def.hpp"
+#include "types.hpp"
 AMTRS_NAMESPACE_BEGIN
 
 
@@ -12,7 +13,7 @@ class	pcm
 		: public ref_object
 {
 public:
-	pcm(std::size_t _channels, std::size_t _bits_per_sample, std::size_t _samples_per_sec);
+	pcm(int _channels, int _bits_per_sample, int64_t _samples_per_sec);
 	pcm(const pcm* _src);
 	
 	// ==============================================================
@@ -54,14 +55,14 @@ public:
 	// --------------------------------------------------------------
 	//! 
 	// --------------------------------------------------------------
-	std::size_t bits_per_sample() const noexcept { return mBitsPerSample; }
+	std::size_t bits_per_sample() const noexcept { return mFormat.bitsParSamples; }
 
 	// ==============================================================
 	//! サウンドのチャンネル数を取得します。
 	// --------------------------------------------------------------
 	//! モノラルだと 1、ステレオだと 2 になります。
 	// --------------------------------------------------------------
-	std::size_t channels() const noexcept { return mChannels; }
+	std::size_t channels() const noexcept { return mFormat.channels; }
 
 
 	// ==============================================================
@@ -69,7 +70,7 @@ public:
 	// --------------------------------------------------------------
 	//! 44.1KHzのサウンドであれば 44100 になります。
 	// --------------------------------------------------------------
-	std::size_t samples_par_sec() const noexcept { return mSamplesPerSec; }
+	std::size_t samples_par_sec() const noexcept { return mFormat.samplesParSecond; }
 
 
 	// ==============================================================
@@ -83,31 +84,30 @@ public:
 		return	0;
 	}
 
+	const sound_format& format() const noexcept { return mFormat; }
 
 
 protected:
 	virtual bool on_read(std::size_t* _copied_size, void* _buffer, std::size_t _bufferSize) = 0;
 
 private:
+	sound_format	mFormat;
 	bool			mEnded			= false;
-	std::size_t		mChannels;
-	std::size_t		mBitsPerSample;
-	std::size_t		mSamplesPerSec;
 };
 
 
-inline pcm::pcm(std::size_t _channels, std::size_t _bits_per_sample, std::size_t _samples_per_sec)
-	: mChannels(_channels)
-	, mBitsPerSample(_bits_per_sample)
-	, mSamplesPerSec(_samples_per_sec)
-{}
+inline pcm::pcm(int _channels, int _bits_per_sample, int64_t _samples_per_sec)
+{
+	mFormat.channels			= _channels;
+	mFormat.bitsParSamples		= _bits_per_sample;
+	mFormat.samplesParSecond	= _samples_per_sec;
+}
 
 
 inline pcm::pcm(const pcm* _src)
-	: mChannels(_src->mChannels)
-	, mBitsPerSample(_src->mBitsPerSample)
-	, mSamplesPerSec(_src->mSamplesPerSec)
-{}
+	: mFormat(_src->mFormat)
+{
+}
 
 
 inline bool pcm::read(std::size_t* _copied_size, void* _buffer, std::size_t _bufferSize)

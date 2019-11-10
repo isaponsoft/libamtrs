@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <sstream>
 #include <string>
-#include <amtrs/system.hpp>
 #include "../psnvm.hpp"
 PASSION_NAMESPACE_BEGIN
 namespace collection {

@@ -6,6 +6,7 @@
 #ifndef	__libamtrs__datetime__datetime_ios__hpp
 #define	__libamtrs__datetime__datetime_ios__hpp
 #include <time.h>
+#import <UIKit/UIKit.h>
 AMTRS_NAMESPACE_BEGIN
 
 // ============================================================================

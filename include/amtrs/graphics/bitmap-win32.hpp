@@ -2,10 +2,10 @@
 #define	__libamtrs__bitmaps__bitmap_win32__hpp
 #include <atomic>
 #include <iostream>
-#include "../../os/win32/windows.hpp"
+#include "../os/win32/windows.hpp"
 #include <gdiplus.h>
 #include "../iostream/rstream.hpp"
-#include "../../os/win32/com_istream.hpp"
+#include "../os/win32/com_istream.hpp"
 #pragma comment(lib, "gdiplus.lib")
 AMTRS_NAMESPACE_BEGIN
 

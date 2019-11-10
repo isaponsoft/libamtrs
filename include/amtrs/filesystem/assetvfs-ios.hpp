@@ -69,37 +69,80 @@ private:
 		return	thiz;
 	}
 
-	virtual file_status    on_status    (const path& _path, std::error_code& _ec) const override { return filesystem::status    (get_path(_path), _ec); }
-	virtual std::uintmax_t on_file_size (const path& _path, std::error_code& _ec) const override { return filesystem::file_size (get_path(_path), _ec); }
-	virtual bool		   on_remove    (const path& _path, std::error_code& _ec) const override { return filesystem::remove    (get_path(_path), _ec); }
-	virtual std::uintmax_t on_remove_all(const path& _path, std::error_code& _ec) const override { return filesystem::remove_all(get_path(_path), _ec); }
+	virtual file_status on_status(path_type _path, std::error_code& _ec) const override
+	{
+		struct stat	st;
+		std::string	p(_path);
+		if (::stat(p.c_str(), &st))
+		{
+			// ファイルが見つからなかった
+			return	file_status(file_type::not_found);
+		}
+
+		// file type.
+		file_status		retval;
+		retval.type
+		(
+			S_ISREG (st.st_mode) ? file_type::regular   :
+			S_ISDIR (st.st_mode) ? file_type::directory :
+			S_ISLNK (st.st_mode) ? file_type::symlink   :
+			S_ISBLK (st.st_mode) ? file_type::block     :
+			S_ISCHR (st.st_mode) ? file_type::character :
+			S_ISFIFO(st.st_mode) ? file_type::fifo      :
+			S_ISSOCK(st.st_mode) ? file_type::socket    :
+						   file_type::unknown
+		);
+		return	retval;
+	}
+
+
+	virtual std::uintmax_t on_file_size (path_type _path, std::error_code& _ec) const override
+	{
+		struct stat	st;
+		auto	p	= get_path(_path);
+		if (::stat(p.c_str(), &st))
+		{
+			return	0;
+		}
+		return	st.st_size;
+	}
+
+	virtual bool on_remove(path_type _path, std::error_code& _ec) const override
+	{
+		return false;
+	}
+
+	virtual std::uintmax_t on_remove_all(path_type _path, std::error_code& _ec) const override
+	{
+		return 0;
+	}
 	
-	virtual ios::iovstream on_open(const path& _path, std::error_code& _ec) override
+	virtual ios::iovstream on_open(path_type _path, std::error_code& _ec) override
 	{
 		auto	p	= get_path(_path);
-		if (!filesystem::is_regular_file(p))
+		if (!is_regular_file((path_type)p))
 		{
 			ios::iovstream	retval;
 			retval.setstate(std::ios::failbit);
-			AMTRS_TRACE_LOG("%s : asset virtual filesystem fail open.", _path.string().c_str());
+			AMTRS_TRACE_LOG("%s : asset virtual filesystem fail open.", ((std::string)_path).c_str());
 			return	retval;
 		}
 		return	stdvfs::on_open(p, _ec);
 	}
 
 protected:
-	path get_path(const path& _path) const
+	std::string get_path(path_type _path) const
 	{
 		if (mBundlePath.empty())
 		{
 			NSBundle*	bundle	= [NSBundle mainBundle];
 			NSString*	dir		= [bundle resourcePath];
-			mBundlePath	= path(std::string((const char*)[dir UTF8String]));
+			mBundlePath	= std::string((const char*)[dir UTF8String]);
 		}
-		return	mBundlePath / _path;
+		return	mBundlePath +"/"+ _path;
 	}
 
-	mutable path	mBundlePath;
+	mutable std::string	mBundlePath;
 };
 
 

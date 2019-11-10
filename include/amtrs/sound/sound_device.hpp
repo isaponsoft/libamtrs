@@ -3,6 +3,7 @@
 #include <functional>
 #include "../utility/@"
 #include "def.hpp"
+#include "types.hpp"
 AMTRS_NAMESPACE_BEGIN
 
 
@@ -43,7 +44,7 @@ public:
 	// ========================================================================
 	//! プレイヤーを生成します。
 	// ------------------------------------------------------------------------
-	virtual ref<sound_player> create_player(sound_stream_type _stream = sound_stream_type::stream_default) = 0;
+	virtual ref<sound_player> create_player(const sound_format& _format, sound_stream_type _stream = sound_stream_type::stream_default) = 0;
 
 
 	// ========================================================================
@@ -51,7 +52,7 @@ public:
 	// ------------------------------------------------------------------------
 	//! バッファのサイズを指定して生成します。バッファは 0 でクリアされます。
 	// ------------------------------------------------------------------------
-	virtual ref<sound_buffer> create_buffer(std::size_t _bytesSize) = 0;
+	virtual ref<sound_buffer> create_buffer(const sound_format& _format, std::size_t _bytesSize) = 0;
 
 
 	// ========================================================================
@@ -59,7 +60,7 @@ public:
 	// ------------------------------------------------------------------------
 	//! バッファのサイズを指定して生成します。バッファは 0 でクリアされます。
 	// ------------------------------------------------------------------------
-	virtual ref<sound_buffer> create_buffer(const void* _pcmdata, std::size_t _bytesSize) = 0;
+	virtual ref<sound_buffer> create_buffer(const sound_format& _format, const void* _pcmdata, std::size_t _bytesSize) = 0;
 
 
 	// ========================================================================

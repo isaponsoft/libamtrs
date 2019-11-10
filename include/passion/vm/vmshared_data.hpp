@@ -1,7 +1,7 @@
 ﻿#ifndef	__passion__vm_shared_data__hpp
 #define	__passion__vm_shared_data__hpp
 #include <unordered_map>
-#include <amtrs/logging.hpp>
+#include <amtrs/logging/@>
 #include "def.hpp"
 #include "types.hpp"
 #include "vmclass.hpp"

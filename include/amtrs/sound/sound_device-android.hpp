@@ -21,9 +21,10 @@ class	sound_buffer_android
 		: public sound_buffer
 {
 public:
-	sound_buffer_android(sound_device_android* _device, std::size_t _bytesSize)
+	sound_buffer_android(sound_device_android* _device, const sound_format& _format, std::size_t _bytesSize)
 		: mDevice(_device)
 		, mBufferSize(_bytesSize)
+		, mFormat(_format)
 	{}
 
 	~sound_buffer_android()
@@ -51,6 +52,7 @@ public:
 	sound_device_android*	mDevice			= nullptr;
 	std::size_t				mBufferSize		= 0;
 	std::vector<char>		mBuffer;
+	sound_format			mFormat;
 
 	friend	sound_device_android;
 	friend	sound_player_android;
@@ -136,16 +138,16 @@ public:
 			return	&mSource;
 		}
 
-		source_pcm(int _samplingRate = SL_SAMPLINGRATE_44_1, int _bit = 16, int _channel = 2)
+		source_pcm(const sound_format& _format)
 		{
 			mSource	= {&mLocator, &mFormat};
 
 			mFormat.formatType		= SL_DATAFORMAT_PCM;
-			mFormat.samplesPerSec	= _samplingRate;				// SL_SAMPLINGRATE_44_1, SL_SAMPLINGRATE_32, SL_SAMPLINGRATE_22_05,
-			mFormat.bitsPerSample	= _bit;							// SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_8
-			mFormat.containerSize	= _bit;
-			mFormat.numChannels		= _channel;
-			mFormat.channelMask		= SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT;
+			mFormat.samplesPerSec	= _format.samplesParSecond * 1000;	// SL_SAMPLINGRATE_44_1, SL_SAMPLINGRATE_32, SL_SAMPLINGRATE_22_05,
+			mFormat.bitsPerSample	= _format.bitsParSamples;			// SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_8
+			mFormat.containerSize	= _format.bitsParSamples;
+			mFormat.numChannels		= _format.channels;
+			mFormat.channelMask		= (_format.channels == 1) ? SL_SPEAKER_FRONT_CENTER  : (SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT);
 			mFormat.endianness		= SL_BYTEORDER_LITTLEENDIAN;
 		}
 
@@ -190,12 +192,11 @@ public:
 	};
 
 
-	void initialize(SLEngineItf _engine, SLObjectItf _mix, sound_stream_type _stream)
+	void initialize(const sound_format& _format, SLEngineItf _engine, SLObjectItf _mix, sound_stream_type _stream)
 	{
 		SLresult 					res;
 
-
-		mSource	= new source_pcm(SL_SAMPLINGRATE_44_1, 16, 2);
+		mSource	= new source_pcm(_format);
 		mSink	= new outmix_sink(_mix);
 
 
@@ -315,10 +316,10 @@ public:
 	// ========================================================================
 	//! プレイヤーを生成します。
 	// ------------------------------------------------------------------------
-	virtual ref<sound_player> create_player(sound_stream_type _stream) override
+	virtual ref<sound_player> create_player(const sound_format& _format, sound_stream_type _stream) override
 	{
 		ref<sound_player_android>	retval	= new sound_player_android(this);
-		retval->initialize(mSlenEngine, mSleOutputMixObj, _stream);
+		retval->initialize(_format, mSlenEngine, mSleOutputMixObj, _stream);
 		return	retval;
 	}
 
@@ -328,9 +329,9 @@ public:
 	// ------------------------------------------------------------------------
 	//! バッファのサイズを設定できます。
 	// ------------------------------------------------------------------------
-	virtual ref<sound_buffer> create_buffer(std::size_t _bytesSize) override
+	virtual ref<sound_buffer> create_buffer(const sound_format& _format, std::size_t _bytesSize) override
 	{
-		ref<sound_buffer_android>	buff	= new sound_buffer_android(this, _bytesSize);
+		ref<sound_buffer_android>	buff	= new sound_buffer_android(this, _format, _bytesSize);
 		std::vector<char>		zero(_bytesSize);
 		for (auto& c : zero) { c = 0; }
 		buff->initialize(zero.data());
@@ -338,9 +339,9 @@ public:
 	}
 
 
-	virtual ref<sound_buffer> create_buffer(const void* _pcmdata, std::size_t _bytesSize) override
+	virtual ref<sound_buffer> create_buffer(const sound_format& _format, const void* _pcmdata, std::size_t _bytesSize) override
 	{
-		ref<sound_buffer_android>	buff	= new sound_buffer_android(this, _bytesSize);
+		ref<sound_buffer_android>	buff	= new sound_buffer_android(this, _format, _bytesSize);
 		buff->initialize(_pcmdata);
 		return	buff;
 	}

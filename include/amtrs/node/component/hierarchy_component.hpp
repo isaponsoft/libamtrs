@@ -166,14 +166,6 @@ protected:
 	};
 
 	// ==========================================================
-	//! 親ノードが変更されたときに呼ばれます。
-	// ----------------------------------------------------------
-	//! 親を失った場合は nullptr が渡されます。	
-	// ----------------------------------------------------------
-	virtual void on_parent(node_type* _parent)
-	{}
-
-	// ==========================================================
 	//! 子ノードが変更されたときに呼ばれます。
 	// ----------------------------------------------------------
 	//! 引数には変更のあった子ノードが渡されます。
@@ -266,7 +258,6 @@ auto hierarchy_component<NodeT>::add_child(NodeT* _child) -> NodeT*
 	hierarchy_component*	chld		= static_cast<hierarchy_component*>(_child);
 	c.emplace(c.end(), element(_child));
 	chld->mParent	= owner();
-	chld->on_parent(owner());
 	on_child(_child, on_child_event::add);
 	schedule_compaction();
 	return	_child;
@@ -279,7 +270,6 @@ auto hierarchy_component<NodeT>::insert_child(NodeT* _pos, NodeT* _child) -> Nod
 	hierarchy_component*	chld		= static_cast<hierarchy_component*>(_child);
 	c.insert(std::find(c.begin(), c.end(), _pos), element(_child));
 	chld->mParent	= owner();
-	chld->on_parent(owner());
 	on_child(_child, on_child_event::add);
 	schedule_compaction();
 	return	_child;
@@ -297,7 +287,6 @@ bool hierarchy_component<NodeT>::remove_child(NodeT* _child)
 			hierarchy_component*	c(static_cast<hierarchy_component*>(child.node));
 			schedule_compaction();
 			on_child(child.node, on_child_event::remove);
-			c->on_parent(nullptr);
 			c->mParent	= nullptr;
 			return	true;
 		}

@@ -35,8 +35,8 @@ either expressed or implied, of the libamtrs project.
 #import <UIKit/UIKit.h>
 #include <vector>
 #include <map>
-#include "../../os/ios/app_delegate.hpp"
-#include "../../input.hpp"
+#include "../os/ios/app_delegate.hpp"
+#include "../input/@"
 
 AMTRS_NAMESPACE_BEGIN
 class	window_ios_interface;

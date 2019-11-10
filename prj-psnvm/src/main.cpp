@@ -1,8 +1,7 @@
 ﻿#include <iostream>
 #include <iomanip>
-#include <amtrs/filesystem.hpp>
-#include <amtrs/io.hpp>
-#include <amtrs/string.hpp>
+#include <amtrs/filesystem/@>
+#include <amtrs/string/@>
 #include <passion/psnvm.hpp>
 #include <passion/collection/console.hpp>
 #include <passion/collection/filesystem.hpp>
@@ -26,6 +25,9 @@ namespace {
 // ----------------------------------------------------------------------------
 int main(int _argn, char* _argv[])
 {
+	auto	fl	= filesystem::fileloader::get_instance();
+	fl->push_back(filesystem::stdvfs::get_instance());
+
 	int		r;
 	auto	cmd_argn	= _argn;
 	auto	cmd_argv	= _argv;
@@ -164,7 +166,7 @@ bool read_and_compile(vmclass_manager* _vm, const char* _sourcefile_path)
 	// Read sourcefile.
 	try
 	{
-		script	= io::readall<std::string, io::fio>(_sourcefile_path);
+		script	= filesystem::file_get_contents<std::string>((std::string_view)_sourcefile_path);
 	}
 	catch (...)
 	{

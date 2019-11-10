@@ -10,7 +10,7 @@
 #include "../os/win32/windows.hpp"
 #include "../os/win32/error_code.hpp"
 #include <winhttp.h>
-#include "../string.hpp"
+#include "../string/@"
 #pragma comment(lib, "Winhttp.lib")
 AMTRS_NET_NAMESPACE_BEGIN
 

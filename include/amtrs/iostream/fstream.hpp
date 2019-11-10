@@ -29,6 +29,7 @@ either expressed or implied, of the libamtrs project.
 #ifndef	__libamtrs__iostream__fstream__hpp
 #define	__libamtrs__iostream__fstream__hpp
 #include <cstdio>
+#include <iosfwd>
 #include "rstream.hpp"
 #include "wstream.hpp"
 AMTRS_IOSTREAM_NAMESPACE_BEGIN
@@ -101,7 +102,7 @@ public:
 		{
 			switch (_dir)
 			{
-				case std::ios_base::seekdir::beg:
+				case std::ios_base::beg:
 				{
 					if (std::fseek(mFile, _off, SEEK_SET))
 					{
@@ -110,7 +111,7 @@ public:
 					break;
 				}
 
-				case std::ios_base::seekdir::cur:
+				case std::ios_base::cur:
 				{
 					if (std::fseek(mFile, _off, SEEK_CUR))
 					{
@@ -119,7 +120,7 @@ public:
 					break;
 				}
 
-				case std::ios_base::seekdir::end:
+				case std::ios_base::end:
 				{
 					if (std::fseek(mFile, _off, SEEK_END))
 					{
@@ -127,6 +128,8 @@ public:
 					}
 					break;
 				}
+
+				default: break;
 			}
 		}
 		return	*this;
@@ -205,7 +208,7 @@ public:
 		{
 			switch (_dir)
 			{
-				case std::ios_base::seekdir::beg:
+				case std::ios_base::beg:
 				{
 					if (std::fseek(mFile, _off, SEEK_SET))
 					{
@@ -214,7 +217,7 @@ public:
 					break;
 				}
 
-				case std::ios_base::seekdir::cur:
+				case std::ios_base::cur:
 				{
 					if (std::fseek(mFile, _off, SEEK_CUR))
 					{
@@ -223,7 +226,7 @@ public:
 					break;
 				}
 
-				case std::ios_base::seekdir::end:
+				case std::ios_base::end:
 				{
 					if (std::fseek(mFile, _off, SEEK_END))
 					{
@@ -231,6 +234,8 @@ public:
 					}
 					break;
 				}
+
+				default: break;
 			}
 		}
 		return	*this;

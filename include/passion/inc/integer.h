@@ -7,7 +7,7 @@
 #define	__passion__integer__h
 #include <assert.h>
 #ifdef	__cplusplus
-#include <amtrs/inc/string/constring.hpp>
+#include <amtrs/string/constring.hpp>
 #endif
 
 /*

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include <cstddef>
-#include <amtrs/filesystem.hpp>
+#include <amtrs/filesystem/@>
 #include "../psnvm.hpp"
 PASSION_NAMESPACE_BEGIN namespace collection {
 
@@ -15,26 +15,24 @@ inline void register_filesystem(vmclass_manager* _vm)
 	auto	clazz	= _vm->get_global_scope();
 	clazz->add_function(native::create_static_function(_vm, clazz->name(), "getcwd", [](passion_context& _context) -> vmstring
 	{
-		return	filesystem::current_path().string();
+		return	filesystem::current_path<std::string>();
 	}));
 
 	clazz->add_function(native::create_static_function(_vm, clazz->name(), "dirname", [](passion_context& _context, vmstring _filename) -> vmstring
 	{
-		auto	s	= filesystem::path(_filename.c_str()).parent_path().string();
-		auto	r	= vmstring(s);
-		return	r;
+		return	vmstring(filesystem::parent_path((std::string_view)_filename));
 	}));
 
 
 	clazz->add_function(native::create_static_function(_vm, clazz->name(), "file_get_contents", [](passion_context& _context, vmstring _filename) -> vmstring
 	{
-		return	filesystem::file_get_contents(_filename.c_str());
+		return	filesystem::file_get_contents<std::string>(_filename.c_str());
 	}));
 
 
 	clazz->add_function(native::create_static_function(_vm, clazz->name(), "file_put_contents", [](passion_context& _context, vmstring _filename, vmstring _data) -> vmint_t
 	{
-		filesystem::file_put_contents(_filename.c_str(), _data);
+		filesystem::file_put_contents<std::string>(_filename.c_str(), _data);
 		return	0;
 	}));
 

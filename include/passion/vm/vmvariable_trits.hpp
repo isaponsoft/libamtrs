@@ -1,6 +1,6 @@
 ﻿#ifndef	__passion__vm__vmvariable_trits__hpp
 #define	__passion__vm__vmvariable_trits__hpp
-#include <amtrs/type_traits.hpp>
+#include <amtrs/type_traits/@>
 #include "vmfunction.hpp"
 PASSION_NAMESPACE_BEGIN
 

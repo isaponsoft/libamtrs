@@ -29,9 +29,12 @@ either expressed or implied, of the libamtrs project.
 #ifndef	__libamtrs__string__hpp
 #define	__libamtrs__string__hpp
 #include "../amtrs.hpp"
+#include "chartype.hpp"
 #include "constring.hpp"
 #include "convert.hpp"
+#include "find.hpp"
 #include "format.hpp"
+#include "lowercase.hpp"
 #include "make_string_view.hpp"
 #include "split_iterator.hpp"
 #include "string.h"
@@ -40,5 +43,6 @@ either expressed or implied, of the libamtrs project.
 #include "string_view.hpp"
 #include "starts_with.hpp"
 #include "trim.hpp"
+#include "uppercase.hpp"
 #include "utf8.hpp"
 #endif

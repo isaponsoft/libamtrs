@@ -6,9 +6,9 @@ AMTRS_NAMESPACE_BEGIN
 
 struct	sound_format
 {
-	int		channels;
-	int		bitsParSamples;
-	int		samplesParSecond;
+	int			channels;
+	int			bitsParSamples;
+	int64_t		samplesParSecond;
 };
 
 

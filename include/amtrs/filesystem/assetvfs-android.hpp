@@ -80,9 +80,9 @@ private:
 		mAsset	= AAssetManager_fromJava(env, am.get());
 	}
 
-	virtual file_status    on_status    (const path& _path, std::error_code& _ec) const override
+	virtual file_status    on_status(path_type _path, std::error_code& _ec) const override
 	{
-		auto*	asset	= AAssetManager_open(mAsset, _path.string().c_str(), AASSET_MODE_UNKNOWN);
+		auto*	asset	= AAssetManager_open(mAsset, ((std::string)_path).c_str(), AASSET_MODE_UNKNOWN);
 		if (!asset)
 		{
 			return	file_status(file_type::not_found, perms::unknown);
@@ -92,9 +92,9 @@ private:
 	}
 
 
-	virtual std::uintmax_t on_file_size(const path& _path, std::error_code& _ec) const override
+	virtual std::uintmax_t on_file_size(path_type _path, std::error_code& _ec) const override
 	{
-		auto*	asset	= AAssetManager_open(mAsset, _path.string().c_str(), AASSET_MODE_UNKNOWN);
+		auto*	asset	= AAssetManager_open(mAsset, ((std::string)_path).c_str(), AASSET_MODE_UNKNOWN);
 		if (!asset)
 		{
 			return	0;
@@ -105,20 +105,20 @@ private:
 	}
 
 
-	virtual bool on_remove(const path& _path, std::error_code& _ec) const override
+	virtual bool on_remove(path_type _path, std::error_code& _ec) const override
 	{
 		return	false;
 	}
 
 
-	virtual std::uintmax_t on_remove_all(const path& _path, std::error_code& _ec) const override
+	virtual std::uintmax_t on_remove_all(path_type _path, std::error_code& _ec) const override
 	{
 		return	false;
 	}
 
 
 	
-	virtual ios::iovstream on_open(const path& _path, std::error_code& _ec) override
+	virtual ios::iovstream on_open(path_type _path, std::error_code& _ec) override
 	{
 		struct	vfsstreambuf
 				: public ios::iovstream::vstreambuf::streamif
@@ -188,7 +188,7 @@ private:
 			std::size_t	mBufferSize;
 		};
 
-		auto*	asset	= AAssetManager_open(mAsset, _path.string().c_str(), AASSET_MODE_UNKNOWN);
+		auto*	asset	= AAssetManager_open(mAsset, ((std::string)_path).c_str(), AASSET_MODE_UNKNOWN);
 		if (!asset)
 		{
 			_ec	= std::make_error_code(std::errc::no_such_file_or_directory);

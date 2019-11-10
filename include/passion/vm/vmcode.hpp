@@ -1,6 +1,6 @@
 ﻿#ifndef	__passion__vm__vmcode__hpp
 #define	__passion__vm__vmcode__hpp
-#include <amtrs/logging.hpp>
+#include <amtrs/logging/@>
 #include "def.hpp"
 #include "vmclass.hpp"
 #include "vmobject.hpp"

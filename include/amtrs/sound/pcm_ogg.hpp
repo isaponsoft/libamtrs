@@ -24,7 +24,7 @@ public:
 
 protected:
 	template<class... Args>
-	pcm_ogg(std::size_t _channels, std::size_t _bits_per_sample, std::size_t _samples_per_sec, Args&&... _args)
+	pcm_ogg(int _channels, int _bits_per_sample, int64_t _samples_per_sec, Args&&... _args)
 		: pcm_raw(_channels, _bits_per_sample, _samples_per_sec, std::forward<Args>(_args)...)
 	{}
 };
@@ -103,7 +103,7 @@ inline ref<pcm_ogg> pcm_ogg::create(StreamT&& _in)
 	}
 	//AMTRS_DEBUG_LOG("ogg channel=%d,rate=%d, size=%zd", (int)info->channels, (int)info->rate, pcm.size())
 
-	ref<pcm_ogg> 	retval	= new pcm_ogg(info->channels, 16, info->rate, std::move(pcm));
+	ref<pcm_ogg> 	retval	= new pcm_ogg(info->channels, 16, (int64_t)info->rate, std::move(pcm));
 	ov_clear(&ovf);
 	return	retval;
 }

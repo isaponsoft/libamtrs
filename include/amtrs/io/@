@@ -5,11 +5,21 @@
  */
 #ifndef	__libamtrs__io__hpp
 #define	__libamtrs__io__hpp
-// 低レベルIO
-#include "amtrs.hpp"
-#include "inc/io/def.hpp"
-#include "inc/io/types.hpp"
-#include "inc/io/basic_io.hpp"
-#include "inc/io/io_traits.hpp"
-#include "inc/io/read.hpp"
+#include "../amtrs.hpp"
+#include "def.hpp"
+#include "types.hpp"
+#include "basic_io.hpp"
+#include "io_traits.hpp"
+#include "limit.hpp"
+#include "read.hpp"
+#include "read_checksum.hpp"
+#include "seek.hpp"
+#include "size.hpp"
+#include "stream_copy.hpp"
+#include "stream_in.hpp"
+#include "stream_in-cstd.hpp"
+#include "stream_in-fwd.hpp"
+#include "stream_in-stl.hpp"
+#include "stream_in-view.hpp"
+#include "vstream.hpp"
 #endif

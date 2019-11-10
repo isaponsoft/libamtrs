@@ -1,6 +1,6 @@
 #ifndef	__passion__assembler__log__hpp
 #define	__passion__assembler__log__hpp
-#include <amtrs/logging.hpp>
+#include <amtrs/logging/@>
 #include "def.hpp"
 
 #ifdef	PASSION_ASSEMBLER_TRACE

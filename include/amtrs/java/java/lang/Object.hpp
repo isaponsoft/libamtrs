@@ -11,6 +11,8 @@ struct	Object;
 using	ObjectClass		= jcls<Object>;
 using	ObjectObject	= jobj<Object>;
 
+struct	String;
+
 struct	Object
 {
 	using					jni_type	= jobject;
@@ -66,6 +68,12 @@ struct	Object
 		AMTRS_JAVA_DEFINE_METHOD(
 			hashCode,
 			jint()
+		)
+
+
+		AMTRS_JAVA_DEFINE_METHOD(
+			toString,
+			String()
 		)
 	};
 };

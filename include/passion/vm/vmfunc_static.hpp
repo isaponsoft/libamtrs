@@ -1,6 +1,6 @@
 ﻿#ifndef	__passion__vm__vmfunc_static__hpp
 #define	__passion__vm__vmfunc_static__hpp
-#include <amtrs/type_traits.hpp>
+#include <amtrs/type_traits/@>
 #include "vmnative.hpp"
 PASSION_NAMESPACE_BEGIN namespace native {
 

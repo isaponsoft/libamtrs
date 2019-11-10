@@ -30,8 +30,8 @@ either expressed or implied, of the libamtrs project.
 #define	__libamtrs__application__application_ios__hpp
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#include "../../os/ios/app_delegate.hpp"
-#include "../../filesystem.hpp"
+#include "../os/ios/app_delegate.hpp"
+#include "../filesystem/@"
 
 
 @interface iosAppUIControoler : UIViewController
@@ -64,7 +64,7 @@ inline void application::foreground()
 {
 }
 
-inline filesystem::path application::cache_dir() const
+inline std::string application::cache_dir() const
 {@autoreleasepool{
 	NSArray*	paths	= NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	NSString*	dir		= [paths objectAtIndex:0];
@@ -73,7 +73,7 @@ inline filesystem::path application::cache_dir() const
 }}
 
 
-inline filesystem::path application::files_dir(bool _external) const
+inline std::string application::files_dir(bool _external) const
 {@autoreleasepool{
 	NSArray*	paths	= NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
 	NSString*	dir		= [paths objectAtIndex:0];
@@ -82,7 +82,7 @@ inline filesystem::path application::files_dir(bool _external) const
 }}
 
 
-inline filesystem::path application::documents_dir() const
+inline std::string application::documents_dir() const
 {@autoreleasepool{
 	NSArray*	paths	= NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString*	dir		= [paths objectAtIndex:0];

@@ -14,7 +14,7 @@ AMTRS_IO_NAMESPACE_BEGIN
 // ----------------------------------------------------------------------------
 //! このクラスは、異なるI/Oのインターフェースを共通化します。
 // ----------------------------------------------------------------------------
-template<class T, class Traits = io_trits<T>>
+template<class T, class Traits = io_traits<T>>
 class	basic_io
 {
 public:
@@ -94,7 +94,7 @@ public:
 	}
 
 
-	fpos_type seek(fpos_type _position, seek_origin _org)
+	fpos_type seek(fpos_type _position, std::ios::seekdir _org)
 	{
 		auto	p	= traits_type{}.seek(mIO, _position, _org);
 		if (p > 0)

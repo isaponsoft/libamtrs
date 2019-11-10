@@ -5,7 +5,7 @@
  */
 #ifndef	__libamtrs__io__def__hpp
 #define	__libamtrs__io__def__hpp
-#include "../../amtrs.hpp"
+#include "../amtrs.hpp"
 #define	AMTRS_IO_NAMESPACE_BEGIN	AMTRS_NAMESPACE_BEGIN namespace io {
 #define	AMTRS_IO_NAMESPACE_END		} AMTRS_NAMESPACE_END
 AMTRS_IO_NAMESPACE_BEGIN

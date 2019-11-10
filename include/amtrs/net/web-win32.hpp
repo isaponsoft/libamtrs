@@ -28,8 +28,8 @@ either expressed or implied, of the libamtrs project.
 ******************************************************************************/
 #ifndef	__libamtrs__web__web_win32__hpp
 #define	__libamtrs__web__web_win32__hpp
-#include "../../os/win32/windows.hpp"
-#include "../../amtrs.hpp"
+#include "../os/win32/windows.hpp"
+#include "../amtrs.hpp"
 AMTRS_NAMESPACE_BEGIN
 
 struct	web

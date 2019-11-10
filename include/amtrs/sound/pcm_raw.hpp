@@ -15,14 +15,14 @@ public:
 	virtual ~basic_pcm_raw(){}
 
 	template<class... Args>
-	static ref<basic_pcm_raw> create(std::size_t _channels, std::size_t _bits_per_sample, std::size_t _samples_per_sec, Args&&... _args)
+	static ref<basic_pcm_raw> create(int _channels, int _bits_per_sample, int64_t _samples_per_sec, Args&&... _args)
 	{
 		return	new basic_pcm_raw(_channels, _bits_per_sample, _samples_per_sec, std::forward<Args>(_args)...);
 	}
 
 protected:
 	template<class... Args>
-	basic_pcm_raw(std::size_t _channels, std::size_t _bits_per_sample, std::size_t _samples_per_sec, Args&&... _args)
+	basic_pcm_raw(int _channels, int _bits_per_sample, int64_t _samples_per_sec, Args&&... _args)
 		: pcm(_channels, _bits_per_sample, _samples_per_sec)
 		, mPCMData(std::forward<Args>(_args)...)
 	{}

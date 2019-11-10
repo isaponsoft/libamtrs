@@ -17,7 +17,7 @@
 
 
 #ifdef	AMTRS_USE_COMPATI_VARIANT
-#include "../compati/variant.hpp"
+#include "../../compati-stl/variant/variant"
 #else
 #include <variant>
 #endif

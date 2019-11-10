@@ -35,7 +35,7 @@ either expressed or implied, of the libamtrs project.
 #include <array>
 #include <cstring>
 #include <utility>
-#include "../endian.hpp"
+#include "../memory/endian.hpp"
 #include "def.hpp"
 AMTRS_CRYPTO_NAMESPACE_BEGIN
 

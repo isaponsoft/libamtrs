@@ -62,7 +62,7 @@ struct	BITMAPINFOHEADER
 template<class ImageT>
 std::ostream& operator << (std::ostream& _out, bmp<ImageT> _bmp)
 {
-	using	value_type	= rgba<uint8_t>;
+	using	value_type	= typename bmp<ImageT>::bitmap_type::value_type;
 	constexpr uint32_t	BMPFILEHEADER_SIZE	= 14;
 	constexpr uint32_t	BMPINFOHEADER_SIZE	= 40;
 
@@ -93,14 +93,15 @@ std::ostream& operator << (std::ostream& _out, bmp<ImageT> _bmp)
 
 	// Pixel data.
 	std::vector<value_type>	buff(img.size().width);
-	for (unsigned int y = 0; y < img.size().height; ++y)
+	for (unsigned int y = 0; y < (unsigned int)img.size().height; ++y)
 	{
-		auto	cursor	= img.subimg({0, img.size().height-1-y, img.size().width, 1}).begin();
+		auto	cursor	= img.subimg({0, (int)img.size().height-1-(int)y, (int)img.size().width, 1}).begin();
 		auto	dest	= buff.begin();
 		for (unsigned int x = 0; x < img.size().width; ++x)
 		{
-			*dest = *cursor++;
+			*dest = *cursor;
 			std::swap(dest->r, dest->b);
+			++cursor;
 			++dest;
 		}
 		_out.write(reinterpret_cast<const char*>(buff.data()), sizeof(value_type) * buff.size());

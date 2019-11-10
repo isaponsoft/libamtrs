@@ -5,6 +5,7 @@
  */
 #ifndef	__libamtrs__io__io_traits_unixsystemlike__hpp
 #define	__libamtrs__io__io_traits_unixsystemlike__hpp
+#include <iosfwd>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -15,7 +16,7 @@ AMTRS_IO_NAMESPACE_BEGIN
 
 
 template<>
-struct	io_trits<int>
+struct	io_traits<int>
 {
 	using	value_type	= int;
 	using	size_type	= std::size_t;
@@ -43,10 +44,10 @@ struct	io_trits<int>
 		return	::write(_io, _buffer, _request);
 	}
 
-	fpos_type seek(value_type _io, fpos_type _position, seek_origin _org)
+	fpos_type seek(value_type _io, fpos_type _position, std::ios::seekdir _org)
 	{
-		int	org	= _org == seek_origin::so_begin ? 0
-				: _org == seek_origin::so_end   ? 2
+		int	org	= _org == std::ios::beg ? 0
+				: _org == std::ios::end   ? 2
 				: 1;
 		return	::lseek(_io, _position, org);
 	}

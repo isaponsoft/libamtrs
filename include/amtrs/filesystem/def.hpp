@@ -29,6 +29,7 @@ either expressed or implied, of the libamtrs project.
 #ifndef __libamtrs__filesystem__def__hpp
 #define __libamtrs__filesystem__def__hpp
 #include "../amtrs.hpp"
+#define	AMTRS_FILESYSTEM_NAMESPACE			AMTRS_NAMESPACE::filesystem
 #define	AMTRS_FILESYSTEM_NAMESPACE_BEGIN	AMTRS_NAMESPACE_BEGIN namespace filesystem {
 #define	AMTRS_FILESYSTEM_NAMESPACE_END		} AMTRS_NAMESPACE_END
 #endif

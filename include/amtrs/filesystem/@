@@ -33,6 +33,8 @@ either expressed or implied, of the libamtrs project.
 #include "assetvfs.hpp"
 #include "cascadevfs.hpp"
 #include "fileloader.hpp"
+#include "filename.hpp"
+#include "functions.hpp"
 #include "stdvfs.hpp"
 #include "util.hpp"
 #include "types.hpp"

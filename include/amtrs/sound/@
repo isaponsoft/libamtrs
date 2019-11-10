@@ -31,4 +31,5 @@ either expressed or implied, of the libamtrs project.
 #include "def.hpp"
 #include "pcm.hpp"
 #include "sound_device.hpp"
+#include "types.hpp"
 #endif

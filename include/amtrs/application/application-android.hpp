@@ -48,7 +48,7 @@ inline void application::foreground()
 }
 
 
-inline filesystem::path application::cache_dir() const
+inline std::string application::cache_dir() const
 {
 	using	Environment		= java::classes::android::os::Environment;
 	auto	clsEnv		= Environment::find();
@@ -58,7 +58,7 @@ inline filesystem::path application::cache_dir() const
 }
 
 
-inline filesystem::path application::documents_dir() const
+inline std::string application::documents_dir() const
 {
 	using	Environment		= java::classes::android::os::Environment;
 	auto	clsEnv		= Environment::find();
@@ -68,10 +68,10 @@ inline filesystem::path application::documents_dir() const
 }
 
 
-inline filesystem::path application::files_dir(bool _external) const
+inline std::string application::files_dir(bool _external) const
 {
 	auto	dir		= os::android::get_activity().getFilesDir().getPath();
-	return	filesystem::path(std::to_string((jstring)dir.get()));
+	return	std::to_string((jstring)dir.get());
 }
 
 

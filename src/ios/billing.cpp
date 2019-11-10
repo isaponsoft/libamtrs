@@ -1,6 +1,6 @@
 #include <amtrs/billing/billing_manager.hpp>
 #include <amtrs/os/ios/string.hpp>
-#include <amtrs/logging.hpp>
+#include <amtrs/logging/@>
 using namespace AMTRS_NAMESPACE;
 
 

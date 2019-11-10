@@ -162,7 +162,7 @@ public:
 
 	virtual page_type* get_page(index_type _page) noexcept override
 	{
-		if (_page < mPageList.size())
+		if (_page >= mPageList.size())
 		{
 			return	nullptr;
 		}
@@ -349,9 +349,10 @@ private:
 		using	_base_type	= transform_component;
 	public:
 		local_transform(pager_node* _owner)
-			: _base_type(_owner, _owner)
-			, mOwner(_owner)
-		{}
+			: mOwner(_owner)
+		{
+			_base_type::set_parent_transform(_owner);
+		}
 
 		virtual void on_coordinate_modify() noexcept override
 		{

@@ -59,7 +59,7 @@ protected:
 	}
 
 
-	virtual void on_children_transform_change(typename NodeT::node_type* _child) override
+	virtual void on_children_transform_change(typename _base_type::transform_component* _child) override
 	{
 		_base_type::on_children_transform_change(_child);
 		update_scroll_range();

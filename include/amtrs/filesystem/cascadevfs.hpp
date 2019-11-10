@@ -85,7 +85,7 @@ protected:
 	}
 
 
-	virtual ios::iovstream on_open(const path& _path, std::error_code& _ec) override
+	virtual ios::iovstream on_open(path_type _path, std::error_code& _ec) override
 	{
 		return	each
 				(
@@ -99,7 +99,7 @@ protected:
 	}
 
 
-	virtual filesystem::file_status on_status(const path& _path, std::error_code& _ec) const override
+	virtual filesystem::file_status on_status(path_type _path, std::error_code& _ec) const override
 	{
 		return	each
 				(
@@ -113,7 +113,7 @@ protected:
 	}
 
 
-	virtual std::uintmax_t on_file_size(const path& _path, std::error_code& _ec) const override
+	virtual std::uintmax_t on_file_size(path_type _path, std::error_code& _ec) const override
 	{
 		return	each
 				(
@@ -127,7 +127,7 @@ protected:
 	}
 
 
-	virtual bool on_remove(const path& _path, std::error_code& _ec) const override
+	virtual bool on_remove(path_type _path, std::error_code& _ec) const override
 	{
 		return	each
 				(
@@ -140,7 +140,7 @@ protected:
 				);
 	}
 
-	virtual std::uintmax_t on_remove_all(const path& _path, std::error_code& _ec) const override
+	virtual std::uintmax_t on_remove_all(path_type _path, std::error_code& _ec) const override
 	{
 		std::uintmax_t	count	= 0;
 		for (auto& v : mVfsList)

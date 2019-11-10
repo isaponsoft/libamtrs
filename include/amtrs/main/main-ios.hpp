@@ -5,8 +5,8 @@
  */
 #ifndef	__libamtrs__main__main_ios__hpp
 #define	__libamtrs__main__main_ios__hpp
-#include "../../application.hpp"
-#include "../../logging.hpp"
+#include "../application/@"
+#include "../logging/@"
 
 
 #define	AMTRS_GUI_MAIN(_mainclass)	\

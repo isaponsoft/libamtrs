@@ -28,8 +28,10 @@ either expressed or implied, of the libamtrs project.
 ******************************************************************************/
 #ifndef	__libamtrs__memory__hpp
 #define	__libamtrs__memory__hpp
+#include "bits_view.hpp"
 #include "def.hpp"
 #include "endian.hpp"
 #include "ref_object.hpp"
 #include "shared_buffer.hpp"
+#include "view.hpp"
 #endif

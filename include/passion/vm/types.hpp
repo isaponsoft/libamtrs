@@ -1,7 +1,7 @@
 ﻿#ifndef	__passion__vm__types__hpp
 #define	__passion__vm__types__hpp
-#include <amtrs/string.hpp>
-#include <amtrs/shared_buffer.hpp>
+#include <amtrs/string/@>
+#include <amtrs/memory/shared_buffer.hpp>
 #include "../def.hpp"
 PASSION_NAMESPACE_BEGIN
 using namespace amtrs;

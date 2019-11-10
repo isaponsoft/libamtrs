@@ -5,10 +5,11 @@
  */
 #ifndef	__libamtrs__io__io_traits__hpp
 #define	__libamtrs__io__io_traits__hpp
-AMTRS_IO_NAMESPACE_BEGIN
-template<class...>
-struct	io_trits;			// prototype. 
-AMTRS_IO_NAMESPACE_END
+
+#include "io_traits-fwd.hpp"
+#include "io_traits-stl.hpp"
+#include "io_traits-view.hpp"
+
 
 #if	__has_include(<unistd.h>)
 #include "io_traits-unix.hpp"

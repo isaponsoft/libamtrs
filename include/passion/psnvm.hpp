@@ -15,7 +15,7 @@
 #include <vector>
 #include <string_view>
 #include <amtrs/amtrs.hpp>
-#include <amtrs/variant.hpp>
+#include <amtrs/variant/@>
 #include "err/error.hpp"
 
 #ifdef	_MSC_VER

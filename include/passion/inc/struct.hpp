@@ -1,6 +1,6 @@
 #ifndef	__passion__struct__hpp
 #define	__passion__struct__hpp
-#include <amtrs/shared_buffer.hpp>
+#include <amtrs/memory/@>
 PASSION_NAMESPACE_BEGIN
 
 

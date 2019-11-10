@@ -33,63 +33,56 @@ either expressed or implied, of the libamtrs project.
 #include "../graphics/@"
 #include "../input/@"
 #include "../string/@"
-#include "nodefwd.hpp"
+#include "@fwd.hpp"
 #include "action.hpp"
-#include "node_components.hpp"
 #include "node_traits.hpp"
+#include "component/action_component.hpp"
+#include "component/color_component.hpp"
+#include "component/hierarchy_component.hpp"
+#include "component/input_component.hpp"
+#include "component/name_component.hpp"
+#include "component/renderer_component.hpp"
+#include "component/scheduler_component.hpp"
+#include "component/transform_component.hpp"
+#include "component/user_data_component.hpp"
 AMTRS_NAMESPACE_BEGIN
 
 
 
 template<class T, class Traits>
-class	basic_node
+class	basic_node<T, Traits, void>
 		: public ref_object
-		, public node_components<T, Traits>
+		, public component::action_component	<basic_node<T, Traits>>
+		, public component::color_component		<basic_node<T, Traits>>
+		, public component::hierarchy_component	<basic_node<T, Traits>>
+		, public component::input_component		<basic_node<T, Traits>>
+		, public component::name_component		<std::string, basic_node<T, Traits>>
+		, public component::renderer_component	<Traits>
+		, public component::scheduler_component	<basic_node<T, Traits>, void(float)>
+		, public component::transform_component	<T, Traits>
+		, public component::user_data_component	<basic_node<T, Traits>, void*>
 {
 public:
-	using	super_type					= node_components<T, Traits>;
-	using	components_type				= node_components<T, Traits>;
-	using	node_type					= basic_node<T, Traits>;
+	using	node_type					= basic_node<T, Traits, void>;
+	using	traits_type					= Traits;
+	using	action_type					= basic_action;
 
-	using	director_component			= typename super_type::director_component;
-	using	update_scheduler_component	= typename super_type::update_scheduler_component;
-	using	hierarcy_component			= typename super_type::hierarcy_component;
-	using	transform_component			= typename super_type::transform_component;
-	using	director_type				= typename super_type::director_type;
-	using	schede_dispatcher_type		= typename super_type::schede_dispatcher_type;
-	using	action_type					= typename super_type::action_type;
-	using	layer						= typename super_type::layer;
-	using	render_queue				= typename super_type::render_queue;
-	using	on_child_event				= typename super_type::on_child_event;
-	using	box_type					= typename super_type::box_type;
-	using	position_type				= typename super_type::position_type;
+	using	transform_component			= typename component::transform_component<T, Traits>;
+	using	box_type					= typename transform_component::box_type;
+	using	position_type				= typename transform_component::position_type;
 
-	basic_node();
+	using	name_component				= typename component::name_component<std::string, node_type>;
 
-	// ========================================================================
-	//! 描画レイヤーを取得します。
-	// ------------------------------------------------------------------------
-	layer* get_layer() const noexcept { return mLayer; }
+	using	hierarcy_component			= typename component::hierarchy_component<node_type>;
+	using	on_child_event				= typename hierarcy_component::on_child_event;
 
+	using	renderer_component			= typename component::renderer_component<traits_type>;
+	using	scheduler_component			= typename component::scheduler_component<node_type, void(float)>;
 
-	// ========================================================================
-	//! 描画レイヤーを設定します。
-	// ------------------------------------------------------------------------
-	//! nullptr を設定した場合は親ノードに従います。
-	// ------------------------------------------------------------------------
-	void set_layer(layer* _layer) noexcept { mLayer = _layer; }
+	using	schede_dispatcher_type		= typename scheduler_component::schede_dispatcher_type;
 
-
-	// ========================================================================
-	//! create時のコールバックを追加します。
-	// ------------------------------------------------------------------------
-	//! on_created() 
-	// ------------------------------------------------------------------------
-	template<class Callback>
-	void add_created(Callback&& _callback)
-	{
-		this->schedule_once([cb = std::move(_callback)](float){ cb(); });
-	}
+	using	layer						= typename renderer_component::layer;
+	using	render_queue				= typename renderer_component::render_queue;
 
 
 	// ========================================================================
@@ -143,19 +136,15 @@ public:
 		return	this;
 	}
 
-	virtual bool visibility() const noexcept { return mVisible; }
 
-	// ========================================================================
-	//! 可視状態を変更します。
-	// ------------------------------------------------------------------------
-	//! 不可視状態ではレンダリングは行われませんが、ほかの機能は有効です。
-	// ------------------------------------------------------------------------
-	void set_visibility(bool _visible) noexcept { if (mVisible != _visible) { mVisible = _visible; on_visibility(mVisible); } }
 
 protected:
-	virtual void on_created()
+
+	virtual void on_created() override
 	{
-		mCreated	= true;
+		scheduler_component::on_created();
+		auto	s	= this->size();
+		this->on_size_change(s);
 	}
 
 
@@ -237,6 +226,7 @@ protected:
 
 	virtual void on_render(render_queue& _rq) override
 	{
+		renderer_component::on_render(_rq);
 		layer*	current	= _rq.current;
 		this->visit_children([&](auto* c) -> bool
 		{
@@ -270,40 +260,9 @@ protected:
 		});
 		this->rerender_request();
 	}
-
-private:
-	// ************************************************************************
-	// hierarchy_component
-	// ************************************************************************
-	virtual void on_parent(node_type* _parent) override
-	{}
-
-
-	layer*		mLayer		= nullptr;
-	bool		mCreated	= false;
-	bool		mVisible	= true;
 };
 
 
-
-template<class T, class Traits>
-basic_node<T, Traits>::basic_node()
-{
-	transform_component::initialize(this, nullptr);
-
-	auto*	director	= this->get_default_director();
-	if (director)
-	{
-		this->set_director(director);
-	}
-
-	this->add_created([this]()
-	{
-		this->on_created();
-		auto	s	= this->size();
-		this->on_size_change(s);
-	});
-}
 
 
 using	node	= amtrs::basic_node<float>;
