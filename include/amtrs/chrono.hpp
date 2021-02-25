@@ -13,8 +13,8 @@
 #include <stdexcept>
 #include <sstream>
 #include <thread>
-#include "io/deserialize.hpp"
-#include "io/serialize.hpp"
+#include ".inc/io-deserialize.hpp"
+#include ".inc/io-serialize.hpp"
 
 #define	AMTRS_CHRONO_NAMESPACE			AMTRS_NAMESPACE::chrono
 #define	AMTRS_CHRONO_NAMESPACE_BEGIN	AMTRS_NAMESPACE_BEGIN namespace chrono {

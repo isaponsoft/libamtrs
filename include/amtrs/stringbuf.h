@@ -80,8 +80,8 @@ public:
 	}
 
 	stringbuf(const_pointer _str)
+		: stringbuf(_str, strlen(_str))
 	{
-		strlen(_str);
 	}
 
 	stringbuf(stringbuf&& r)
