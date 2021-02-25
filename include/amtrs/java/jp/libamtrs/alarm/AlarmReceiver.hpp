@@ -1,8 +1,6 @@
-﻿/*
- * Copyright (c) 2017 Isao Shibuya
- * Released under the MIT license
- * http://opensource.org/licenses/mit-license.php 
- */
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__android__java_classes__jp__libamtrs__alarm__AlarmReceiver__hpp
 #define	__libamtrs__android__java_classes__jp__libamtrs__alarm__AlarmReceiver__hpp
 #include <amtrs/java/android/content/BroadcastReceiver.hpp>
@@ -30,7 +28,7 @@ AMTRS_JAVA_DEFINE_CLASS(AlarmReceiver, android::content::BroadcastReceiver)
 		AMTRS_JAVA_STATICS_BASIC;
 
 		AMTRS_JAVA_DEFINE_METHOD(addAlarm
-			, void(Activity, Class receiver, jlong time, jint id, String title, String message)
+			, void(Activity, Class receiver, jlong time, jint id, String title, String message, String channelId, String channelTitle, jint wakeup)
 		)
 
 		AMTRS_JAVA_DEFINE_METHOD(cancelAll

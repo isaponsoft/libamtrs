@@ -1,14 +1,26 @@
-﻿/*
- * Copyright (c) 2017 Isao Shibuya
- * Released under the MIT license
- * http://opensource.org/licenses/mit-license.php 
- */
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__android__java_classes__android_content_Context__hpp
 #define	__libamtrs__android__java_classes__android_content_Context__hpp
-#include <amtrs/java/def.hpp>
+#include "../../java/lang/CharSequence.hpp"
+#include "../../java/lang/String.hpp"
 
 AMTRS_JAVA_CLASSES_NAMESPACE_BEGIN
 
+namespace java::lang {
+	struct	CharSequence;
+	struct	Class;
+	struct	ClassLoader;
+}
+
+namespace java::io {
+	struct	File;
+	struct	FileInputStream;
+	struct	FileOutputStream;
+	struct	InputStream;
+	struct	OutputStream;
+}
 
 namespace android::content::pm {
 	struct	ApplicationInfo;

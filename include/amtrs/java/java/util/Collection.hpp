@@ -1,4 +1,7 @@
-﻿#ifndef	__libamtrs__java__jc__java__util_Collection__hpp
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
+#ifndef	__libamtrs__java__jc__java__util_Collection__hpp
 #define	__libamtrs__java__jc__java__util_Collection__hpp
 #include <amtrs/java/java/lang.hpp>
 #include <amtrs/java/java/lang/Object.hpp>

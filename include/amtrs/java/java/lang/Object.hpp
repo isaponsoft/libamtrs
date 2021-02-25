@@ -1,8 +1,10 @@
-﻿#ifndef	__libamtrs__java__java__lang__Object__hpp
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
+#ifndef	__libamtrs__java__java__lang__Object__hpp
 #define	__libamtrs__java__java__lang__Object__hpp
-#include "../../@"
-#include "../../../string/@"
-#include "../../def.hpp"
+#include "../../../string.hpp"
+#include "../../../jni.hpp"
 AMTRS_JAVA_CLASSES_NAMESPACE_BEGIN
 namespace java::lang {
 
@@ -25,21 +27,13 @@ struct	Object
 	// ------------------------------------------------------------------------
 	struct	statics	: local_cls
 	{
-		using	ref_type	= local_cls;
-		using	handle_type	= typename ref_type::pointer;
-		using	ref_type::ref_type;
-		using	ref_type::operator =;
-		statics() = default;
-		statics(const statics&  _r) = default;
-		statics(      statics&& _r) = default;
-		statics& operator = (const statics&  _r) = default;
-		statics& operator = (      statics&& _r) = default;
+		using	statics_base	= statics;
+		using	super_type		= local_cls;
+		using	handle_type		= typename super_type::pointer;
+		using	ref_type		= super_type;
 
-		statics(const ref_type& _r) : ref_type(_r) {}
-		statics(ref_type&& _r) : ref_type(_r) {}
-		statics& operator = (const ref_type&  _r){ ref_type::operator = (_r); return *this; }
-		statics& operator = (      ref_type&& _r){ ref_type::operator = (_r); return *this; }
-
+		using	super_type::super_type;
+		using	super_type::operator =;
 	};
 
 	// ========================================================================
@@ -47,8 +41,9 @@ struct	Object
 	// ------------------------------------------------------------------------
 	struct	dynamics : local_obj
 	{
-		using	ref_type	= local_obj;
-		using	handle_type	= typename local_obj::pointer;
+		using	dynamics_base	= dynamics;
+		using	ref_type		= local_obj;
+		using	handle_type		= typename local_obj::pointer;
 		using	local_obj::local_obj;
 		using	local_obj::operator =;
 		dynamics() = default;
@@ -63,6 +58,7 @@ struct	Object
 		dynamics& operator = (      local_obj&& _r){ local_obj::operator = (_r); return *this; }
 
 		explicit dynamics(jobject _o) : local_obj(_o) {}
+
 
 		// int hashCode()
 		AMTRS_JAVA_DEFINE_METHOD(

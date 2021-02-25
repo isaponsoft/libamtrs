@@ -1,3 +1,0 @@
-#ifndef	__libamtrs__bitmaps__font_linux__hpp
-#define	__libamtrs__bitmaps__font_linux__hpp
-#endif

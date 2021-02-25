@@ -1,25 +1,20 @@
-﻿/*
- * Copyright (c) 2017 Isao Shibuya
- * Released under the MIT license
- * http://opensource.org/licenses/mit-license.php 
- */
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__android__java_classes__android_view_WindowManager__hpp
 #define	__libamtrs__android__java_classes__android_view_WindowManager__hpp
-#include <amtrs/java/android/view/ViewGroup.hpp>
-#include <amtrs/java/android/view/ViewManager.hpp>
+#include "ViewGroup.hpp"
+#include "ViewManager.hpp"
 AMTRS_JAVA_CLASSES_NAMESPACE_BEGIN
 
 namespace android::view {
-struct	Display;
-}
 
-namespace android::view {
+struct	Display;
+
 
 // https://developer.android.com/reference/android/view/WindowManager
 AMTRS_JAVA_DEFINE_CLASS(WindowManager, ViewManager)
 {
-	using	Display	= android::view::Display;
-
 	AMTRS_JAVA_CLASS_SIGNATURE("android/view/WindowManager");
 
 

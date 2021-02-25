@@ -54,3 +54,18 @@ psnvm スクリプトファイル名
 
 libamtrs/docs に記載しています。アルファ版ですので未対応のもの不具合のあるも、仕様が変更される可能性があるものが含まれています。
 
+
+## 依存ライブラリ
+
+依存するライブラリを "libamtrs/deps/xxx" または "libamtrs/../xxx" にコピーしてください。
+
+|LIB|directory|Type|Platform|URL|
+|--|--|--|--|--|
+|JPG|libjpeg-turbo|source|all||
+|OGG|libogg, libvorbis|source|all||
+|OpenCV|OpenCV-android-sdk|binary|android||
+|OpenCV|openc-win|binary|windows||
+|OpenCV|opencv2.framework|binary|ios||
+|PNG|libpng|source|all||
+|SSL|libressl|source|all||
+|ZLIB|zlib|source|all||

@@ -1,16 +1,13 @@
-﻿/*
- * Copyright (c) 2017 Isao Shibuya
- * Released under the MIT license
- * http://opensource.org/licenses/mit-license.php 
- */
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__android__java_classes__android__graphics__Paint__hpp
 #define	__libamtrs__android__java_classes__android__graphics__Paint__hpp
-#include <amtrs/java/def.hpp>
-
 AMTRS_JAVA_CLASSES_NAMESPACE_BEGIN
 namespace android::graphics {
 
 struct	Rect;
+struct	Typeface;
 
 AMTRS_JAVA_DEFINE_CLASS(Paint, java::lang::Object)
 {
@@ -129,6 +126,22 @@ AMTRS_JAVA_DEFINE_CLASS(Paint, java::lang::Object)
 		//! public void setTextSize(float textSize);
 		AMTRS_JAVA_DEFINE_METHOD(setTextSize,
 			void(float)
+		)
+
+		AMTRS_JAVA_DEFINE_METHOD(setTextSkewX,
+			void(float _skewX)
+		)
+
+		AMTRS_JAVA_DEFINE_METHOD(setTypeface,
+			Typeface(Typeface _typeface)
+		)
+
+		AMTRS_JAVA_DEFINE_METHOD(setUnderlineText,
+			void(jboolean _underlineText)
+		)
+
+		AMTRS_JAVA_DEFINE_METHOD(setWordSpacing,
+			void(float _wordSpacing)
 		)
 	};
 

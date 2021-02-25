@@ -1,12 +1,8 @@
-﻿/*
- * Copyright (c) 2017 Isao Shibuya
- * Released under the MIT license
- * http://opensource.org/licenses/mit-license.php 
- */
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__android__java_classes__android_os_Environment__hpp
 #define	__libamtrs__android__java_classes__android_os_Environment__hpp
-#include <amtrs/java/def.hpp>
-
 #include <amtrs/java/android/os/Environment.hpp>
 
 AMTRS_JAVA_CLASSES_NAMESPACE_BEGIN
@@ -35,6 +31,11 @@ AMTRS_JAVA_DEFINE_CLASS(Environment, java::lang::Object)
 		AMTRS_JAVA_DEFINE_FIELD(String, DIRECTORY_ALARMS)
 		AMTRS_JAVA_DEFINE_FIELD(String, DIRECTORY_DCIM)
 		AMTRS_JAVA_DEFINE_FIELD(String, DIRECTORY_DOCUMENTS)
+		AMTRS_JAVA_DEFINE_FIELD(String, DIRECTORY_DOWNLOADS)
+		AMTRS_JAVA_DEFINE_FIELD(String, DIRECTORY_MOVIES)
+		AMTRS_JAVA_DEFINE_FIELD(String, DIRECTORY_MUSIC)
+		AMTRS_JAVA_DEFINE_FIELD(String, DIRECTORY_PICTURES)
+
 
 		AMTRS_JAVA_DEFINE_METHOD(getExternalStorageDirectory
 			, File()

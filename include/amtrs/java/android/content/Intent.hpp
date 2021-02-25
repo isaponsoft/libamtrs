@@ -1,16 +1,16 @@
-﻿/*
- * Copyright (c) 2017 Isao Shibuya
- * Released under the MIT license
- * http://opensource.org/licenses/mit-license.php 
- */
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__android__java_classes__android_content_Intent__hpp
 #define	__libamtrs__android__java_classes__android_content_Intent__hpp
-#include <amtrs/java/def.hpp>
-
 AMTRS_JAVA_CLASSES_NAMESPACE_BEGIN
 
 namespace android::net {
 struct	Uri;
+}
+
+namespace android::os {
+struct	Bundle;
 }
 
 namespace android::content {
@@ -21,6 +21,7 @@ struct	Context;
 AMTRS_JAVA_DEFINE_CLASS(Intent , java::lang::Object)
 {
 	using	Class				= java::lang::Class;
+	using	Bundle				= android::os::Bundle;
 	using	Uri					= android::net::Uri;
 	using	String				= java::lang::String;
 
@@ -212,6 +213,14 @@ AMTRS_JAVA_DEFINE_CLASS(Intent , java::lang::Object)
 	{
 		AMTRS_JAVA_DYNAMICS_BASIC;
 
+		AMTRS_JAVA_DEFINE_METHOD(addCategory
+			, Intent(String category)
+		)
+
+		AMTRS_JAVA_DEFINE_METHOD(getData
+			, Uri()
+		)
+
 		AMTRS_JAVA_DEFINE_METHOD(getIntExtra
 			, jint(String, jint)
 		)
@@ -249,7 +258,11 @@ AMTRS_JAVA_DEFINE_CLASS(Intent , java::lang::Object)
 
 		AMTRS_JAVA_DEFINE_METHOD(putExtras
 			, Intent(Intent)
-//			, Intent(Bundle)
+			, Intent(Bundle)
+		)
+
+		AMTRS_JAVA_DEFINE_METHOD(setType
+			, Intent(String type)
 		)
 
 	};

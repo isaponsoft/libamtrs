@@ -1,11 +1,9 @@
-﻿/*
- * Copyright (c) 2017 Isao Shibuya
- * Released under the MIT license
- * http://opensource.org/licenses/mit-license.php 
- */
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__android__java_classes__jp_libamtrs_AmtrsActivity__hpp
 #define	__libamtrs__android__java_classes__jp_libamtrs_AmtrsActivity__hpp
-#include <amtrs/java/android/support/v4/app/FragmentActivity.hpp>
+#include "../../androidx/fragment/app/FragmentActivity.hpp"
 
 AMTRS_JAVA_CLASSES_NAMESPACE_BEGIN
 
@@ -18,8 +16,7 @@ namespace jp::libamtrs {
 struct	AmtrsActivityResult;
 
 
-// https://developer.android.com/reference/android/app/FragmentActivity
-AMTRS_JAVA_DEFINE_CLASS(AmtrsActivity, android::support::v4::app::FragmentActivity)
+AMTRS_JAVA_DEFINE_CLASS(AmtrsActivity, androidx::fragment::app::FragmentActivity)
 {
 	using	View	= android::view::View;
 
@@ -39,7 +36,7 @@ AMTRS_JAVA_DEFINE_CLASS(AmtrsActivity, android::support::v4::app::FragmentActivi
 		AMTRS_JAVA_DYNAMICS_BASIC;
 
 
-
+/*
 		AMTRS_JAVA_DEFINE_METHOD(openDocument
 			, void(AmtrsActivityResult, java::lang::String)
 		)
@@ -47,6 +44,10 @@ AMTRS_JAVA_DEFINE_CLASS(AmtrsActivity, android::support::v4::app::FragmentActivi
 
 		AMTRS_JAVA_DEFINE_METHOD(addActivityResult
 			, int(AmtrsActivityResult)
+		)
+*/
+		AMTRS_JAVA_DEFINE_METHOD(addView
+			, void(View _topView)
 		)
 
 

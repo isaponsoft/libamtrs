@@ -18,6 +18,8 @@ Microsoft Windows, macOS, Linux, *BSD, Android, iOS.
 
 c++17 compiler(clang++ >= 6.0.0, VisualC++ >= 2019, etc...)
 
+
+
 ### for Windows
 
 ```shell
@@ -55,3 +57,17 @@ psnvm SCRIPT-FILE-NAME
 
 Read libamtrs/docs directory.Passion is alpha version.
 
+## Depenency libraries
+
+Depenency libs copy to "libamtrs/deps/xxx" or "libamtrs/../xxx".
+
+|LIB|directory|Type|Platform|URL|
+|--|--|--|--|--|
+|JPG|libjpeg-turbo|source|all||
+|OGG|libogg, libvorbis|source|all||
+|OpenCV|OpenCV-android-sdk|binary|android||
+|OpenCV|openc-win|binary|windows||
+|OpenCV|opencv2.framework|binary|ios||
+|PNG|libpng|source|all||
+|SSL|libressl|source|all||
+|ZLIB|zlib|source|all||
