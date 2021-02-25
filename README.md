@@ -1,73 +1,40 @@
 # Welcome!
 
-Cross platform library and program language passion.
+Very easy cross platform c++17 library.
 
-日本語 : README-jp.md
+## Example
 
+#### main.cpp
 
-# Getting Started
+```c++
+#include <amtrs/filesystem.hpp>
+#include <amtrs/string.hpp>
 
-## System Requirements
+using namespace AMTRS_NAMESPACE;
 
-Microsoft Windows, macOS, Linux, *BSD, Android, iOS.
+namespace fs = AMTRS_NAMESPACE::filesystem;
 
-## Build & test passion
+int main()
+{
+	// helloworld.txt is "Hello world!".
+	std::string	filedata = fs::file_get_contents<std::string>("helloworld.txt");
 
-
-### Build system Requirements
-
-c++17 compiler(clang++ >= 6.0.0, VisualC++ >= 2019, etc...)
-
-
-
-### for Windows
-
-```shell
-cd libamtrs\prj-psnvm
-build.bat
-test.bat
+	// wildcard match.
+	if (wcmatch(filedata, "*ello*d!"))
+	{
+		std::cout << "Hello world!" << std::endl;
+	}
+	return	0;
+}
 ```
 
+#### CMakeLists.txt
 
-### for Linux, *BSD, macOS
+```cmake
+cmake_minimum_required(VERSION 3.0.2)
+project(helloworld)
+set(AMTRS_APPNAME "helloworld")
 
-```shell
-cd libamtrs/prj-psnvm
-sh build.sh
-sh test.sh
+# Please set libamtrs copied directory!
+set(libAmtrs_DIR ../libamtrs)
 ```
-
-
-
-| OS      | Intel 32bit | Intel 64bit   |
-| ------- | ----------- | ------------- |
-| macos   | Darwin-x86  | Darwin-x86_64 |
-| FreeBSD | FreeBSD-x86 | FreeBSD-amd64 |
-| Linux   | Linux-x86   | Linux-x86_64  |
-
-## Run passion 
-
-rename to psnvm.exe(Windows) or psnvm(Other OS).
-
-```sh
-psnvm SCRIPT-FILE-NAME
-```
-
-## Passion  coding
-
-Read libamtrs/docs directory.Passion is alpha version.
-
-## Depenency libraries
-
-Depenency libs copy to "libamtrs/deps/xxx" or "libamtrs/../xxx".
-
-|LIB|directory|Type|Platform|URL|
-|--|--|--|--|--|
-|JPG|libjpeg-turbo|source|all||
-|OGG|libogg, libvorbis|source|all||
-|OpenCV|OpenCV-android-sdk|binary|android||
-|OpenCV|openc-win|binary|windows||
-|OpenCV|opencv2.framework|binary|ios||
-|PNG|libpng|source|all||
-|SSL|libressl|source|all||
-|ZLIB|zlib|source|all||
