@@ -106,10 +106,10 @@ protected:
 	}
 
 	
-	virtual iovstream on_open(path_type _path, std::error_code& _ec) override
+	virtual io::iovstream on_open(path_type _path, std::error_code& _ec) override
 	{
 		struct	vfsstreambuf
-				: public iovstream::vstreambuf::streamif
+				: public io::iovstream::vstreambuf::streamif
 		{
 			using	seekdir		= std::ios_base::seekdir;
 			using	openmode	= std::ios_base::openmode;
@@ -145,11 +145,11 @@ protected:
 			std::ifstream	fs;
 		};
 
-		iovstream	retval;
+		io::iovstream	retval;
 		std::ifstream	fin((std::string)_path, std::ios::binary);
 		if (fin.is_open())
 		{
-			retval	= iovstream(iovstream::vstreambuf(new vfsstreambuf(std::move(fin))));
+			retval	= io::iovstream(io::iovstream::vstreambuf(new vfsstreambuf(std::move(fin))));
 		}
 		else
 		{

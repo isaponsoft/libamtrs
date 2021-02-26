@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
  * Use of this source code is governed by a BSD-style  license that   *
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__images__bmp__hpp
@@ -71,23 +71,23 @@ std::basic_ostream<T, Traits>& operator << (std::basic_ostream<T, Traits>& _out,
 
 	// Bitmap file header(16bytes)
 	_out << "BM";
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>((unsigned int)(imageBitSize / 8) + BMPFILEHEADER_SIZE + BMPINFOHEADER_SIZE)));
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint16_t>(0)));		// reserve
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint16_t>(0)));		// reserve
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(BMPFILEHEADER_SIZE + BMPINFOHEADER_SIZE)));		// offset
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>((unsigned int)(imageBitSize / 8) + BMPFILEHEADER_SIZE + BMPINFOHEADER_SIZE)));
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint16_t>(0)));		// reserve
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint16_t>(0)));		// reserve
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(BMPFILEHEADER_SIZE + BMPINFOHEADER_SIZE)));		// offset
 
 	// Bitmap info header(40bytes)
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(BMPINFOHEADER_SIZE)));
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(img.size().width)));
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(img.size().height)));
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint16_t>(1)));					// plane
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint16_t>(img.bitrate())));		// bitcount
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));					// compress
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>((unsigned int)imageBitSize / 8)));
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));
-	_out << ios::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(BMPINFOHEADER_SIZE)));
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(img.size().width)));
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(img.size().height)));
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint16_t>(1)));					// plane
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint16_t>(img.bitrate())));		// bitcount
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));					// compress
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>((unsigned int)imageBitSize / 8)));
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));
+	_out << io::make_bin(make_array(endian_util::encode<endian::little, uint32_t>(0)));
 
 
 	// Pixel data.
@@ -120,8 +120,8 @@ std::basic_istream<T, Traits>& operator >> (std::basic_istream<T, Traits>& _in, 
 	BITMAPFILEHEADER	fileHeader;
 	BITMAPINFOHEADER	infoHeader;
 
-	_in >> amtrs::ios::make_bin(fileHeader);
-	_in >> amtrs::ios::make_bin(infoHeader);
+	_in >> amtrs::io::make_bin(fileHeader);
+	_in >> amtrs::io::make_bin(infoHeader);
 	if (amtrs::make_array(fileHeader.identify) != amtrs::make_array<char>({'B', 'M'}))
 	{
 		throw	std::runtime_error("Unkown bmp file format");
@@ -138,7 +138,7 @@ std::basic_istream<T, Traits>& operator >> (std::basic_istream<T, Traits>& _in, 
 				auto	cursor	= img.subimg({0, infoHeader.height-1-y, infoHeader.width, 1}).begin();
 				for (unsigned int x = 0; x < infoHeader.width; ++x)
 				{
-					_in >> amtrs::ios::make_bin(t);
+					_in >> amtrs::io::make_bin(t);
 					*cursor++ = {t.b, t.g, t.r, 255};	// swap R <=> B.
 				}
 			}
@@ -153,7 +153,7 @@ std::basic_istream<T, Traits>& operator >> (std::basic_istream<T, Traits>& _in, 
 				auto	cursor	= img.subimg({0, infoHeader.height-1-y, infoHeader.width, 1}).begin();
 				for (unsigned int x = 0; x < infoHeader.width; ++x)
 				{
-					_in >> amtrs::ios::make_bin(t);
+					_in >> amtrs::io::make_bin(t);
 					std::swap(t.r, t.b);
 					*cursor++ = t;	// swap R <=> B.
 				}

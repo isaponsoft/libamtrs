@@ -8,7 +8,7 @@ AMTRS_FILESYSTEM_NAMESPACE_BEGIN
 namespace file_get_contents_impl
 {
 	template<class T, class GetPtr>
-	void file_get_contents(T& _destinate, path_type _path, bool _zero_add, GetPtr _getptr, vfs* _loader)
+	bool file_get_contents(T& _destinate, path_type _path, bool _zero_add, GetPtr _getptr, vfs* _loader)
 	{
 		ref<fileloader>	def;
 		if (!_loader)
@@ -22,7 +22,7 @@ namespace file_get_contents_impl
 		AMTRS_SYSTRACE_LOG("%s is %zdbytes", _path.data(), (size_t)fsize);
 		if (fsize == -1)
 		{
-			return;
+			return	false;
 		}
 		_destinate.resize(fsize + (_zero_add ? 1 : 0));
 		if (fsize > 0)
@@ -42,10 +42,11 @@ namespace file_get_contents_impl
 			_destinate[fsize]	= 0;
 			_destinate.resize(fsize);
 		}
+		return	true;
 	}
 
 	template<class D, class GetPtr>
-	void file_get_contents(shared_buffer<void, D>& _destinate, path_type _path, bool _zero_add, GetPtr _getptr, vfs* _loader)
+	bool file_get_contents(shared_buffer<void, D>& _destinate, path_type _path, bool _zero_add, GetPtr _getptr, vfs* _loader)
 	{
 		ref<fileloader>	def;
 		if (!_loader)
@@ -59,7 +60,7 @@ namespace file_get_contents_impl
 		AMTRS_SYSTRACE_LOG("%s is %zdbytes", _path.data(), (size_t)fsize);
 		if (fsize == -1)
 		{
-			return;
+			return	false;
 		}
 		_destinate	= shared_buffer<void, D>(fsize);
 		if (fsize > 0)
@@ -67,6 +68,7 @@ namespace file_get_contents_impl
 			auto	in		= _loader->open(_path);
 			in.read(reinterpret_cast<char*>(_getptr(_destinate)), fsize);
 		}
+		return	true;
 	}
 }
 
@@ -74,9 +76,9 @@ namespace file_get_contents_impl
 //!	@brief	指定したデータ型のコンテナにファイルの内容を読み込んで返します。
 //!	_destinate で指定したバッファは resize() され、先頭から書き込まれます。
 template<class T>
-void file_get_contents(T& _destinate, path_type _path, bool _zero_add = true, vfs* _loader = nullptr)
+bool file_get_contents(T& _destinate, path_type _path, bool _zero_add = true, vfs* _loader = nullptr)
 {
-	file_get_contents_impl::file_get_contents
+	return	file_get_contents_impl::file_get_contents
 	(
 		_destinate, _path, _zero_add,
 		[](T& _data) -> decltype(_data.data())

@@ -1,13 +1,13 @@
 ﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
  * Use of this source code is governed by a BSD-style  license that   *
  * can be found in the LICENSE file.                                  */
-#include <amtrs/amtrs.h>
-#include <amtrs/stringbuf.h>
+#include <amtrs/amtrs.hpp>
+#include <amtrs/string.hpp>
 #include <string.h>
 
 
 
-inline void __amtrs_stringbuf_init(amtrs_stringbuf* buff, amtrs_allocator* allocator)
+static inline void __amtrs_stringbuf_init(amtrs_stringbuf* buff, amtrs_allocator* allocator)
 {
 	buff->allocator	= allocator;
 	buff->data		= NULL;

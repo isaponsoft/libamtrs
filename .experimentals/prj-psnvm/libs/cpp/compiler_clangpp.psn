@@ -1,0 +1,31 @@
+class	compiler_clangpp
+		: public compiler
+{
+public:
+
+
+protected:
+	virtual string on_cstd(cstd _e) override
+	{
+		return	switch (_e)
+		{
+			case c11:
+				answer	"-std:c++11";
+			case c14:
+				answer	"-std:c++14";
+			case c17:
+				answer	"-std:c++17";
+			case c20:
+				answer	"-std:c++20";
+			default:
+				throw	std::syntax_error("unsupported " + std::to_string(_e));
+		};
+	}
+
+
+	virtual string on_include(string _include) override
+	{
+		return	"-I${_include}";
+	}
+};
+

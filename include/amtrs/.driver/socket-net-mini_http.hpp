@@ -3,8 +3,6 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__net__http__mini_http__socket__hpp
 #define	__libamtrs__net__http__mini_http__socket__hpp
-#include "../io/listener_stream.hpp"
-#include "../io/vstream.hpp"
 AMTRS_NET_NAMESPACE_BEGIN
 
 

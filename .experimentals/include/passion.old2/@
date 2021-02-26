@@ -1,0 +1,12 @@
+﻿#ifndef	__libamtrs__passion__hpp
+#define	__libamtrs__passion__hpp
+#include "def.hpp"
+#include "lexar.hpp"
+#include "lexar_rules.hpp"
+#include "sourcecode.hpp"
+#include "syntax.hpp"
+#include "token.hpp"
+#include "vm.hpp"
+#include "vmtypedata.hpp"
+#include "vmtypelist.hpp"
+#endif

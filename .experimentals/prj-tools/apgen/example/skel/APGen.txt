@@ -1,0 +1,16 @@
+.if(NOT ${PACKAGE})
+	@message(WARNING: Nothing PACKAGE)
+.endif
+.if(NOT ${cmake.PROJECTNAME})
+	@message(WARNING: Nothing cmake.PROJECTNAME)
+.endif
+PACKAGE	= ${PACKAGE}
+
+
+@update(build-android.bat ${APGEN_TEMPLATE_DIR}/build-android.bat)
+@update(build-android.sh ${APGEN_TEMPLATE_DIR}/build-android.sh)
+@update(CMakeLists.txt ${APGEN_TEMPLATE_DIR}/CMakeLists.txt)
+@update(src/main.cpp ${APGEN_TEMPLATE_DIR}/src/main.cpp)
+@update(inc/main.hpp ${APGEN_TEMPLATE_DIR}/inc/main.hpp)
+@copy(. ${APGEN_TEMPLATE_DIR}/asset)
+@copy(. ${APGEN_TEMPLATE_DIR}/res)

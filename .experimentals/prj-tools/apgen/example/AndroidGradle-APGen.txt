@@ -1,0 +1,13 @@
+APPLICATIONID				= jp.toyste.game.miniture001
+
+PACKAGE						= com.isaponsoft.example
+MAINACTIVITY				= .MainActivity
+
+CMAKE_ARGUMENTS				= [ "-DANDROID_STL=c++_static", "-DSCRIPT_DIR=${APGEN_STARTUP_DIR}" ]
+RESOURCES_SRCDIRS			= [ '${APGEN_STARTUP_DIR}/resources/android' ]
+RESOURCES_DEBUG_SRCDIRS		= [ '${APGEN_STARTUP_DIR}/resources/android-debug' ]
+JAVA_SRCDIRS				= [ '${APGEN_SELF_DIR}/../libamtrs/src/android', '${APGEN_SELF_DIR}/android/src' ]
+
+CMAKELISTS					= ${APGEN_SELF_DIR}/CMakeLists.txt
+
+

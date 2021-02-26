@@ -3,7 +3,6 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__net__simple_http_socket__hpp
 #define	__libamtrs__net__simple_http_socket__hpp
-#include "../net/socket/@"
 AMTRS_NET_NAMESPACE_BEGIN
 
 

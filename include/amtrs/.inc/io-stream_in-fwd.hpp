@@ -1,0 +1,69 @@
+ï»¿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
+ * Use of this source code is governed by a BSD-style  license that   *
+ * can be found in the LICENSE file.                                  */
+#ifndef	__libamtrs__io__stream_in_fwd__hpp
+#define	__libamtrs__io__stream_in_fwd__hpp
+AMTRS_IO_NAMESPACE_BEGIN
+
+
+// ****************************************************************************
+//! —lX‚ÈƒIƒuƒWƒFƒNƒg‚É‘Î‚µ‚ÄAstd::istream ‚É‹ß‚¢ƒCƒ“ƒ^[ƒtƒF[ƒX‚ğ’ñ‹Ÿ‚·‚éB
+// ----------------------------------------------------------------------------
+//! ‚ ‚­‚Ü‚Å‚àƒCƒ“ƒ^[ƒtƒF[ƒX‚ÌƒGƒ~ƒ…ƒŒ[ƒg‚Ì‚İ‚ğs‚¢A“à•”“I‚É‚Í‚Ù‚Ú‰½‚à‚µ‚È‚¢B
+//! ‚»‚Ì‚½‚ßAƒRƒ“ƒpƒCƒ‰‚ÌÅ“K‰»‚É‚æ‚Á‚ÄƒI[ƒo[ƒwƒbƒh‚Í‚Ù‚Ú‘¶İ‚µ‚È‚¢‚Í‚¸‚Å‚ ‚éB
+//! —˜—p‚Å‚«‚é‚Ì‚Í read(), gcount(), seekg(), tellg(), ƒXƒe[ƒ^ƒX‚Ìæ“¾Œn‚Ì‚İB
+// ----------------------------------------------------------------------------
+template<class...>
+class	stream_in;
+
+
+
+template<class... T>
+auto make_stream_in(stream_in<T...>& _in) -> stream_in<T...>&
+{
+	return	_in;
+}
+
+
+template<class... T>
+auto make_stream_in(stream_in<T...>&& _in) -> stream_in<T...>
+{
+	return	_in;
+}
+
+
+template<class... T>
+struct	io_traits<stream_in<T...>>
+{
+	using	io_type		= stream_in<T...>;
+	using	char_type	= typename io_type::char_type;
+	using	off_type	= typename io_type::off_type;
+	using	size_type	= typename io_type::off_type;
+	using	fpos_type	= typename io_type::pos_type;
+
+	size_type read(void* _buffer, io_type& _io, size_type _request)
+	{
+		_io.read((char_type*)_buffer, _request);
+		return	_io.gcount();
+	}
+
+	size_type write(io_type& _io, const char_type* _buffer, size_type _request)
+	{
+		return	_io.write(_io, (const char_type*)_buffer, _request);
+	}
+
+	fpos_type seek(io_type& _io, off_type _position, std::ios::seekdir _org)
+	{
+		return	_io.lseek(_position, _org);
+	}
+
+	size_type size(io_type& _io)
+	{
+		return	_io.size();
+	}
+};
+
+
+
+AMTRS_IO_NAMESPACE_END
+#endif

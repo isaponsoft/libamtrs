@@ -3,7 +3,6 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__crypto__crc32__hpp
 #define	__libamtrs__crypto__crc32__hpp
-#include "def.hpp"
 AMTRS_CRYPTO_NAMESPACE_BEGIN
 
 class	crc32

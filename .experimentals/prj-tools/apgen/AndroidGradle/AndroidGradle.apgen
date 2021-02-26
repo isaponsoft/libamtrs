@@ -1,0 +1,22 @@
+# Default paramters
+CMAKELISTS			= ${SELF}/CMakeLists.txt
+MAINACTIVITY		= .MainActivity
+AndroidManifest.xml	= Android.template.AndroidManifest.xml
+
+
+
+
+.if(not exists(".gradle"))
+
+	__GRADLEFILE	= @download("http://gradle.com")
+	__GRADLEDIR		= @unzip(${__GRADLEFILE})
+
+	@update("settings.gradle", "settings.gradle.first")
+	@exec("${__GRADLEDIR}/bin/gradle wrapper");
+	
+.endif
+
+
+@mkdir("src/main")
+@update("src/main/AndroidManifest.xml", ${AndroidManifest.xml})
+

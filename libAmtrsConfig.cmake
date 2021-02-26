@@ -56,7 +56,7 @@ endif()
 # -----------------------------------------------------------------------------
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	message("libamtrs : Windows")
-	file(GLOB AMTRS_PLATFORM_SRCS "${libAmtrs_DIR}/src/amtrs/win32/*.cpp")
+	file(GLOB AMTRS_PLATFORM_SRCS "${libAmtrs_DIR}/src/amtrs/win32-*.cpp")
 
 
 # =============================================================================
@@ -94,25 +94,14 @@ elseif (ANDROID)
 
 
 # =============================================================================
-# FreeBSD
+# FreeBSD/Linux
 # -----------------------------------------------------------------------------
-elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
-	message("libamtrs : FreeBSD")
+elseif(CMAKE_SYSTEM_NAME MATCHES "BSD" OR CMAKE_SYSTEM_NAME MATCHES "Linux")
+	message("libamtrs : Unix")
 
-	file(GLOB AMTRS_PLATFORM_SRCS	"${libAmtrs_DIR}/src/amtrs/posix/*.cpp")
+	file(GLOB AMTRS_PLATFORM_SRCS	"${libAmtrs_DIR}/src/amtrs/unixdrv-*.cpp")
 	find_package(Threads REQUIRED)
-	set(libAmtrs_PLATFORM_LIBS Threads::Threads)
-
-
-# =============================================================================
-# Linux
-# -----------------------------------------------------------------------------
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	message("libamtrs : Linux")
-
-	file(GLOB AMTRS_PLATFORM_SRCS	"${libAmtrs_DIR}/src/amtrs/posix/*.cpp")
-	find_package(Threads REQUIRED)
-	set(libAmtrs_PLATFORM_LIBS Threads::Threads)
+	set(libAmtrs_PLATFORM_LIBS Threads::Threads ssl crypto z)
 
 
 # =============================================================================
@@ -120,7 +109,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 # -----------------------------------------------------------------------------
 elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 	message("libamtrs : Darwin")
-	file(GLOB AMTRS_PLATFORM_SRCS "${libAmtrs_DIR}/src/amtrs/amtrs/darwin/*.cpp" "${libAmtrs_DIR}/src/amtrs/amtrs/posix/*.cpp")
+	file(GLOB AMTRS_PLATFORM_SRCS "${libAmtrs_DIR}/src/amtrs/amtrs/darwin-.cpp" "${libAmtrs_DIR}/src/amtrs/amtrs/unixdrv-*.cpp")
 	find_package(Threads REQUIRED)
 	set(libAmtrs_PLATFORM_LIBS Threads::Threads)
 
@@ -179,13 +168,8 @@ set(AMTRS_SRCS	${AMTRS_SRCS}
 		"${libAmtrs_DIR}/src/amtrs/allocator.c"
 		"${libAmtrs_DIR}/src/amtrs/logging.cpp"
 		"${libAmtrs_DIR}/src/amtrs/stringbuf.c"
+		"${libAmtrs_DIR}/src/amtrs/graphics-imagebuff.cpp"
 )
-
-# =============================================================================
-# Module Graphics
-# -----------------------------------------------------------------------------
-message("libamtrs : Enable  ImageBuffer")
-set(AMTRS_SRCS	${AMTRS_SRCS} "${libAmtrs_DIR}/src/amtrs/graphics-imagebuff.cpp")
 
 
 # =============================================================================
@@ -472,15 +456,19 @@ if(AMTRS_ZLIB_ENABLE)
 		set(PNG_BUILD_ZLIB		ON	CACHE BOOL "libpng zlib build" FORCE)
 		set(SKIP_INSTALL_ALL	OFF	CACHE BOOL "zlib skip install" FORCE)
 
-		find_path(AMTRS_ZLIB_PATH NAMES zlib.h ${LIBAMTRS_DIR}deps/zlib ../zlib)
+		find_path(AMTRS_ZLIB_PATH zlib.h
+			PATHS			${LIBAMTRS_DEPS_SEARCH_DIR}
+			PATH_SUFFIXES 	zlib
+			NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 
 		add_subdirectory(${AMTRS_ZLIB_PATH} EXCLUDE_FROM_ALL  build-zlib)
 		set(ZLIB_INCLUDE_DIR
 			${AMTRS_ZLIB_PATH} ${CMAKE_CURRENT_BINARY_DIR}/build-zlib
 			CACHE STRING "zlib include" FORCE)
 		set(ZLIB_LIBRARY		zlibstatic)
-		include_directories(${AMTRS_ZLIB_PATH} ${CMAKE_CURRENT_BINARY_DIR}/build-zlib)
-		target_link_libraries(amtrs zlibstatic)
+
+		set(libAmtrs_INCLUDES	"${libAmtrs_INCLUDES}" "${AMTRS_ZLIB_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/build-zlib")
+		set(libAmtrs_LIBS		"${libAmtrs_LIBS}" zlibstatic)
 	endif()
 	message("libamtrs : Enable  ZLIB, ${CMAKE_CURRENT_BINARY_DIR}")
 	add_definitions(-DAMTRS_ZLIB_ENABLE=1)

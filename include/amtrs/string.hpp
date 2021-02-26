@@ -5,6 +5,9 @@
 #define	__libamtrs__string__hpp
 #include "amtrs.hpp"
 
+/* standard library */
+#ifdef	__cplusplus
+#include <cstring>
 #include <cstdlib>
 #include <iterator>
 #include <regex>
@@ -12,8 +15,16 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#else
+#include <string.h>
+#endif
 
-// keep order.
+/* c utility */
+#include ".inc/string-stringbuf.hpp"
+
+
+/* c++ utility */
+#ifdef	__cplusplus
 #include ".inc/string-chartype.hpp"
 #include ".inc/string-constring.hpp"
 #include ".inc/string-convert.hpp"
@@ -32,4 +43,6 @@
 #include ".inc/string-uppercase.hpp"
 #include ".inc/string-utf8.hpp"
 #include ".inc/string-wildcard.hpp"
+#endif
+
 #endif

@@ -3,5 +3,5 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__net__http__mini_http__win32__hpp
 #define	__libamtrs__net__http__mini_http__win32__hpp
-#include "../socket/net-mini_http.hpp"
+#include "socket-net-mini_http.hpp"
 #endif

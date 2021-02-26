@@ -3,7 +3,6 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__crypto__sha256__hpp
 #define	__libamtrs__crypto__sha256__hpp
-#include "def.hpp"
 AMTRS_CRYPTO_NAMESPACE_BEGIN
 namespace sha256_impl {
 
@@ -68,7 +67,7 @@ public:
 		}
 		else
 		{
-			for (int i = m_chunkSize/4; i < 14; ++i)
+			for (auto i = m_chunkSize/4; i < 14; ++i)
 			{
 				W[i] 	= 0;
 			}

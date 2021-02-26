@@ -3,7 +3,6 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__crypto__base64__hpp
 #define	__libamtrs__crypto__base64__hpp
-#include "def.hpp"
 AMTRS_CRYPTO_NAMESPACE_BEGIN
 
 // ==================================================================

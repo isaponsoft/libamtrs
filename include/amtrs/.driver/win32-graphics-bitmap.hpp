@@ -5,7 +5,7 @@
 #define	__libamtrs__bitmaps__bitmap_win32__hpp
 #include <atomic>
 #include <iostream>
-#include "../iostream.hpp"
+#include "../io.hpp"
 #include "win32-api-windows.hpp"
 #include "win32-api-com_istream.hpp"
 #include <gdiplus.h>
@@ -25,7 +25,7 @@ auto basic_bitmap<PixelT, BufferT>::load(In&& _in) -> basic_bitmap
 	ULONG_PTR			lpToken;
 	Gdiplus::GdiplusStartup(&lpToken, &gpSI, nullptr);
 	{
-		auto											rs	= ios::make_rstream(_in);
+		auto											rs	= io::make_rstream(_in);
 		os::win32::com_istream_wrapper<decltype(rs)>	ist(rs);
 		Gdiplus::Bitmap									image(&ist);
 		if (auto err = image.GetLastStatus(); err != Gdiplus::Ok)

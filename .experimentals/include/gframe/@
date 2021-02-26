@@ -1,0 +1,10 @@
+﻿#ifndef	__libamtrs__gframe__hpp
+#define	__libamtrs__gframe__hpp
+#include "def.hpp"
+#include "main.hpp"
+#include "module.hpp"
+#include "panel.hpp"
+#include "scene.hpp"
+#include "ui.hpp"
+#include "texture_manager.hpp"
+#endif

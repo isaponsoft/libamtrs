@@ -1,0 +1,22 @@
+
+#ifndef	__has_include(".gradle-donloaded")
+	#invoke(code text ; download("http://xyz/gradle-6.0.2.zip"))
+	#invoke(code text ; unzip("gradle-6.0.2.zip"))
+	#update("build.setting", MKSTR(TEMPLATEDIR/build.setting))
+	#if	SYSTEM == WINDOWS
+	#exec(code text ; "gradlew.bat > nil")
+	#else
+	#exec(code text ; "chmod +x gradle/bin/gradle > /dev/null")
+	#exec(code text ; "./gradlew > /dev/null")
+	#endif
+#endif
+
+
+#foreach(i val : AndroidManifest.Permission)
+
+	#if i > 0
+		, Android.Manifest.permission.val
+	#endif
+
+#endfor
+

@@ -60,13 +60,13 @@ protected:
 	}
 
 
-	virtual iovstream on_open(path_type _path, std::error_code& _ec) override
+	virtual io::iovstream on_open(path_type _path, std::error_code& _ec) override
 	{
 		return	each
 				(
 					_ec,
-					[&]() -> iovstream { return {}; },
-					[&](vfs* _vfs, std::error_code& ec) -> iovstream
+					[&]() -> io::iovstream { return {}; },
+					[&](vfs* _vfs, std::error_code& ec) -> io::iovstream
 					{
 						return	_vfs->open(_path, ec);
 					}

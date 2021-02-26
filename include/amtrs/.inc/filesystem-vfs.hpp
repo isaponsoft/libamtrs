@@ -42,8 +42,8 @@ class	vfs : public ref_object
 	}
 
 public:
-	iovstream open(path_type _path, std::error_code& _ec) {                                                     return on_open(_path, _ec);     }
-	iovstream open(path_type _path                      ) { return throwmode(_path, [&](std::error_code& _ec) { return on_open(_path, _ec); }); }
+	io::iovstream open(path_type _path, std::error_code& _ec) {                                                     return on_open(_path, _ec);     }
+	io::iovstream open(path_type _path                      ) { return throwmode(_path, [&](std::error_code& _ec) { return on_open(_path, _ec); }); }
 
 
 	file_status		status		(path_type _path, std::error_code& _ec) const {                                              return on_status   (_path, _ec);     }
@@ -211,7 +211,7 @@ public:
 	
 
 protected:
-	virtual iovstream      on_open      (path_type _path, std::error_code& _ec)       = 0;
+	virtual io::iovstream      on_open      (path_type _path, std::error_code& _ec)       = 0;
 	virtual file_status    on_status    (path_type _path, std::error_code& _ec) const = 0;
 	virtual std::uintmax_t on_file_size (path_type _path, std::error_code& _ec) const = 0;
 	virtual bool		   on_remove    (path_type _path, std::error_code& _ec) const = 0;

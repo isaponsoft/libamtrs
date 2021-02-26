@@ -5,7 +5,6 @@
 #define	__libamtrs__system__env_win32__hpp
 #include <vector>
 #include <stdio.h> 
-#include "env.hpp"
 AMTRS_NAMESPACE_BEGIN
 AMTRS_IMPLEMENTS_BEGIN(env)
 

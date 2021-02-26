@@ -10,10 +10,8 @@
 #include <string_view>
 #include <vector>
 
-#include "api/windows.hpp"
-#include "api/error_code.hpp"
+#include "win32-api-windows.hpp"
 #include <winhttp.h>
-#include "../../string/@"
 #pragma comment(lib, "Winhttp.lib")
 AMTRS_NET_NAMESPACE_BEGIN
 

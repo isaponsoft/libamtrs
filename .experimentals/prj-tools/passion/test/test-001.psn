@@ -1,0 +1,10 @@
+﻿#!/usr/bin/env	psnvm
+#compati		1
+class	main
+{
+public:
+	int func()
+	{
+		return	0;
+	}
+};

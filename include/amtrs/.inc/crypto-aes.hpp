@@ -3,7 +3,6 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__crypto__aes__hpp
 #define	__libamtrs__crypto__aes__hpp
-#include "def.hpp"
 AMTRS_CRYPTO_NAMESPACE_BEGIN
 
 template<size_t Bit, class CharT = uint8_t>
