@@ -47,5 +47,6 @@ protected:
 };
 
 AMTRS_NET_NAMESPACE_END
-#include AMTRS_DRIVER_INCLUDE(net-simple_http.hpp)
+#define	AMTRS_PLIB_NAME	net-simple_http.hpp
+#include "include-platform.hpp"
 #endif

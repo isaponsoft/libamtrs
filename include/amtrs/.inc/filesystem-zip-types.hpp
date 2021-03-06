@@ -75,15 +75,15 @@ AMTRS_FILESYSTEM_ZIP_NAMESPACE_END
 AMTRS_IO_NAMESPACE_BEGIN
 
 template<class In>
-bool read(filesystem::zip::localfilehead& _lfh, In&& _in)
+bool read(filesystem::zip::localfilehead& _lfh, In& _in)
 {
 	char	buff[filesystem::zip::localfilehead_size];
-	if (io::read(buff, std::forward<In>(_in)) != sizeof(buff))
+	if (io::read(buff, _in) != sizeof(buff))
 	{
 		return	false;
 	}
 
-	auto	i	= io::make_stream_in(make_view(buff));
+	auto	i	= io::make_streamif(std::string_view(buff, sizeof(buff)));
 	io::read(_lfh.signature, i);
 	if (std::memcmp(_lfh.signature, filesystem::zip::lfhs, sizeof(filesystem::zip::lfhs)))
 	{
@@ -103,15 +103,15 @@ bool read(filesystem::zip::localfilehead& _lfh, In&& _in)
 }
 
 template<class In>
-bool read(filesystem::zip::centraldirentry& _cde, In&& _in)
+bool read(filesystem::zip::centraldirentry& _cde, In& _in)
 {
 	char	buff[filesystem::zip::centraldirentry_size];
-	if (io::read(buff, std::forward<In>(_in)) != sizeof(buff))
+	if (auto rs = io::read(buff, _in); rs != sizeof(buff))
 	{
 		return	false;
 	}
 
-	auto	i	= io::make_stream_in(make_view(buff));
+	auto	i	= io::make_streamif(std::string_view(buff, sizeof(buff)));
 	io::read(_cde.signature, i);
 	if (std::memcmp(_cde.signature, filesystem::zip::cdes, sizeof(filesystem::zip::cdes)))
 	{
@@ -137,25 +137,25 @@ bool read(filesystem::zip::centraldirentry& _cde, In&& _in)
 }
 
 template<class In>
-bool read(filesystem::zip::end_of_centraldirentry& _eoc, In&& _in)
+bool read(filesystem::zip::end_of_centraldirentry& _eoc, In& _in)
 {
 	char	buff[filesystem::zip::end_of_centraldirentry_size];
-	if (io::read(buff, std::forward<In>(_in)) != sizeof(buff))
+	if (io::read<char, In>(buff, _in) != sizeof(buff))
 	{
 		return	false;
 	}
 
-	auto	i	= io::make_stream_in(make_view(buff));
-	io::read(_eoc.signature, i);
+	auto	i	= io::make_streamif(std::string_view(buff, sizeof(buff)));
+	auto	rs	= io::read(_eoc.signature, i);
 	if (std::memcmp(_eoc.signature, filesystem::zip::eocd, sizeof(filesystem::zip::eocd)))
 	{
 		return	false;
 	}
-	io::read<endian::little>(_eoc.numberDisk,				i);
-	io::read<endian::little>(_eoc.numberDiskWithCD,			i);
-	io::read<endian::little>(_eoc.numberEntry,				i);
-	io::read<endian::little>(_eoc.numberEntryCD,			i);
-	if (_eoc.numberDisk || _eoc.numberDiskWithCD || (_eoc.numberEntryCD != _eoc.numberEntry))
+	if (!io::read<endian::little>(_eoc.numberDisk,				i)
+	 ||	!io::read<endian::little>(_eoc.numberDiskWithCD,		i)
+	 ||	!io::read<endian::little>(_eoc.numberEntry,				i)
+	 ||	!io::read<endian::little>(_eoc.numberEntryCD,			i)
+	 || (_eoc.numberDisk || _eoc.numberDiskWithCD || (_eoc.numberEntryCD != _eoc.numberEntry)))
 	{
 		return	false;
 	}

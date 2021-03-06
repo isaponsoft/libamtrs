@@ -14,6 +14,12 @@
 #endif
 AMTRS_NET_NAMESPACE_BEGIN
 
+struct	netbase
+{
+	netbase();
+	~netbase();
+};
+
 
 // ****************************************************************************
 //! socket addrinfo を簡単に扱うためのラッパークラスです。
@@ -21,7 +27,7 @@ AMTRS_NET_NAMESPACE_BEGIN
 //! ムーブはできますがコピーは禁止です。自動的に　freeaddrinfo() を呼び出し
 //! 不要になったaddrinfoを開放します。
 // ----------------------------------------------------------------------------
-class	address
+class	address : public netbase
 {
 public:
 	using	value_type	= ::addrinfo;
@@ -124,7 +130,7 @@ public:
 			return	true;
 		}
 
-#if	0
+#if	1
 		char		name[NI_MAXHOST] = { 0 };
 		char		ntop[NI_MAXHOST] = { 0 };
 		using		type	= struct sockaddr;
@@ -133,14 +139,11 @@ public:
 		int			ecode	= getnameinfo(saddr, len, ntop, sizeof(ntop), NULL, 0, NI_NUMERICHOST);
 		if (ecode != 0)
 		{
-			std::cout << "getnameinfo:" << gai_strerror(ecode) << std::endl;
+			throw	std::error_code(ecode, std::generic_category());
 		}
 		else
 		{
 			
-			std::cout << "OK" << std::endl;
-			std::cout << (char*)name << std::endl;
-			std::cout << (char*)ntop << std::endl;
 			return	true;
 		}
 #endif

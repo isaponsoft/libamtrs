@@ -166,7 +166,5 @@ private:
 
 
 AMTRS_NET_NAMESPACE_END
-#else	// __has_include(<openssl/ssl.h>)
-#define	AMTRS_SSL_SUPPORTED	0
-#endif	// __has_include(<openssl/ssl.h>)
+#endif
 #endif

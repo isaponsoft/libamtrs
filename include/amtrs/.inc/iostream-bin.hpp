@@ -9,8 +9,8 @@ AMTRS_IOSTREAM_NAMESPACE_BEGIN
 template<class...>
 struct	bin;
 
-//! std::ostream ‚â std::istream ‚É‘Î‚µAdata(), size() ‚ğ‚Âƒf[ƒ^\‘¢‚ğ
-//! ƒoƒCƒiƒŠ‚Æ‚µ‚Äo—Í^“ü—Í‚·‚é‚½‚ß‚Ìƒ‰ƒbƒp[‚Å‚·B
+//! std::ostream ã‚„ std::istream ã«å¯¾ã—ã€data(), size() ã‚’æŒã¤ãƒ‡ãƒ¼ã‚¿æ§‹é€ ã‚’
+//! ãƒã‚¤ãƒŠãƒªã¨ã—ã¦å‡ºåŠ›ï¼å…¥åŠ›ã™ã‚‹ãŸã‚ã®ãƒ©ãƒƒãƒ‘ãƒ¼ã§ã™ã€‚
 template<class T>
 struct	bin<T>
 {

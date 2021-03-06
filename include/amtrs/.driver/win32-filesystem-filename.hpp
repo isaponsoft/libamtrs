@@ -73,7 +73,7 @@ constexpr auto stem(T&& _path) noexcept -> std::basic_string_view<chartype_t<T>>
 {
 	using	char_type	= chartype_t<T>;
 	using	view_type	= std::basic_string_view<char_type>;
-	view_type	path(_path);
+	view_type	path(filename(_path));
 	auto	ext	= extension(path);
 	return	path.substr(0, path.size() - ext.size());
 }
@@ -265,15 +265,6 @@ inline T current_path()
 		}
 		free(name);
 	}
-	return	retval;
-}
-
-
-
-template<class PathT>
-inline std::string absolute_path(PathT _path)
-{
-	auto	retval	= current_path<std::string>() + "\\" + std::string(_path);
 	return	retval;
 }
 

@@ -4,8 +4,11 @@
 #ifndef	__libamtrs__net__hpp
 #define	__libamtrs__net__hpp
 #include "amtrs.hpp"
+#include <unordered_map>
+#include <vector>
 
-
+#include "io.hpp"
+#include "string.hpp"
 #include ".inc/typeutil-listener.hpp"
 
 #define	AMTRS_NET_NAMESPACE_BEGIN	AMTRS_NAMESPACE_BEGIN namespace net {
@@ -45,7 +48,6 @@ AMTRS_NET_HTTP_NAMESPACE_END
 #include ".inc/net-http-http_header_analyzer.hpp"
 #include ".inc/net-http-mini_http.hpp"
 #include ".inc/net-simple_http.hpp"
-#include ".inc/net-web.hpp"
 
 
 #endif

@@ -1,6 +1,7 @@
 ﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
  * Use of this source code is governed by a BSD-style  license that   *
  * can be found in the LICENSE file.                                  */
+#if	0
 #ifndef	__libamtrs__bitmaps__bitmap_ios__hpp
 #define	__libamtrs__bitmaps__bitmap_ios__hpp
 #include <iostream>
@@ -16,10 +17,10 @@ AMTRS_NAMESPACE_BEGIN
 
 template<class PixelT, class BufferT>
 template<class In>
-auto basic_bitmap<PixelT, BufferT>::load(In&& _in) -> basic_bitmap
+auto basic_bitmap<PixelT, BufferT>::load(In _in) -> basic_bitmap
 {
 	// ファイルサイズ取得＆バッファに読み込み
-	auto		in			= io::make_rstream(std::forward<In>(_in));
+	auto		in			= io::make_streamif(std::forward<In>(_in));
 	auto		inSize		= static_cast<std::size_t>(in.seekg(0, std::ios_base::end).tellg());
 	in.seekg(0, std::ios_base::beg);
 
@@ -49,4 +50,5 @@ auto basic_bitmap<PixelT, BufferT>::load(In&& _in) -> basic_bitmap
 
 
 AMTRS_NAMESPACE_END
+#endif
 #endif

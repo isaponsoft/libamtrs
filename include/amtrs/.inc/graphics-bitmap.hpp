@@ -44,7 +44,7 @@ public:
 	//! APIを利用します。
 	// ------------------------------------------------------------------------
 	template<class In>
-	static basic_bitmap load(In&& _in);
+	static basic_bitmap load(In _in);
 
 
 	constexpr std::size_t bitrate() const noexcept { return sizeof(value_type) * 8; }
@@ -162,5 +162,7 @@ using	bitmap32	= bitmap<rgba<uint8_t>>;
 
 
 AMTRS_NAMESPACE_END
-#include AMTRS_DRIVER_INCLUDE(graphics-bitmap.hpp)
+
+#define	AMTRS_PLIB_NAME	graphics-bitmap.hpp
+#include "include-platform.hpp"
 #endif

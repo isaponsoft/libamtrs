@@ -3,12 +3,13 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__system__hpp
 #define	__libamtrs__system__hpp
-#define	AMTRS_NAMESPACE_PROCESS_BEGIN	AMTRS_NAMESPACE_BEGIN namespace process {
-#define	AMTRS_NAMESPACE_PROCESS_END		} AMTRS_NAMESPACE_END
-AMTRS_NAMESPACE_PROCESS_BEGIN
-AMTRS_NAMESPACE_PROCESS_END
+#include "amtrs.hpp"
 
-#include ".inc/process-run.hpp"
+#define	AMTRS_NAMESPACE_SYSTEM_BEGIN	AMTRS_NAMESPACE_BEGIN namespace system {
+#define	AMTRS_NAMESPACE_SYSTEM_END		} AMTRS_NAMESPACE_END
+AMTRS_NAMESPACE_SYSTEM_BEGIN
+AMTRS_NAMESPACE_SYSTEM_END
 #include ".inc/system-env.hpp"
 #include ".inc/system-power.hpp"
+#include ".inc/system-process.hpp"
 #endif

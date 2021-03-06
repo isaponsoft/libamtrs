@@ -44,5 +44,30 @@ constexpr bool is_absolute(T const& _path) noexcept
 
 
 AMTRS_FILESYSTEM_NAMESPACE_END
-#include AMTRS_DRIVER_INCLUDE(filesystem-filename.hpp)
+#define	AMTRS_PLIB_NAME	filesystem-filename.hpp
+#include "include-platform.hpp"
+
+
+
+
+
+AMTRS_FILESYSTEM_NAMESPACE_BEGIN
+template<class PathT>
+inline std::string absolute_path(PathT _path)
+{
+	if (is_absolute(_path))
+	{
+		return	std::string(_path);
+	}
+	else
+	{
+		auto	retval	= std::filesystem::current_path().string();
+		retval.append(1, directory_separator);
+		retval.append(_path);
+		return	retval;
+	}
+}
+AMTRS_FILESYSTEM_NAMESPACE_END
+
+
 #endif

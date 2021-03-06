@@ -85,8 +85,7 @@ namespace v1 {
 	template<class SizeT, class Out>
 	bool serialize(Out& _out, event const& _val)
 	{
-		using	traits	= decltype(io::choise_stream_traits(std::declval<Out&>()));
-		if (!traits{}.good(_out))
+		if (!_out)
 		{
 			return	false;
 		}
@@ -107,7 +106,7 @@ namespace v1 {
 		{
 			return	false;
 		}
-		return	traits{}.good(_out);
+		return	_out;
 	}
 
 
@@ -115,8 +114,7 @@ namespace v1 {
 	template<class In>
 	bool deserialize(event& _buff, In& _in)
 	{
-		using	traits	= decltype(io::choise_stream_traits(std::declval<In&>()));
-		if (!traits{}.good(_in))
+		if (!_in)
 		{
 			return	false;
 		}
@@ -138,7 +136,7 @@ namespace v1 {
 		{
 			return	false;
 		}
-		return	traits{}.good(_in);
+		return	_in;
 	}
 }
 AMTRS_CHRONO_NAMESPACE_END

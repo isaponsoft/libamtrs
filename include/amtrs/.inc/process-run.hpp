@@ -122,5 +122,6 @@ inline int run(const char* _command)
 
 
 AMTRS_NAMESPACE_PROCESS_END
-#include AMTRS_DRIVER_INCLUDE(process-run.hpp)
+#define	AMTRS_PLIB_NAME	process-run.hpp
+#include "include-platform.hpp"
 #endif

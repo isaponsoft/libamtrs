@@ -523,8 +523,7 @@ AMTRS_NAMESPACE_BEGIN
 template<class Out>
 bool serialize(Out& _out, chrono::timev const& _val)
 {
-	using	traits	= decltype(io::choise_stream_traits(std::declval<Out&>()));
-	if (!traits{}.good(_out))
+	if (!_out)
 	{
 		return	false;
 	}
@@ -541,8 +540,7 @@ bool serialize(Out& _out, chrono::timev const& _val)
 template<class In>
 bool deserialize(chrono::timev& _buff, In& _in)
 {
-	using	traits	= decltype(io::choise_stream_traits(std::declval<In&>()));
-	if (!traits{}.good(_in))
+	if (!_in)
 	{
 		return	false;
 	}
@@ -567,7 +565,7 @@ bool deserialize(chrono::timev& _buff, In& _in)
 	{
 		return	false;
 	}
-	return	traits{}.good(_in);
+	return	_in;
 }
 
 AMTRS_NAMESPACE_END

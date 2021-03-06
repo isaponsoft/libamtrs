@@ -20,13 +20,13 @@ public:
 
 	struct	instance : basic_mini_http<StringT>::instance
 	{
-		using	listener_wrapper	= io::listener_stream<value_type, io::vstream<char>>;
+		using	listener_wrapper	= io::listener_stream<value_type, io::vstreamif>;
 
 		std::string			url;
 		uri::info<char>		uinf;
-		net::socket			sock;
-		io::vstream<char>	io;
+		io::vstreamif		io;
 		http::parser		psr;
+		size_t				mtu;
 
 		virtual uri::info<char> const& uri_info() const noexcept override
 		{
@@ -60,7 +60,7 @@ public:
 			while (!io.bad() && !io.eof() && (ws != req.size()))
 			{
 				io.write(req.data() + ws, req.size() - ws);
-				ws += io.pcount();
+				ws += (req.size() - ws);
 			}
 
 			auto	l	= make_listener<listener_wrapper>([this](auto e)
@@ -93,7 +93,7 @@ public:
 
 			if (io2.good())
 			{
-				std::vector<char>	buff((sock.mtu() - 40) * 2);
+				std::vector<char>	buff((mtu - 40) * 2);
 				do
 				{
 					auto	rs	= psr.read(buff.data(), io2, buff.size());
@@ -112,7 +112,7 @@ public:
 
 		virtual bool empty() const noexcept override
 		{
-			return	sock.empty() || (!io.good() && !io.eof());
+			return	(!io.good() && !io.eof());
 		}
 
 	};
@@ -123,19 +123,22 @@ public:
 		retval->url		= _url;
 
 
-		retval->sock	= net::socket::connect(&retval->uinf, retval->url, SOCK_STREAM);
-		if (retval->sock.empty())
+		net::socket			sock;
+		sock	= net::socket::connect(&retval->uinf, retval->url, SOCK_STREAM);
+		if (sock.empty())
 		{
 			return	{};
 		}
+		retval->mtu	= sock.mtu();
 
-		#if	AMTRS_SSL_SUPPORTED
+		#if	AMTRS_SSL_SUPPORTED && 0
 		retval->io	= retval->uinf.scheme == "https"
-					? io::make_vstream(net::basic_ssl_stream<char, socket>(retval->sock.get()))
-					: io::make_vstream(net::socket_stream(retval->sock.get()));
+					? io::vstreamif(net::basic_ssl_stream<char, socket>(std::move(sock))
+					: io::vstreamif(io::make_streamif(net::socket_stream(std::move(sock))));
 		#else
-		retval->io	= io::make_vstream(net::socket_stream(retval->sock.get()));
+		retval->io	= io::make_vstreamif(io::make_streamif(std::move(sock)));
 		#endif
+
 
 		return	retval;
 	}

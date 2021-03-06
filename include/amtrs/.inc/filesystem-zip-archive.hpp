@@ -51,7 +51,8 @@ uintmax_t search_end_of_central(end_of_centraldirentry* _buff, In& _in, uintmax_
 				// セントラルディレクトリを読み取る
 				if (_buff)
 				{
-					if (!io::read(*_buff, view<char>(buff + i, sizeof(buff) - i)))
+					auto	in	= io::make_streamif(std::string_view(buff + i, sizeof(buff) - i));
+					if (!io::read(*_buff, in))
 					{
 						return	static_cast<uintmax_t>(-1);
 					}
@@ -86,8 +87,14 @@ public:
 		end_of_centraldirentry	eoc;
 		mArchiveSize		= io::size(mInput);
 		mEOCPosition		= search_end_of_central(&eoc, mInput, mArchiveSize);
+		if (mEOCPosition == -1)
+		{
+			mEnable	= false;
+			return;
+		}
 		mDataPosition		= mEOCPosition - eoc.sizeOfCentralDir - eoc.offsetOfCentralDir;
 		mFirstCentralPos	= eoc.offsetOfCentralDir;
+		mInput.clear();
 	}
 
 	zip_archive(const zip_archive&) = default;
@@ -130,10 +137,15 @@ public:
 		return	mInput;
 	}
 
+	operator bool () const noexcept
+	{
+		return	mEnable;
+	}
+
 private:
 	bool read_entry(zip_entry* _entry, filesystem::zip::centraldirentry& _central, filesize_type _cdp)
 	{
-
+		mInput.clear();
 		io::seek(mInput, mDataPosition + _cdp, std::ios::beg);
 		if (!io::read(_central, mInput))
 		{
@@ -163,6 +175,7 @@ private:
 	filesize_type	mEOCPosition		= 0;
 	filesize_type	mDataPosition		= 0;
 	filesize_type	mFirstCentralPos	= 0;
+	bool			mEnable				= true;
 
 	template<class>
 	friend	class	zip_iterator;

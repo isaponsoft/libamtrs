@@ -181,28 +181,6 @@ private:
 
 
 
-
-template<class... T>
-struct	io_traits<inflate_stream_in<T...>>
-{
-	using	io_type		= inflate_stream_in<T...>;
-	using	char_type	= typename io_type::char_type;
-	using	off_type	= typename io_type::off_type;
-	using	size_type	= typename io_type::off_type;
-
-	size_type read(void* _buffer, io_type& _io, size_type _request)
-	{
-		_io.read((char_type*)_buffer, _request);
-		return	_io.gcount();
-	}
-
-	size_type size(io_type& _io)
-	{
-		return	_io.size();
-	}
-};
-
-
 template<class INDATA>
 auto make_inflate_stream_in(INDATA& _iput)
 {

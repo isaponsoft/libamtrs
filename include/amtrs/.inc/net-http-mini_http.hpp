@@ -205,5 +205,6 @@ struct	listener<net::basic_mini_http<StringT, Traits>>
 };
 
 AMTRS_NAMESPACE_END
-#include AMTRS_DRIVER_INCLUDE(net-mini_http.hpp)
+#define	AMTRS_PLIB_NAME	net-mini_http.hpp
+#include "include-platform.hpp"
 #endif

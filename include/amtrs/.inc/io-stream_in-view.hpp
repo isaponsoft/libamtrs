@@ -121,6 +121,60 @@ private:
 
 
 template<class T>
+struct	io_traits<stream_in<view<T>>>
+{
+	using	stream_type	= stream_in<view<T>>;
+	using	char_type	= typename stream_type::char_type;
+
+
+	size_t read(void* _buff, stream_type& _io, size_t _size)
+	{
+		_io.read(reinterpret_cast<char_type*>(_buff), _size);
+		auto	r	= _io.gcount();
+		return	r;
+	}
+
+
+	size_t write(stream_type& _io, const void* _buff, size_t _size)
+	{
+		_io.write(reinterpret_cast<const char_type*>(_buff), _size);
+		auto	r	= _io.gcount();
+		return	r;
+	}
+
+
+
+	bool seekg(stream_type& _io, std::ios::off_type _off, std::ios::seekdir _dir)
+	{
+		_io.seekg(_off, _dir);
+		return	true;
+	}
+
+
+	bool seekp(stream_type& _io, std::ios::off_type _off, std::ios::seekdir _dir)
+	{
+		_io.seekp(_off, _dir);
+		return	true;
+	}
+
+
+	uintmax_t size(stream_type& _io)
+	{
+		_io.clear();
+		seekg(_io, 0, std::ios::end);
+		auto	endPos	= _io.tellg();
+		_io.clear();
+		seekg(_io, 0, std::ios::beg);
+		auto	begPos	= _io.tellg();
+		_io.clear();
+		return	static_cast<uintmax_t>(endPos - begPos);
+	}
+};
+
+
+
+
+template<class T>
 bool seek(stream_in<view<T>>& _in, std::ios::off_type _off, std::ios::seekdir _dir)
 {
 	_in.seekg(_off, _dir);

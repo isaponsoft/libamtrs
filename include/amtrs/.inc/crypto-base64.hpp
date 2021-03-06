@@ -17,7 +17,7 @@ constexpr std::size_t base64_encode_size(std::size_t _n)
 //!	@brief	base64 の符号化を行います。
 // ------------------------------------------------------------------
 template<class OutCursor, class InCursor>
-amtrs_constexpr14 std::size_t base64_encode(OutCursor _dest, InCursor _s, std::size_t _n)
+constexpr std::size_t base64_encode(OutCursor _dest, InCursor _s, std::size_t _n)
 {
 	auto	dest	= cursor::make_put(_dest);
 	auto	src		= cursor::make_get(_s);

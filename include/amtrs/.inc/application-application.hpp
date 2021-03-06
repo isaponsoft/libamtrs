@@ -245,5 +245,4 @@ inline bool application::remove_event_listener(void* _key)
 
 
 AMTRS_NAMESPACE_END
-#include AMTRS_DRIVER_INCLUDE(application.hpp)
 #endif

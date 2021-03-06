@@ -6,6 +6,24 @@
 AMTRS_FILESYSTEM_NAMESPACE_BEGIN
 
 
+bool tmpname(amtrs_bufferif_one_init const& _out);
+
+
+template<class T>
+bool tmpname(T& _out)
+{
+	return	tmpname(amtrs_bufferif_one_init
+	{
+		.object		= &_out,
+		.allocate	= [](void* _object, size_t _size) -> void*
+		{
+			T*	dest	= reinterpret_cast<T*>(_object);
+			bufferif_one_init_traits<T>::allocate(dest, _size);
+			return	dest->data();
+		}
+	});
+}
+
 
 inline bool exists(path_type _path, vfs* _loader = nullptr)
 {
@@ -100,5 +118,6 @@ inline bool remove(path_type _path)
 
 
 AMTRS_FILESYSTEM_NAMESPACE_END
-#include AMTRS_DRIVER_INCLUDE(filesystem-functions.hpp)
+#define	AMTRS_PLIB_NAME	filesystem-functions.hpp
+#include "include-platform.hpp"
 #endif

@@ -11,7 +11,7 @@ AMTRS_EXTERN_C_BEGIN
  */
 typedef	struct
 {
-	char*				data;
+	char const*			data;
 	size_t				size;
 } amtrs_stringview;
 

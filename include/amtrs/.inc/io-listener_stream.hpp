@@ -46,24 +46,21 @@ public:
 	{}
 
 
-	listener_stream& read(char_type* _buff, size_t _n)
+	size_t read(char_type* _buff, size_t _n)
 	{
-		mStream->read(_buff, _n);
-		(*mListener)(on_read<CharT>{ _buff, mStream->gcount() });
-		return	*this;
+		auto	s	= mStream->read(_buff, _n);
+		(*mListener)(on_read<CharT>{ _buff, (size_t)s });
+		return	s;
 	}
 
-	listener_stream& write(char_type const* _buff, size_t _n)
+	size_t write(char_type const* _buff, size_t _n)
 	{
-		mStream->write(_buff, _n);
-		(*mListener)(on_write<CharT>{ _buff, mStream->pcount() });
-		return	*this;
+		auto	s	= mStream->write(_buff, _n);
+		(*mListener)(on_write<CharT>{ _buff, (size_t)s });
+		return	s;
 	}
 
 
-
-	size_t gcount() const noexcept { return mStream->gcount(); }
-	size_t pcount() const noexcept { return mStream->pcount(); }
 
 	explicit operator bool() const { return good(); }
 

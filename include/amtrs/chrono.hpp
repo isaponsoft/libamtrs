@@ -20,7 +20,9 @@
 #define	AMTRS_CHRONO_NAMESPACE_END		} AMTRS_NAMESPACE_END
 
 
-#include AMTRS_PLATFORM_INCLUDE(chrono-time.hpp)
+#define	AMTRS_PLIB_NAME	chrono-time.hpp
+#include ".inc/include-platform.hpp"
+
 
 // keep order.
 #include ".inc/chrono-functions.hpp"
@@ -32,7 +34,7 @@
 #include ".inc/chrono-framerator.hpp"
 #include ".inc/chrono-calendar.hpp"
 
-
-#include AMTRS_PLATFORM_INCLUDE(chrono-datetime.hpp)
+#define	AMTRS_PLIB_NAME	chrono-datetime.hpp
+#include ".inc/include-platform.hpp"
 
 #endif

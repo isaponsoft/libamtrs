@@ -1,6 +1,7 @@
 ﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
  * Use of this source code is governed by a BSD-style  license that   *
  * can be found in the LICENSE file.                                  */
+#if	0
 #ifndef	__libamtrs__bitmaps__bitmap_win32__hpp
 #define	__libamtrs__bitmaps__bitmap_win32__hpp
 #include <atomic>
@@ -17,7 +18,7 @@ inline const char* get_gdiplus_pixel_format_str(Gdiplus::PixelFormat _format);
 
 template<class PixelT, class BufferT>
 template<class In>
-auto basic_bitmap<PixelT, BufferT>::load(In&& _in) -> basic_bitmap
+auto basic_bitmap<PixelT, BufferT>::load(In _in) -> basic_bitmap
 {
 	basic_bitmap	retval;
 
@@ -25,7 +26,7 @@ auto basic_bitmap<PixelT, BufferT>::load(In&& _in) -> basic_bitmap
 	ULONG_PTR			lpToken;
 	Gdiplus::GdiplusStartup(&lpToken, &gpSI, nullptr);
 	{
-		auto											rs	= io::make_rstream(_in);
+		auto											rs	= io::make_streamif(_in);
 		os::win32::com_istream_wrapper<decltype(rs)>	ist(rs);
 		Gdiplus::Bitmap									image(&ist);
 		if (auto err = image.GetLastStatus(); err != Gdiplus::Ok)
@@ -209,4 +210,5 @@ const char* get_gdiplus_pixel_format_str(Gdiplus::PixelFormat _format)
 }
 
 AMTRS_NAMESPACE_END
+#endif
 #endif

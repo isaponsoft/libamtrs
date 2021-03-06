@@ -165,10 +165,18 @@ endif()
 # -----------------------------------------------------------------------------
 message("libamtrs : Enable  APPLICATION;LOG")
 set(AMTRS_SRCS	${AMTRS_SRCS}
-		"${libAmtrs_DIR}/src/amtrs/allocator.c"
-		"${libAmtrs_DIR}/src/amtrs/logging.cpp"
-		"${libAmtrs_DIR}/src/amtrs/stringbuf.c"
-		"${libAmtrs_DIR}/src/amtrs/graphics-imagebuff.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-allocator.c"
+		"${libAmtrs_DIR}/src/amtrs/base-application.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-filesystem-cascadevfs.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-filesystem-stdvfs.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-filesystem-util.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-graphics-imagebuff.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-net.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-logging.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-scriptutil.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-stringbuf.c"
+		"${libAmtrs_DIR}/src/amtrs/base-system-process.cpp"
+		"${libAmtrs_DIR}/src/amtrs/base-tests.cpp"
 )
 
 
@@ -200,7 +208,7 @@ if (AMTRS_COMMONMARK_ENABLE)
 	add_definitions(-DAMTRS_COMMONMARK_GFM_ENABLE=1)
 	set(libAmtrs_INCLUDES	"${libAmtrs_INCLUDES}" "${CMAKE_CURRENT_BINARY_DIR}/deps-cmark/src" "${CMAKE_CURRENT_BINARY_DIR}/deps-cmark/extensions" "${AMTRS_CMARK_DIR}/src" "${AMTRS_CMARK_DIR}/extensions")
 	set(libAmtrs_LIBS		"${libAmtrs_LIBS}" libcmark-gfm-extensions_static libcmark-gfm_static)
-	set(AMTRS_SRCS	${AMTRS_SRCS} "${libAmtrs_DIR}/src/amtrs/text-markdown.cpp")
+	set(AMTRS_SRCS	${AMTRS_SRCS} "${libAmtrs_DIR}/src/amtrs/base-text-markdown.cpp")
 else ()
 	set(LIBAMTRS_DISABLE_MODULES_LOG	${LIBAMTRS_DISABLE_MODULES_LOG} "COMMONMARK")
 endif ()

@@ -34,7 +34,7 @@ using	socket	= basic_socket<__socket_info>;
 //! OSによる初期化と終了処理の違いを吸収します。
 // ----------------------------------------------------------------------------
 template<class Traits>
-class	basic_socket : Traits::startupper
+class	basic_socket : Traits::startupper, public netbase
 {
 public:
 	using	trits_type		= Traits;
@@ -310,7 +310,11 @@ struct	__socket_info
 		if (ref().load() == 0)
 		{
 			WSADATA	ws = {};
-			WSAStartup(MAKEWORD(2,0), &ws);
+			int	err	= WSAStartup(MAKEWORD(2,0), &ws);
+			if (err)
+			{
+				std::error_code(err, std::generic_category());
+			}
 		}
 		++ref();
 	}

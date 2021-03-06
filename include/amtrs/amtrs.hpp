@@ -59,9 +59,9 @@
 #if 	defined(ANDROID) || defined(__ANDROID__) || defined(__ANDROID)
 
 	//
-	#define	AMTRS_CURRENT_PLATFORM		AMTRS_PLATFORM_ANDROID
-	#define	AMTRS_CURRENT_PLATFORM_NAME	android
-	#include <cstddef>
+	#define	AMTRS_CURRENT_PLATFORM			AMTRS_PLATFORM_ANDROID
+	#define	AMTRS_CURRENT_PLATFORM_NAME		android
+	#define	AMTRS_CURRENT_PLATFORM2_NAME	unixdrv
 
 
 /* ==============================================================
@@ -74,12 +74,13 @@
 	#include <TargetConditionals.h>
 
 	#if		(TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1)
-	#define	AMTRS_CURRENT_PLATFORM		AMTRS_PLATFORM_IOS
-	#define	AMTRS_CURRENT_PLATFORM_NAME	ios
+	#define	AMTRS_CURRENT_PLATFORM			AMTRS_PLATFORM_IOS
+	#define	AMTRS_CURRENT_PLATFORM_NAME		ios
 	#elif	(TARGET_OS_MAC == 1)
-	#define	AMTRS_CURRENT_PLATFORM		AMTRS_PLATFORM_DARWIN
-	#define	AMTRS_CURRENT_PLATFORM_NAME	darwin
+	#define	AMTRS_CURRENT_PLATFORM			AMTRS_PLATFORM_DARWIN
+	#define	AMTRS_CURRENT_PLATFORM_NAME		darwin
 	#endif
+	#define	AMTRS_CURRENT_PLATFORM2_NAME	unixdrv
 
 
 /* ==============================================================
@@ -87,8 +88,9 @@
  */
 #elif defined(__linux__)
 
-	#define	AMTRS_CURRENT_PLATFORM		AMTRS_PLATFORM_LINUX
-	#define	AMTRS_CURRENT_PLATFORM_NAME	unixdrv
+	#define	AMTRS_CURRENT_PLATFORM			AMTRS_PLATFORM_LINUX
+	#define	AMTRS_CURRENT_PLATFORM_NAME		linuxdrv
+	#define	AMTRS_CURRENT_PLATFORM2_NAME	unixdrv
 
 
 /* ==============================================================
@@ -96,8 +98,9 @@
  */
 #elif defined(__unix__) 
 
-	#define	AMTRS_CURRENT_PLATFORM		AMTRS_PLATFORM_FREEBSD
-	#define	AMTRS_CURRENT_PLATFORM_NAME	unixdrv
+	#define	AMTRS_CURRENT_PLATFORM			AMTRS_PLATFORM_FREEBSD
+	#define	AMTRS_CURRENT_PLATFORM_NAME		freebsd
+	#define	AMTRS_CURRENT_PLATFORM2_NAME	unixdrv
 
 
 /* ==============================================================
@@ -106,16 +109,16 @@
 #elif	defined(__cplusplus_winrt)
 // || defined(__cplusplus_cli)
 
-	#define	AMTRS_CURRENT_PLATFORM		AMTRS_PLATFORM_WINRT
-	#define	AMTRS_CURRENT_PLATFORM_NAME	winrt
+	#define	AMTRS_CURRENT_PLATFORM			AMTRS_PLATFORM_WINRT
+	#define	AMTRS_CURRENT_PLATFORM_NAME		winrt
 
 /* ==============================================================
  * Microsoft windows WIN32
  */
 #elif	defined(_WIN32) || defined(_WIN64)
 
-	#define	AMTRS_CURRENT_PLATFORM		AMTRS_PLATFORM_WIN32
-	#define	AMTRS_CURRENT_PLATFORM_NAME	win32
+	#define	AMTRS_CURRENT_PLATFORM			AMTRS_PLATFORM_WIN32
+	#define	AMTRS_CURRENT_PLATFORM_NAME		win32
 
 	/* Keep a include order. Include winwosk2 is fastest. */
 	#define	NOMINMAX		1
@@ -148,11 +151,16 @@
 #define	AMTRS_DRIVER_INCLUDE(_filename)				AMTRS_DRIVER_CUSTOM_INCLUDE(AMTRS_CURRENT_PLATFORM_NAME-_filename)
 
 /* basic header */
+#ifdef	__cplusplus
+#include <cstddef>
+#else
 #include <stddef.h>
+#endif
 
 
 /* base library */
 #include ".inc/amtrs-allocator.h"
+#include ".inc/amtrs-bufferif.h"
 #include ".inc/amtrs-stringview.h"
 
 

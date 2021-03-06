@@ -8,7 +8,6 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
-#include <list>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -18,14 +17,12 @@
 #include "string.hpp"
 
 
-#define	AMTRS_FILESYSTEM_NAMESPACE			AMTRS_NAMESPACE::filesystem
-#define	AMTRS_FILESYSTEM_NAMESPACE_BEGIN	AMTRS_NAMESPACE_BEGIN namespace filesystem {
-#define	AMTRS_FILESYSTEM_NAMESPACE_END		} AMTRS_NAMESPACE_END
+#define	AMTRS_FILESYSTEM_NAMESPACE				AMTRS_NAMESPACE::filesystem
+#define	AMTRS_FILESYSTEM_NAMESPACE_BEGIN		AMTRS_NAMESPACE_BEGIN namespace filesystem {
+#define	AMTRS_FILESYSTEM_NAMESPACE_END			} AMTRS_NAMESPACE_END
 #define	AMTRS_FILESYSTEM_ZIP_NAMESPACE_BEGIN	AMTRS_FILESYSTEM_NAMESPACE_BEGIN namespace zip {
 #define	AMTRS_FILESYSTEM_ZIP_NAMESPACE_END		} AMTRS_FILESYSTEM_NAMESPACE_END
 
-#include ".inc/filesystem-compati.hpp"
-#include ".inc/filesystem-path.hpp"
 #include ".inc/filesystem-types.hpp"
 #include ".inc/filesystem-vfs.hpp"
 #include ".inc/filesystem-assetvfs.hpp"
@@ -37,7 +34,6 @@
 #include ".inc/filesystem-util.hpp"
 
 
-#if		AMTRS_ZLIB_ENABLE
 AMTRS_FILESYSTEM_ZIP_NAMESPACE_BEGIN
 template<class CharT>
 struct	zip_traits;
@@ -62,6 +58,5 @@ AMTRS_FILESYSTEM_ZIP_NAMESPACE_END
 #include ".inc/filesystem-zip-archive.hpp"
 #include ".inc/filesystem-zip-iterator.hpp"
 #include ".inc/filesystem-zip-zipfs.hpp"
-#endif
 
 #endif

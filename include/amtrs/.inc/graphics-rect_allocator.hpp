@@ -7,10 +7,10 @@ AMTRS_NAMESPACE_BEGIN
 
 
 // ****************************************************************************
-//! ‚QŸŒ³‹éŒ`‚Ì—ÌˆæŠÇ—‚ğs‚¢‚Ü‚·B
+//! ï¼’æ¬¡å…ƒçŸ©å½¢ã®é ˜åŸŸç®¡ç†ã‚’è¡Œã„ã¾ã™ã€‚
 // ----------------------------------------------------------------------------
-//! ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Åw’è‚µ‚½‚QŸŒ³ƒTƒCƒY‚©‚çAallocate() ‚Åw’è‚·‚é‚QŸŒ³—Ìˆæ‚ğ
-//! Šm•Û‚µ‚½‚èAŠJ•ú‚µ‚½‚è‚µ‚Ü‚·B
+//! ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§æŒ‡å®šã—ãŸï¼’æ¬¡å…ƒã‚µã‚¤ã‚ºã‹ã‚‰ã€allocate() ã§æŒ‡å®šã™ã‚‹ï¼’æ¬¡å…ƒé ˜åŸŸã‚’
+//! ç¢ºä¿ã—ãŸã‚Šã€é–‹æ”¾ã—ãŸã‚Šã—ã¾ã™ã€‚
 //!	
 //!	rect_allocator<int>	my_image_area({100, 100});
 //!	rect<int>			area1 = my_image_area.allocate(50, 100);
@@ -27,12 +27,12 @@ public:
 	using	position_type	= typename rect_type::position_type;
 	using	size_type		= typename rect_type::size_type;
 
-	//! w’è‚µ‚½ƒTƒCƒY‚Ì‹éŒ`—Ìˆæ‚ğŠÇ—‚µ‚Ü‚·B
+	//! æŒ‡å®šã—ãŸã‚µã‚¤ã‚ºã®çŸ©å½¢é ˜åŸŸã‚’ç®¡ç†ã—ã¾ã™ã€‚
 	constexpr rect_allocator(const size_type& _size)
 		: mRoot(status::nouse, {{0, 0}, _size})
 	{}
 
-	//! w’è‚µ‚½ˆÊ’u‚ÆƒTƒCƒY‚Ì‹éŒ`—Ìˆæ‚ğŠÇ—‚µ‚Ü‚·B
+	//! æŒ‡å®šã—ãŸä½ç½®ã¨ã‚µã‚¤ã‚ºã®çŸ©å½¢é ˜åŸŸã‚’ç®¡ç†ã—ã¾ã™ã€‚
 	constexpr rect_allocator(const rect_type& _rect)
 		: mRoot(status::nouse, {_rect})
 	{}
@@ -44,7 +44,7 @@ public:
 	rect_allocator& operator = (rect_allocator&& _r) = default;
 	~rect_allocator() = default;
 
-	//! Šm•Û‚É¸”s‚µ‚½ê‡‚Í empty() ‚ğ•Ô‚µ‚Ü‚·B
+	//! ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯ empty() ã‚’è¿”ã—ã¾ã™ã€‚
 	rect_type allocate(const size_type& _size)
 	{
 		auto	it	= mRoot.allocate(_size, std::true_type{});
@@ -53,13 +53,13 @@ public:
 				: rect_type(0, 0, 0, 0);
 	}
 
-	//! ‘¶İ‚µ‚È‚¢—Ìˆæ‚Ìê‡‚Í false ‚ğ•Ô‚µA‰½‚à‚µ‚Ü‚¹‚ñB
+	//! å­˜åœ¨ã—ãªã„é ˜åŸŸã®å ´åˆã¯ false ã‚’è¿”ã—ã€ä½•ã‚‚ã—ã¾ã›ã‚“ã€‚
 	bool deallocate(const rect_type& _r)
 	{
 		return	mRoot.deallocate(_r);
 	}
 
-	//! Šm•Û‰Â”\‚©–â‚¢‡‚í‚¹‚Ü‚·B
+	//! ç¢ºä¿å¯èƒ½ã‹å•ã„åˆã‚ã›ã¾ã™ã€‚
 	bool fetch(const size_type& _size) const noexcept
 	{
 		return	const_cast<rect_allocator*>(this)->mRoot.allocate(_size, std::false_type{})
@@ -67,13 +67,13 @@ public:
 				: false;
 	}
 
-	//! ŠÇ——Ìˆæ‘S‘Ì‚Ì‘å‚«‚³‚ğ•Ô‚µ‚Ü‚·B
+	//! ç®¡ç†é ˜åŸŸå…¨ä½“ã®å¤§ãã•ã‚’è¿”ã—ã¾ã™ã€‚
 	constexpr size_type size() const noexcept { return {mRoot.block.width, mRoot.block.height}; }
 
-	//! —Ìˆæ‚ª‚©‚ç‚©‚Ç‚¤‚©’²‚×‚Ü‚·B
+	//! é ˜åŸŸãŒã‹ã‚‰ã‹ã©ã†ã‹èª¿ã¹ã¾ã™ã€‚
 	constexpr bool empty() const noexcept { return size().empty(); }
 
-	//! g—p’†‚Ì—Ìˆæ‚ğ—ñ‹“‚µ‚Ü‚·B
+	//! ä½¿ç”¨ä¸­ã®é ˜åŸŸã‚’åˆ—æŒ™ã—ã¾ã™ã€‚
 	std::vector<rect_type> uses() const
 	{
 		std::vector<rect_type>	retval;
@@ -87,7 +87,7 @@ public:
 		return	retval;
 	}
 
-	//! ‹ó‚¢‚Ä‚¢‚é‚Ì—Ìˆæ‚ğ—ñ‹“‚µ‚Ü‚·B
+	//! ç©ºã„ã¦ã„ã‚‹ã®é ˜åŸŸã‚’åˆ—æŒ™ã—ã¾ã™ã€‚
 	std::vector<rect_type> spaces() const
 	{
 		std::vector<rect_type>	retval;
@@ -111,16 +111,16 @@ public:
 public:
 	enum class	status
 	{
-		nouse,		//!< Š®‘S‚È‹ó‚«—Ìˆæ
-		use,		//!< Š®‘S‚Ég—p’†
-		divided		//!< •ªŠ„’†
+		nouse,		//!< å®Œå…¨ãªç©ºãé ˜åŸŸ
+		use,		//!< å®Œå…¨ã«ä½¿ç”¨ä¸­
+		divided		//!< åˆ†å‰²ä¸­
 	};
 
 	struct	node
 	{
-		status		flags;			//!< ƒuƒƒbƒN‚Ìó‘Ô
+		status		flags;			//!< ãƒ–ãƒ­ãƒƒã‚¯ã®çŠ¶æ…‹
 		rect_type	block;
-		node*		children[3]	= { nullptr, nullptr, nullptr };		//!< qƒuƒƒbƒN
+		node*		children[3]	= { nullptr, nullptr, nullptr };		//!< å­ãƒ–ãƒ­ãƒƒã‚¯
 
 		constexpr node()
 			: flags(status::nouse)
@@ -184,13 +184,13 @@ public:
 		template<class Exec>
 		node* allocate(const size_type& _requestSize, Exec&&)
 		{
-			// g—pÏ‚İ‚©ƒTƒCƒY‚ªû‚Ü‚ç‚È‚¢ê‡‚ÍŠm•Û¸”s‚ğ•Ô‚·B
+			// ä½¿ç”¨æ¸ˆã¿ã‹ã‚µã‚¤ã‚ºãŒåã¾ã‚‰ãªã„å ´åˆã¯ç¢ºä¿å¤±æ•—ã‚’è¿”ã™ã€‚
 			if ((flags == status::use) || (_requestSize.width > block.width) || (_requestSize.height > block.height))
 			{
 				return	nullptr;
 			}
 
-			// •ªŠ„’†‚È‚çq—Ìˆæ‚©‚çŠm•Û
+			// åˆ†å‰²ä¸­ãªã‚‰å­é ˜åŸŸã‹ã‚‰ç¢ºä¿
 			if (flags == status::divided)
 			{
 				for (auto* c : children)
@@ -205,7 +205,7 @@ public:
 
 			if constexpr (Exec::value)
 			{
-				// ƒeƒNƒXƒ`ƒƒƒTƒCƒY‚ª‚Ò‚Á‚½‚èû‚Ü‚é‚È‚ç‚»‚Ì‚Ü‚Üg—p’†‚É‚·‚éB
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºãŒã´ã£ãŸã‚Šåã¾ã‚‹ãªã‚‰ãã®ã¾ã¾ä½¿ç”¨ä¸­ã«ã™ã‚‹ã€‚
 				if (_requestSize == block.size())
 				{
 					flags = status::use;
@@ -221,7 +221,7 @@ public:
 			}
 			else
 			{
-				// Šm•Û‰Â”\‚Å‚ ‚é‚±‚Æ‚ğ•Ô‚·‚¾‚¯
+				// ç¢ºä¿å¯èƒ½ã§ã‚ã‚‹ã“ã¨ã‚’è¿”ã™ã ã‘
 				return	this;
 			}
 		}
@@ -241,7 +241,7 @@ public:
 				}
 				return	false;
 			}
-			// q‚Ì’†‚©‚ç—Ìˆæ‚ğ‰ğ•ú‚Å‚«‚é‚©ƒgƒ‰ƒCB
+			// å­ã®ä¸­ã‹ã‚‰é ˜åŸŸã‚’è§£æ”¾ã§ãã‚‹ã‹ãƒˆãƒ©ã‚¤ã€‚
 			bool	isdeallocate	= false;
 			bool	hasAlive	= false;
 			for (auto* child : children)
@@ -257,7 +257,7 @@ public:
 			}
 			if (!hasAlive)
 			{
-				// q‚Í‚·‚×‚Ä‰ğ•úÏ‚İ‚È‚Ì‚Å‚·‚×‚Äíœ‚·‚é
+				// å­ã¯ã™ã¹ã¦è§£æ”¾æ¸ˆã¿ãªã®ã§ã™ã¹ã¦å‰Šé™¤ã™ã‚‹
 				for (auto* child : children)
 				{
 					delete	child;

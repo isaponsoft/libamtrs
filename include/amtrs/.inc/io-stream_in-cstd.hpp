@@ -3,8 +3,6 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__io__stream_in_cstd__hpp
 #define	__libamtrs__io__stream_in_cstd__hpp
-#include <stdio.h>
-#include <stdlib.h>
 AMTRS_IO_NAMESPACE_BEGIN
 
 

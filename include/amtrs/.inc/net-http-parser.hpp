@@ -88,8 +88,7 @@ public:
 
 
 			// バッファの最後尾に読み込む
-			_in.read(mBuffer.data() + mTail, mBuffer.size() - mTail);
-			mTail	+= _in.gcount();
+			mTail	+= _in.read(mBuffer.data() + mTail, mBuffer.size() - mTail);
 			while ((mTail - mTop) > 0)
 			{
 				// 新しく読み取った部分に改行コードが含まれるかチェック
@@ -228,8 +227,7 @@ public:
 							// バッファを拡張する
 							mBuffer.resize(mBuffer.size() + default_buffer_size);
 						}
-						_in.read(mBuffer.data() + mTail, mBuffer.size() - mTail);
-						mTail	+= _in.gcount();
+						mTail	+= _in.read(mBuffer.data() + mTail, mBuffer.size() - mTail);
 					}
 					else
 					{
@@ -268,8 +266,7 @@ public:
 		// まだコピーすべきデータが残っている場合はストリームから読み取りながら転送する
 		while ((reqSize > 0) && _in.good())
 		{
-			_in.read(out, reqSize);
-			auto	rs	= _in.gcount();
+			auto	rs	= _in.read(out, reqSize);
 			reqSize				-= rs;
 			retval				+= rs;
 			out					+= rs;
@@ -284,11 +281,12 @@ public:
 				// Line end skip.
 				char	le[2];
 				int		r	= 0;
+				size_t	rs;
 				do
 				{
-					_in.read(le + r, 2 - r);
-					r += (int)_in.gcount();
-				} while (r != 2 && _in.gcount() > 0);
+					rs = _in.read(le + r, 2 - r);
+					r += (int)rs;
+				} while (r != 2 && rs > 0);
 				if (mChunkSize == 0)
 				{
 					mDataFinish	= true;

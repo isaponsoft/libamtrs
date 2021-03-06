@@ -17,5 +17,6 @@ public:
 
 
 AMTRS_NAMESPACE_END
-#include AMTRS_DRIVER_INCLUDE(system-power.hpp)
+#define	AMTRS_PLIB_NAME	system-power.hpp
+#include "include-platform.hpp"
 #endif

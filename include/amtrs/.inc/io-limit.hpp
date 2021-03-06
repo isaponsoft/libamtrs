@@ -154,8 +154,7 @@ public:
 	{
 		if (good())
 		{
-			mStream.read(_buff, std::min(_n, mLimit - mCursor));
-			mCursor	+= mStream.gcount();
+			mCursor	+= io::read(_buff, mStream, std::min(_n, mLimit - mCursor));
 		}
 		return	*this;
 	}
