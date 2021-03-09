@@ -57,9 +57,19 @@ int initconfig(config& cnf, int _argc, char** _args)
 			cnf.installAmtrs	= true;
 			continue;
 		}
+		else if (starts_with(cmd, "--"))
+		{
+			std::cerr << "unkown option \"" << cmd << "\"" << std::endl;
+			return	1;
+		}
 		else
 		{
 			cnf.scriptPath	= std::move(cmd);
+			if (!exists(cnf.scriptPath))
+			{
+				std::cerr << "script nothing \"" << cnf.scriptPath << "\"" << std::endl;
+				return	1;
+			}
 			break;
 		}
 	}
@@ -69,6 +79,7 @@ int initconfig(config& cnf, int _argc, char** _args)
 		cnf.srciptArgs += " \"";
 		cnf.srciptArgs += cmd;
 		cnf.srciptArgs += "\"";
+
 	}
 
 

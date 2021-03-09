@@ -262,8 +262,18 @@ bool download(std::string const& _url, std::string const& _savename, std::string
 			fname	= filesystem::normalize_path(fname);
 		}
 
-		std::filesystem::create_directories(filesystem::parent_path(fname));
-
+		if (auto dir = filesystem::parent_path(fname); !dir.empty() && !filesystem::is_directory(dir))
+		{
+			try
+			{
+				std::filesystem::create_directories(dir);
+			}
+			catch (...)
+			{
+				std::cerr << "Can't create directory \"" << dir << "\"." << std::endl;
+				return	1;
+			}
+		}
 
 		std::ofstream	out(fname, std::ios::trunc|std::ios::binary);
 
@@ -405,7 +415,7 @@ bool extract(io::vstreamif _in, std::string const& _saveto, bool _skiprootdir)
 		auto			dir		= filesystem::parent_path(dest);
 		if (cd != dir)
 		{
-			if (!dir.empty())
+			if (!dir.empty() && !filesystem::is_directory(dir))
 			{
 				std::filesystem::create_directories(dir);
 			}
