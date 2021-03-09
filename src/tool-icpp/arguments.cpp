@@ -106,12 +106,6 @@ int initconfig(config& cnf, int _argc, char** _args)
 		std::cout << "libamtrs-dir : " << cnf.libamtrsDir << std::endl;
 	}
 
-	if (!is_directory(cnf.libamtrsDir))
-	{
-		std::cerr << "libamtrs directory \"" << cnf.libamtrsDir << "\" nothing." << std::endl;
-		std::cerr << "libamtrs download and install from github >  " << _args[0] << " --install-libamtrs" << std::endl;
-		return	1;
-	}
 
 	if (cnf.scriptPath.empty())
 	{
@@ -120,8 +114,17 @@ int initconfig(config& cnf, int _argc, char** _args)
 
 	if (!is_setuped(cnf))
 	{
-		std::cout << "Auto setup" << std::endl;
-		setup(cnf);
+		if (!setup(cnf))
+		{
+			return	1;
+		}
+	}
+
+	if (!is_directory(cnf.libamtrsDir))
+	{
+		std::cerr << "libamtrs directory \"" << cnf.libamtrsDir << "\" nothing." << std::endl;
+		std::cerr << "libamtrs download and install from github >  " << _args[0] << " --install-libamtrs" << std::endl;
+		return	1;
 	}
 
 	cnf.cmakeCmd		= ssu::add_exe("cmake")

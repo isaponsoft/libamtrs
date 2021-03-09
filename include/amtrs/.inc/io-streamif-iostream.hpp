@@ -54,7 +54,7 @@ protected:
 
 	void clear(value_type& _value, streamif_base::iostate _clear)
 	{
-		_value.clear(_clear);
+		_value.clear((std::ios_base::iostate)_clear);
 	}
 };
 
