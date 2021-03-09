@@ -46,8 +46,7 @@ public:
 
 	using	stream_type		= Stream;
 	using	char_type		= typename stream_type::char_type;
-	using	off_type		= typename stream_type::off_type;
-	using	pos_type		= typename stream_type::pos_type;
+	using	fpos_type		= typename stream_type::fpos_type;
 	using	iostate			= typename stream_type::iostate;
 	using	traits_type		= Traits;
 
@@ -57,11 +56,7 @@ public:
 	{
 		std::memset(&mZ, 0, sizeof(mZ));
 		::inflateInit2(&mZ, -MAX_WBITS);
-
-		mInSize			= size(mStream);
-		mZ.next_out		= (Bytef*)mOut;
-		mZ.avail_out	= buffer_size;
-		mStatus			= mStream.rdstate();
+		_reset_zout();
 	}
 
 	~inflate_stream_in()
@@ -69,83 +64,88 @@ public:
 		inflateEnd(&mZ);
 	}
 
+	size_t _avail() const noexcept
+	{
+		auto	bufferingSize = buffer_size - mZ.avail_out;
+		return	bufferingSize - mCursor;
+	}
+
+	void _reset_zout()
+	{
+		mZ.next_out		= (Bytef*)mOut;
+		mZ.avail_out	= buffer_size;
+		mCursor			= 0;
+	}
+
 	inflate_stream_in& read(char_type* _buff, size_t _n)
 	{
+		char_type*	out		= _buff;
 		mGCount	= 0;
-		if (good())
+		while (good() && mGCount < _n)
 		{
-			size_t		reqsize	= _n;
-			char_type*	out		= _buff;
-			for (bool exec = true; exec && reqsize;)
+			// out に蓄積されているデータを可能な限り転送する。
+			if (auto avs = _avail(); avs > 0)
 			{
-				exec = false;
-
-
-				// 入力バッファが空っぽになったら元のストリームから補充する
-				if ((mZ.avail_in == 0) && (mInSize > 0))
+				auto	sz	= std::min<size_t>(avs, _n - mGCount);
+				traits_type::update_checksum((char_type*)mOut + mCursor, sz);
+				std::copy_n((char_type*)mOut + mCursor, sz, out);
+				out				+= sz;
+				mCursor			+= sz;
+				mGCount			+= sz;
+				// 転送先が満杯になったので終了
+				if (mGCount == _n)
 				{
-					mZ.next_in		=  (Bytef*)mIn;
-					mZ.avail_in		=  (uInt)io::read(mIn, mStream, std::min<size_t>(mInSize, buffer_size));
-					if (!mStream)
-					{
-						mStatus		= mStream.rdstate();
-					}
-					mInSize			-= mZ.avail_in;
-					if (mInSize == 0)
-					{
-						mFlush	= Z_FINISH;
-					}
-
-					exec		= true;
-				}
-				if (mZ.avail_in > 0 && mZ.avail_out > 0)
-				{
-					switch (inflate(&mZ, mFlush))
-					{
-						case Z_OK:
-							exec		= true;
-							break;
-						case Z_BUF_ERROR :
-							break;
-						case Z_STREAM_END :
-							break;
-							case Z_NEED_DICT:    // 辞書が必要
-							break;
-						case Z_DATA_ERROR:   // 不正なデータ
-							break;
-						case Z_STREAM_ERROR:
-							break;
-					}
-				}
-
-				// out に蓄積されているデータを可能な限り転送する。
-				auto	tank	= buffer_size - mZ.avail_out - mCursor;		// 転送待ちのサイズ
-				if (tank > 0)
-				{
-					auto	ts	= std::min<size_t>(tank, reqsize);
-
-					traits_type::update_checksum((char_type*)mOut + mCursor, ts);
-
-					std::copy_n((char_type*)mOut + mCursor, ts, out);
-					out			+= ts;
-					mCursor		+= ts;
-					mGCount		+= ts;
-					reqsize		-= ts;
-					exec		= true;
-				}
-				if (mCursor == buffer_size)
-				{
-					mZ.next_out		= (Bytef*)mOut;
-					mZ.avail_out	= buffer_size;
-					mCursor			= 0;
-					exec			= true;
-				}
-
-				if (!exec)
-				{
-					setstate(std::ios::eofbit);
+					break;
 				}
 			}
+			// 展開用のバッファが空になっているので埋めなおす
+			_reset_zout();
+
+			// 入力データが無いなら終了
+			if (mStreamEnd)
+			{
+				break;
+			}
+
+			// 入力バッファが空なら入力バッファを埋める
+			if (!mZ.avail_in)
+			{
+				mZ.next_in		=  (Bytef*)mIn;
+				mZ.avail_in		=  (uInt)io::read(mIn, mStream, buffer_size);
+				if (!mStream.good() || (mZ.avail_in == 0))
+				{
+					mFlush		= Z_FINISH;
+					mStreamEnd	= true;
+				}
+			}
+
+			if (mZ.avail_in > 0)
+			{
+				switch (inflate(&mZ, mFlush))
+				{
+					case Z_OK:
+						break;
+					case Z_BUF_ERROR :
+						setstate(std::ios::failbit);
+						break;
+					case Z_STREAM_END :
+						mStreamEnd	= true;
+						break;
+					case Z_NEED_DICT:    // 辞書が必要
+						setstate(std::ios::badbit);
+						break;
+					case Z_DATA_ERROR:   // 不正なデータ
+						setstate(std::ios::badbit);
+						break;
+					case Z_STREAM_ERROR:
+						setstate(std::ios::failbit);
+						break;
+				}
+			}
+		}
+		if (!_avail() && mStreamEnd)
+		{
+			setstate(std::ios::eofbit);
 		}
 		return	*this;
 	}
@@ -173,10 +173,10 @@ private:
 	iostate			mStatus		= std::ios::goodbit;
 	char			mIn[buffer_size];
 	char			mOut[buffer_size];
-	pos_type		mCursor	= 0;
-	size_t			mGCount	= 0;
-	size_t			mInSize;
-	int				mFlush	= Z_SYNC_FLUSH;
+	fpos_type		mCursor		= 0;
+	size_t			mGCount		= 0;
+	bool			mStreamEnd	= false;
+	int				mFlush		= Z_SYNC_FLUSH;
 };
 
 

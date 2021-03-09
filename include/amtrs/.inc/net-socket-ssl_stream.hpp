@@ -3,11 +3,11 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__opt__net__ssl_stream__hpp
 #define	__libamtrs__opt__net__ssl_stream__hpp
-#if	__has_include(<openssl/ssl.h>)
-#define	AMTRS_SSL_SUPPORTED	1
+#if		AMTRS_SSL_ENABLE
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 AMTRS_NET_NAMESPACE_BEGIN
+
 
 template<class CharT, class Sock>
 class	basic_ssl_stream;
@@ -32,24 +32,24 @@ public:
 
 	basic_ssl_stream() = delete;
 
+
 	basic_ssl_stream(basic_ssl_stream&& _r)
-		: mSocket(_r.mSocket)
+		: mSocket(std::move(_r.mSocket))
 		, mSSL(_r.mSSL)
 		, mContext(_r.mContext)
 	{
-		_r.mSocket	= nsock;
 		_r.mSSL		= nullptr;
 		_r.mContext	= nullptr;
 	}
 
-	basic_ssl_stream(socket_type _s)
-		: mSocket(_s)
+	basic_ssl_stream(Sock _s)
+		: mSocket(std::move(_s))
 	{
 		SSL_library_init();
 		mContext	= SSL_CTX_new(SSLv23_client_method());
 		mSSL		= SSL_new(mContext);
 
-		if (SSL_set_fd(mSSL, static_cast<int>(mSocket)))
+		if (SSL_set_fd(mSSL, static_cast<int>(mSocket.get())))
 		{
 			if (SSL_connect(mSSL) == 1)
 			{
@@ -57,17 +57,6 @@ public:
 			}
 		}
 		setstate(std::ios::badbit);
-	}
-
-	basic_ssl_stream& operator = (basic_ssl_stream&& _r)
-	{
-		mSocket		= _r.mSocket;
-		mSSL		= _r.mSSL;
-		mContext	= _r.mContext;
-		_r.mSocket	= nsock;
-		_r.mSSL		= nullptr;
-		_r.mContext	= nullptr;
-		return	*this;
 	}
 
 
@@ -83,8 +72,14 @@ public:
 
 	basic_ssl_stream& read(char_type* _buff, size_t _n)
 	{
-		mGCount	= SSL_read(mSSL, _buff, static_cast<int>(_n));
-		switch (SSL_get_error(mSSL, static_cast<int>(mGCount)))
+AMTRS_WARN_LOG("ssl recv");
+		auto	rs	= SSL_read(mSSL, _buff, static_cast<int>(_n));
+		auto	s	= SSL_get_error(mSSL, static_cast<int>(rs));
+AMTRS_WARN_LOG("ssl recv %d %d", (int)rs, (int)s);
+		mGCount	= rs >= 0
+				? rs
+				: 0;
+		switch (s)
 		{
 			// Success.
 			case SSL_ERROR_NONE:
@@ -114,8 +109,6 @@ public:
 			// System calling
 			case SSL_ERROR_SYSCALL:
 			{
-				//auto			en = errno;
-				//std::error_code ec(en, std::generic_category());
 				setstate(std::ios::failbit);
 				break;
 			}
@@ -154,7 +147,7 @@ public:
 
 
 private:
-	socket_type		mSocket 	= nsock;
+	Sock			mSocket;
 	SSL*			mSSL		= nullptr;
 	SSL_CTX*		mContext	= nullptr;
 
@@ -166,5 +159,43 @@ private:
 
 
 AMTRS_NET_NAMESPACE_END
+
+
+AMTRS_IO_NAMESPACE_BEGIN
+
+template<class Elm>
+struct	streamif_traits<net::ssl_stream, Elm>
+{
+	using	char_type	= Elm;
+	using	value_type	= net::ssl_stream;
+	using	size_type	= std::streamsize;
+
+protected:
+	streamif_traits(net::ssl_stream*)
+	{}
+
+	streamif_base::iostate read(value_type& _value, size_type& _readsize, char_type* _data, size_type _size)
+	{
+		_value.read(_data, _size);
+		_readsize	= _value.gcount();
+		return	_value.rdstate();
+	}
+
+	streamif_base::iostate write(value_type& _value, size_type& _readsize, char_type const* _data, size_type _size)
+	{
+		_value.write(_data, _size);
+		_readsize	= _value.pcount();
+		return	_value.rdstate();
+	}
+};
+
+
+inline auto make_streamif(net::ssl_stream _value)
+{
+	return	make_basic_streamif<net::ssl_stream, char>(std::move(_value));
+}
+
+
+AMTRS_IO_NAMESPACE_END
 #endif
 #endif

@@ -13,10 +13,12 @@ int exec(amtrs_system_process_pipe const& _pipe, char const* _command)
 	return	AMTRS_IMPLEMENTS(run)::cmd(_pipe, _command);
 }
 
+
 int exec(char const* _command)
 {
 	amtrs_system_process_pipe	p{};
 	return	exec(p, _command);
 }
+
 
 AMTRS_NAMESPACE_SYSTEM_END

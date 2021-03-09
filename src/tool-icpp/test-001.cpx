@@ -1,0 +1,71 @@
+#!env csc
+#include <amtrs/filesystem.hpp>
+#include <amtrs/system.hpp>
+#include <amtrs/string.hpp>
+
+using namespace amtrs;
+using namespace amtrs::filesystem;
+using namespace amtrs::system;
+using namespace amtrs::ssu;
+
+
+auto	selfnm	= array_shift(argv);
+if (argv.empty())
+{
+	std::cerr << "path nothing." << std::endl;
+	return	1;
+}
+
+while (!argv.empty())
+{
+	auto	path	= array_shift(argv);
+	std::cout << "path : " << path << std::endl;
+
+	std::cout << "stem : " << stem(path) << std::endl;
+	std::cout << "filename : " << filename(path) << std::endl;
+
+	std::cout << "path/ : " << slashdir(path) << std::endl;
+	std::cout << "path\\ : " << backslashdir(path, false) << std::endl;
+	std::cout << "path\\\\: " << backslashdir(path, true) << std::endl;
+}
+
+std::cout << "wsl.exe ls - begin" << std::endl;
+int exitcode = exec("wsl.exe ls");
+std::cout << "wsl.exe ls - end exitocode" << std::endl;
+
+
+
+/*
+
+
+try
+{
+	for (;;)
+	{
+		std::string	line;
+		std::cout << "> ";
+		std::getline(std::cin, line);
+		if (line == "exit")
+		{
+			break;
+		}
+		if (!line.empty())
+		{
+			try
+			{
+				exec(line.c_str());
+			}
+			catch (...)
+			{
+				std::cerr << "command not found" << std::endl;
+			}
+		}
+	}
+	return	0;
+}
+catch (std::exception& e)
+{
+	std::cerr << e.what() << std::endl;
+}
+
+*/

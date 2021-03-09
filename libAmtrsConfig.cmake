@@ -13,7 +13,7 @@ enable_language(C CXX ASM)
 
 
 set(libAmtrs_LIB				amtrs)
-set(libAmtrs_LIBS				${libAmtrs_LIB})
+set(libAmtrs_LIBS				"")
 set(libAmtrs_INCLUDES			${libAmtrs_DIR}/include)
 set(CMAKE_MODULE_PATH			${CMAKE_MODULE_PATH} ${libAmtrs_DIR}/cmake)
 
@@ -189,6 +189,19 @@ if (AMTRS_CAMERA_ENABLE)
 	set(AMTRS_SRCS	${AMTRS_SRCS} "${libAmtrs_DIR}/src/amtrs/camera.cpp")
 else ()
 	set(LIBAMTRS_DISABLE_MODULES_LOG	${LIBAMTRS_DISABLE_MODULES_LOG} "CAMERA")
+endif ()
+
+
+
+# =============================================================================
+# Module CONSOLE
+# -----------------------------------------------------------------------------
+if (AMTRS_CONSOLE_ENABLE)
+	message("libamtrs : Enable  CONSOLE")
+	add_definitions(-DAMTRS_CONSOLE_ENABLE=1)
+	set(AMTRS_SRCS	${AMTRS_SRCS} "${libAmtrs_DIR}/src/amtrs/console.cpp")
+else ()
+	set(LIBAMTRS_DISABLE_MODULES_LOG	${LIBAMTRS_DISABLE_MODULES_LOG} "CONSOLE")
 endif ()
 
 
@@ -440,8 +453,8 @@ if(AMTRS_PNG_ENABLE OR AMTRS_IMAGE_FORMAT_ALL_ENABLE)
 		option(PNG_STATIC "Build static lib" ON)
 		option(PNG_TESTS  "Build libpng tests" OFF)
 		add_subdirectory(${AMTRS_LIBPNG_PATH} EXCLUDE_FROM_ALL  build-libpng)
-		target_include_directories(amtrs PUBLIC ${AMTRS_LIBPNG_PATH} ${CMAKE_CURRENT_BINARY_DIR}/build-libpng)
-		target_link_libraries(amtrs png_static)
+		target_include_directories(${libAmtrs_LIB} PUBLIC ${AMTRS_LIBPNG_PATH} ${CMAKE_CURRENT_BINARY_DIR}/build-libpng)
+		target_link_libraries(${libAmtrs_LIB} png_static)
 	endif()
 
 	message("libamtrs : Enable  PNG")
@@ -460,7 +473,10 @@ endif()
 # -----------------------------------------------------------------------------
 if(AMTRS_ZLIB_ENABLE)
 	find_package(ZLIB QUIET)
-	if(NOT ZLIB_FOUND)
+	if (ZLIB_FOUND)
+		set(libAmtrs_LIBS		"${libAmtrs_LIBS}" ZLIB::ZLIB)
+		message("libamtrs : Enable  ZLIB, Package Found")
+	else ()
 		set(PNG_BUILD_ZLIB		ON	CACHE BOOL "libpng zlib build" FORCE)
 		set(SKIP_INSTALL_ALL	OFF	CACHE BOOL "zlib skip install" FORCE)
 
@@ -477,11 +493,68 @@ if(AMTRS_ZLIB_ENABLE)
 
 		set(libAmtrs_INCLUDES	"${libAmtrs_INCLUDES}" "${AMTRS_ZLIB_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/build-zlib")
 		set(libAmtrs_LIBS		"${libAmtrs_LIBS}" zlibstatic)
+		message("libamtrs : Enable  ZLIB, ${AMTRS_ZLIB_PATH}")
 	endif()
-	message("libamtrs : Enable  ZLIB, ${CMAKE_CURRENT_BINARY_DIR}")
 	add_definitions(-DAMTRS_ZLIB_ENABLE=1)
 else ()
 	set(LIBAMTRS_DISABLE_MODULES_LOG	${LIBAMTRS_DISABLE_MODULES_LOG} "ZLIB")
+endif()
+
+
+
+# =============================================================================
+# Module SSL
+# -----------------------------------------------------------------------------
+if(AMTRS_SSL_ENABLE)
+	find_package(OpenSSL QUIET)
+	if (OPENSSL_FOUND)
+		message("libamtrs : Enable  SSL, Package Found(OpenSSL)")
+		set(libAmtrs_LIBS		"${libAmtrs_LIBS}" OpenSSL::SSL OpenSSL::Crypto)
+#	elseif (LibreSSL QUIET)
+#		message("libamtrs : Enable  SSL, Package Found(LibreSSL)")
+#		set(libAmtrs_LIBS		"${libAmtrs_LIBS}" OpenSSL::SSL OpenSSL::Crypto)
+	else ()
+		find_path(AMTRS_SSL_DIR FindLibreSSL.cmake
+			PATHS			${LIBAMTRS_DEPS_SEARCH_DIR}
+			PATH_SUFFIXES 	libressl openssl
+			NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+
+		add_subdirectory(${AMTRS_SSL_DIR} EXCLUDE_FROM_ALL  build-ssl)
+		set(libAmtrs_INCLUDES	"${libAmtrs_INCLUDES}" "${AMTRS_SSL_DIR}/include")
+		message("libamtrs : Enable  SSL, ${AMTRS_SSL_DIR}")
+		set(libAmtrs_LIBS		"${libAmtrs_LIBS}" crypto ssl tls)
+	endif ()
+
+	add_definitions(-DAMTRS_SSL_ENABLE=1)
+
+	
+else()
+	set(LIBAMTRS_DISABLE_MODULES_LOG	${LIBAMTRS_DISABLE_MODULES_LOG} "SSL")
+endif()
+
+
+
+# =============================================================================
+# Module Archive
+# -----------------------------------------------------------------------------
+if(AMTRS_ARCHIVE_ENABLE)
+	find_path(AMTRS_ARCHIVE_DIR libarchive/archive.h
+		PATHS			${LIBAMTRS_DEPS_SEARCH_DIR}
+		PATH_SUFFIXES 	libarchive
+		NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+
+	set(ENABLE_WERROR OFF CACHE BOOL "ENABLE_WERROR" FORCE)
+	add_subdirectory(${AMTRS_ARCHIVE_DIR} EXCLUDE_FROM_ALL  build-archive)
+
+	set(libAmtrs_INCLUDES	"${libAmtrs_INCLUDES}" "${AMTRS_ARCHIVE_DIR}")
+	message("libamtrs : Enable  ARCHIVE, ${AMTRS_ARCHIVE_DIR}")
+	set(libAmtrs_LIBS		"${libAmtrs_LIBS}" archive_static)
+
+	add_definitions(-DAMTRS_ARCHIVE_ENABLE=1)
+	add_definitions(-DLIBARCHIVE_STATIC=1)
+
+else()
+	set(LIBAMTRS_DISABLE_MODULES_LOG	${LIBAMTRS_DISABLE_MODULES_LOG} "ARCHIVE")
 endif()
 
 
@@ -502,11 +575,12 @@ message("libamtrs : Disable ${LIBAMTRS_DISABLE_MODULES_LOG}")
 
 
 add_library(${libAmtrs_LIB} STATIC ${AMTRS_SRCS} ${AMTRS_PLATFORM_SRCS})
-set(libAmtrs_LIBS ${libAmtrs_LIBS} ${libAmtrs_PLATFORM_LIBS})
+target_link_libraries(${libAmtrs_LIB} ${libAmtrs_LIBS} ${libAmtrs_PLATFORM_LIBS})
 
 message("libAmtrs_LIBS : ${libAmtrs_LIBS}")
 
 
+set(libAmtrs_LIBS ${libAmtrs_LIB} ${libAmtrs_LIBS} ${libAmtrs_PLATFORM_LIBS})
 include_directories(${libAmtrs_INCLUDES})
 
 

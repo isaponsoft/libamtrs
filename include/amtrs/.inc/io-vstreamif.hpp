@@ -46,23 +46,28 @@ public:
 	void setstate(iostate _state) noexcept { clear(rdstate()|_state); }
 	void clear(iostate _state = std::ios::goodbit) noexcept { mInstance->clear(_state); }
 
-	size_type read(char_type* _data, size_type _size) { return mInstance->read(_data, _size); }
-	size_type write(char_type const* _data, size_type _size) { return mInstance->write(_data, _size); }
+	basic_vstreamif& read(char_type* _data, size_type _size) { mInstance->read(_data, _size); return *this; }
+	basic_vstreamif& write(char_type const* _data, size_type _size) { mInstance->write(_data, _size); return *this; }
 	void seek(fpos_type _pos, streamif_base::seekdir _dir) { return mInstance->seek(_pos, _dir); }
 	basic_vstreamif& seek(fpos_type _pos) { seek(_pos, beg); return *this; }
 	fpos_type tell() { return mInstance->tell(); }
 	size_type size() { return mInstance->size(); }
 
+	size_type gcount() const noexcept { return mInstance->gcount(); }
+	size_type pcount() const noexcept { return mInstance->pcount(); }
+
 	class	vstreambase : public ref_object
 	{
 	public:
-		virtual size_type read(char_type* _data, size_type _size) = 0;
-		virtual size_type write(char_type const* _data, size_type _size) = 0;
+		virtual void read(char_type* _data, size_type _size) = 0;
+		virtual void write(char_type const* _data, size_type _size) = 0;
 		virtual void seek(fpos_type _pos, streamif_base::seekdir _dir) = 0;
 		virtual fpos_type tell() = 0;
 		virtual size_type size() = 0;
 		virtual iostate rdstate() const noexcept = 0;
 		virtual void clear(iostate _state) noexcept = 0;
+		virtual size_type gcount() const noexcept = 0;
+		virtual size_type pcount() const noexcept = 0;
 	};
 protected:
 	ref<vstreambase>	mInstance;
@@ -90,14 +95,14 @@ auto make_vstreamif(basic_streamif<Source, Elm, Traits> _s) -> basic_vstreamif<E
 			: org(std::move(_o))
 		{}
 
-		virtual size_type read(char_type* _data, size_type _size) override
+		virtual void read(char_type* _data, size_type _size) override
 		{
-			return	org.read(_data, _size);
+			org.read(_data, _size);
 		}
 
-		virtual size_type write(char_type const* _data, size_type _size) override
+		virtual void write(char_type const* _data, size_type _size) override
 		{
-			return	org.write(_data, _size);
+			org.write(_data, _size);
 		}
 
 		virtual void seek(fpos_type _pos, streamif_base::seekdir _dir) override
@@ -125,6 +130,15 @@ auto make_vstreamif(basic_streamif<Source, Elm, Traits> _s) -> basic_vstreamif<E
 			org.clear(_state);
 		}
 
+		virtual size_type gcount() const noexcept override
+		{
+			return	org.gcount();
+		}
+
+		virtual size_type pcount() const noexcept override
+		{
+			return	org.pcount();
+		}
 
 		stream_type	org;
 	};

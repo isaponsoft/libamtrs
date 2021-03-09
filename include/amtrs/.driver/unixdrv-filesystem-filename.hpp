@@ -54,21 +54,6 @@ constexpr auto filename(T&& _path) noexcept -> std::basic_string_view<chartype_t
 
 
 
-// ============================================================================
-//! ファイル名から拡張子を除いた部分を抜き出します。
-// ----------------------------------------------------------------------------
-template<class T>
-constexpr auto stem(T&& _path) noexcept -> std::basic_string_view<chartype_t<T>>
-{
-	using	char_type	= chartype_t<T>;
-	using	view_type	= std::basic_string_view<char_type>;
-	view_type	path(filename(_path));
-	auto	ext	= extension(path);
-	return	path.substr(0, path.size() - ext.size());
-}
-
-
-
 
 
 // ============================================================================

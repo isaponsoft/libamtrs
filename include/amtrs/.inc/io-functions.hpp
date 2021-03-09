@@ -107,14 +107,14 @@ auto read(CharT* _buff, In& _in, size_t _size)
 {
 	using	intype	= typename std::remove_reference<In>::type;
 	// support read(CharT*, size_t) -> size_type
-	if constexpr (__iotest<intype>::has_read_return_size)
-	{
-		return	_in.read(_buff, _size);
-	}
 	// support read(CharT*, size_t).gcount()
-	else if constexpr (__iotest<intype>::has_read_and_gcount)
+	if constexpr (__iotest<intype>::has_read_and_gcount)
 	{
 		return	_in.read(_buff, _size).gcount();
+	}
+	else if constexpr (__iotest<intype>::has_read_return_size)
+	{
+		return	_in.read(_buff, _size);
 	}
 	// other
 	else
@@ -187,15 +187,15 @@ template<class CharT, class Out>
 auto write(Out& _out, CharT const* _data, size_t _size)
 {
 	using	type	= typename std::remove_reference<Out>::type;
-	// support write(CharT*, size_t) -> size_type
-	if constexpr (__iotest<type>::has_write_return_size)
-	{
-		return	_out.write(_data, _size);
-	}
 	// support write(CharT*, size_t).pcount()
-	else if constexpr (__iotest<type>::has_write_and_pcount)
+	if constexpr (__iotest<type>::has_write_and_pcount)
 	{
 		return	_out.write(_data, _size).pcount();
+	}
+	// support write(CharT*, size_t) -> size_type
+	else if constexpr (__iotest<type>::has_write_return_size)
+	{
+		return	_out.write(_data, _size);
 	}
 	// support write(CharT*, size_t)
 	else if constexpr (__iotest<type>::has_write_only)
@@ -284,6 +284,29 @@ size_t size(In& _in)
 
 
 
+template<class T>
+auto tell(T& _s)
+{
+	using	type	= typename std::remove_reference<T>::type;
+	// support size() function.
+	if constexpr (__iotest<type>::has_tell)
+	{
+		return	_s.tell();
+	}
+	// support tellg() and seekg() functions.
+	else if constexpr (__iotest<type>::has_tellg)
+	{
+		return	_s.tellg();
+	}
+	else
+	{
+		static_assert("seek unsupported");
+		return	0;
+	}
+}
+
+
+
 // copy to "_dest" from "_src".
 template<class D, class S>
 auto copy(D& _dest, S& _src, size_t _size)
@@ -307,6 +330,27 @@ auto copy(D& _dest, S& _src, size_t _size)
 }
 
 
+template<class D, class S>
+auto copy_to_eof(D& _dest, S& _src)
+{
+	size_t	len	= 0;
+	while (_dest && _src)
+	{
+		char	buff[1024];
+		auto	sz	= read(buff, _src, sizeof(buff));
+		while (sz > 0 && _dest)
+		{
+			auto	ws	= write(_dest, buff, sz);
+			len	+= ws;
+			sz  -= ws;
+			if (!_src)
+			{
+				break;
+			}
+		}
+	}
+	return	len;
+}
 
 
 

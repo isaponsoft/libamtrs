@@ -5,7 +5,7 @@
 #define	__libamtrs__memory__endian__hpp
 AMTRS_NAMESPACE_BEGIN
 
-//! c++20 �� STL �����p�\�ȏꍇ�� std::endian �ւ̃G�C���A�X�ɂȂ�܂��B
+//! c++20 の STL が利用可能な場合は std::endian へのエイリアスになります。
 enum class endian
 {
 #ifdef _WIN32
@@ -22,7 +22,7 @@ enum class endian
 
 namespace endian_util {
 
-//! �������ɏ������񂾎��ɃG���f�B�A��������ւ��悤�ɒl��ύX���܂��B
+//! メモリに書き込んだ時にエンディアンが入れ替わるように値を変更します。
 template<class T>
 constexpr T bitswap(T _value) noexcept
 {
@@ -45,7 +45,7 @@ constexpr T bitswap(T _value) noexcept
 }
 
 
-//! �������ɏ������񂾎��ɃG���f�B�A��������ւ��悤�ɒl��ύX���܂��B
+//! メモリに書き込んだ時にエンディアンが入れ替わるように値を変更します。
 template<class V, class T>
 constexpr V bitswap(T const (&_value)[sizeof(V)]) noexcept
 {
@@ -53,7 +53,7 @@ constexpr V bitswap(T const (&_value)[sizeof(V)]) noexcept
 }
 
 
-//! �������ɏ������񂾎��Ɏw�肵���G���f�B�A���ɂȂ�悤�ɒl��ύX���܂��B
+//! メモリに書き込んだ時に指定したエンディアンになるように値を変更します。
 template<endian E, class V, class T>
 constexpr V bitswap_if(T const (&_value)[sizeof(V)]) noexcept
 {
@@ -61,7 +61,7 @@ constexpr V bitswap_if(T const (&_value)[sizeof(V)]) noexcept
 	else								return	*reinterpret_cast<const V*>(_value);
 }
 
-//! �������ɏ������񂾎��Ɏw�肵���G���f�B�A���ɂȂ�悤�ɒl��ύX���܂��B
+//! メモリに書き込んだ時に指定したエンディアンになるように値を変更します。
 template<endian E, class V>
 constexpr V bitswap_if(V _value) noexcept
 {
@@ -69,19 +69,19 @@ constexpr V bitswap_if(V _value) noexcept
 	else								return	_value;
 }
 
-//! �������ɏ������񂾎��Ɏw�肵���G���f�B�A���ɂȂ�悤�ɒl��ύX���܂��B
+//! メモリに書き込んだ時に指定したエンディアンになるように値を変更します。
 template<endian E, class V, class T>
 constexpr V encode(T const (&_value)[sizeof(V)]) noexcept { return bitswap_if<E, V>(_value); }
 
-//! �w�肵���G���f�B�A���ŏ������܂ꂽ����������ǂݍ��񂾃f�[�^���l�C�e�B�u�̒l�Ƃ��Ďg����悤�ɒl���C�����܂��B
+//! 指定したエンディアンで書き込まれたメモリから読み込んだデータをネイティブの値として使えるように値を修正します。
 template<endian E, class V, class T>
 constexpr V decode(T const (&_value)[sizeof(V)]) noexcept { return bitswap_if<E, V>(_value); }
 
-//! �������ɏ������񂾎��Ɏw�肵���G���f�B�A���ɂȂ�悤�ɒl��ύX���܂��B
+//! メモリに書き込んだ時に指定したエンディアンになるように値を変更します。
 template<endian E, class T>
 constexpr T encode(T _value) noexcept { return bitswap_if<E>(_value); }
 
-//! �w�肵���G���f�B�A���ŏ������܂ꂽ����������ǂݍ��񂾃f�[�^���l�C�e�B�u�̒l�Ƃ��Ďg����悤�ɒl���C�����܂��B
+//! 指定したエンディアンで書き込まれたメモリから読み込んだデータをネイティブの値として使えるように値を修正します。
 template<endian E, class V>
 constexpr V decode(V _value) noexcept { return bitswap_if<E>(_value); }
 

@@ -115,6 +115,7 @@ bool read(filesystem::zip::centraldirentry& _cde, In& _in)
 	io::read(_cde.signature, i);
 	if (std::memcmp(_cde.signature, filesystem::zip::cdes, sizeof(filesystem::zip::cdes)))
 	{
+		// eocの場合もある
 		return	false;
 	}
 	io::read<endian::little>(_cde.createVersion,				i);

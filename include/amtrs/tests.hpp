@@ -24,7 +24,7 @@ bool test_eq(int _line, A _a, B _b)
 	if (!(_a == _b))
 	{
 		failed	= true;
-		teststream() << _line << ":(" << _a << " != " << _b << ") ";
+		teststream() << "Line:" << _line << ":(" << _a << " != " << _b << ") ";
 		return	false;
 	}
 	return	true;
@@ -36,7 +36,7 @@ bool test_not_eq(int _line, A _a, B _b)
 	if (!(_a != _b))
 	{
 		failed	= true;
-		teststream() << _line << ":(" << _a << " == " << _b << ") ";
+		teststream() << "Line:" << _line << ":(" << _a << " == " << _b << ") ";
 		return	false;
 	}
 	return	true;
@@ -47,7 +47,7 @@ inline bool test_true(int _line, bool _a)
 	if (!(_a))
 	{
 		failed	= true;
-		teststream() << _line << ":(not true) ";
+		teststream() << "Line:" << _line << ":(not true) ";
 		return	false;
 	}
 	return	true;
@@ -59,7 +59,7 @@ inline bool test_false(int _line, bool _a)
 	if (_a)
 	{
 		failed	= true;
-		teststream() << _line << ":(not false) ";
+		teststream() << "Line:" << _line << ":(not false) ";
 		return	false;
 	}
 	return	true;

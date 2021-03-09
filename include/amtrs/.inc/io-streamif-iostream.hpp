@@ -24,8 +24,13 @@ protected:
 
 	streamif_base::iostate read(value_type& _value, size_type& _readsize, char_type* _data, size_type _size)
 	{
-		_value.read(_data, _size);
-		_readsize	= _value.gcount();
+		size_type	rs	= 0;
+		while (_value.good() && _size > rs)
+		{
+			_value.read(_data, _size - rs);
+			rs += _value.gcount();
+		}
+		_readsize	= rs;
 		return	_value.rdstate();
 	}
 
@@ -37,13 +42,19 @@ protected:
 	streamif_base::iostate seek(value_type& _value, fpos_type& _position, streamif_base::seekdir _org)
 	{
 		_value.seekg(_position, _org);
+		//_value.seekp(_position, _org);
 		return	_value.rdstate();
 	}
 
 	streamif_base::iostate tell(value_type& _value, fpos_type& _position)
 	{
-		_position	= ftell(_value);
+		_position	= _value.tellg();
 		return	streamif_base::goodbit;
+	}
+
+	void clear(value_type& _value, streamif_base::iostate _clear)
+	{
+		_value.clear(_clear);
 	}
 };
 

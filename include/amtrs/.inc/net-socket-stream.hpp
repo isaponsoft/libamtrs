@@ -29,7 +29,9 @@ protected:
 
 	streamif_base::iostate read(value_type& _value, size_type& _readsize, char_type* _data, size_type _size)
 	{
+AMTRS_WARN_LOG("socket recv");
 		auto	s	= _value.recv(_data, static_cast<int>(_size), 0);
+AMTRS_WARN_LOG("socket recv %d", (int)s);
 		if (s == 0)
 		{
 			return	streamif_base::eofbit;

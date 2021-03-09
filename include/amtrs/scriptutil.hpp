@@ -3,14 +3,17 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__libamtrs__scriptutil__hpp
 #define	__libamtrs__libamtrs__scriptutil__hpp
-#include "amtrs.hpp"
+#include "filesystem.hpp"
 #include <deque>
+#include <functional>
 #include <string>
 #define	AMTRS_SCRIPTUTIL_NAMESPACE			AMTRS_NAMESPACE::ssu
 #define	AMTRS_SCRIPTUTIL_NAMESPACE_BEGIN	namespace AMTRS_SCRIPTUTIL_NAMESPACE {
 #define	AMTRS_SCRIPTUTIL_NAMESPACE_END		}
 AMTRS_SCRIPTUTIL_NAMESPACE_BEGIN
 
+template<class T>
+using	span_callback	= void(T*, size_t);
 
 enum class update_result : int
 {
@@ -65,6 +68,12 @@ update_result update(std::string_view _targetfile, std::string_view _text, bool 
  */
 std::string add_exe(std::string_view _filename);
 
+/*!
+ * windows の場合はファイル名に .bat を付与します。
+ * unix に似たOSではファイル名に .sh を付与します。
+ */
+std::string add_bat(std::string_view _filename);
+
 
 /*!
  * ディレクトリセパレターを / に置き換えます。
@@ -76,6 +85,16 @@ std::string slashdir(std::string_view _filename);
  * _escape が true の時は \\ でエスケープします。
  */
 std::string backslashdir(std::string_view _filename, bool _escape);
+
+/*!
+ * シェルスクリプトまたはバッチを実行し設定された環境変数を列挙します。
+ * _envscript
+ *		環境設定用スクリプト
+ * _workfile
+ *		環境設定用スクリプトを実行するための一時ファイルのパス
+ *		enumenvsは一時ファイルに環境変数取得用のスクリプトを作成します。
+ */
+bool enumenvs(std::vector<std::pair<std::string, std::string>>& _dest, std::string const& _envscript, std::string const& _workfile);
 
 
 /*!
@@ -104,6 +123,61 @@ int exec(std::string& _out, std::string const& _command);
  *  <  0	エラー(そもそも実行できなかった)
  */
 int exec(std::string const& _command);
+
+/*!
+ * ファイルをダウンロードします。
+ * _savename を省略した場合はカレントディレクトリに保存されます。
+ * _savename がディレクトリの場合はディレクトリの中に保存されます。
+ * _savedname ダウンロードしたファイルを保存した時のファイル名。
+ */
+bool download(std::string const& _url, std::string const& _savename, std::string* _savedname = nullptr);
+
+
+struct	extract_message
+{
+	int			msgid;
+	std::string	name;
+	size_t		size;
+};
+
+
+
+/*!
+ * アーカイブファイルを展開します。
+ */
+struct	extract_params
+{
+	using		callback	= int(extract_message& m);
+	std::string				sourcename;					// 展開中のソースデータの名前(progress bar info)
+	bool					skiproot	= false;		// 単一のルートディレクトリを持つ場合はルートディレクトリを排除します。
+	std::function<callback>	msgproc;					// 展開時のメッセージプロシージャ
+};
+
+bool extract(io::vstreamif _in, std::string const& _saveto, extract_params _info = {});
+bool extract(std::string const& _file, std::string const& _saveto, extract_params _info = {});
+
+
+/*!
+ * Visual Studio の環境設定を行います。
+ * Windows 以外の場合は無視され、常に true を返します。
+ */
+bool visualstudio_setup();
+
+/*!
+ * c++ の開発環境変数を設定します。
+ * Windows の場合は visualstudio_setup() を呼び出します。
+ */
+bool cpp_setup();
+
+
+/*!
+ * ファイルの一覧を取得します。
+ */
+bool ls(std::string const& _patturn = {});
+
+
+bool cat(std::string_view _file);
+bool cat(std::initializer_list<std::string_view> _files);
 
 
 AMTRS_SCRIPTUTIL_NAMESPACE_END

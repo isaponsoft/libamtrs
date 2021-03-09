@@ -41,6 +41,11 @@ AMTRS_IO_NAMESPACE_END
 #include ".inc/io-functions.hpp"
 #include ".inc/iostream-bin.hpp"
 
+#if		AMTRS_ZLIB_ENABLE
+#include ".inc/io-zlib-stream_in.hpp"
+#endif
+
+
 // 以下廃止予定
 #include ".inc/io-deserialize.hpp"
 #include ".inc/io-limit.hpp"
@@ -52,9 +57,6 @@ AMTRS_IO_NAMESPACE_END
 #include ".inc/io-stream_in-view.hpp"
 
 
-#if		AMTRS_ZLIB_ENABLE
-#include ".inc/io-zlib-stream_in.hpp"
-#endif
 
 
 #endif

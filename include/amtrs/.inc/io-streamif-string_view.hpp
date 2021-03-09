@@ -32,7 +32,7 @@ protected:
 		_readsize	=  sz;
 		if (cur == _value.size())
 		{
-			bits	= streamif_base::eofbit;
+			bits	= (streamif_base::iostate)((int)bits | (int)streamif_base::eofbit);
 		}
 		return	bits;
 	}

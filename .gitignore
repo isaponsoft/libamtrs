@@ -8,6 +8,8 @@ a.out
 *.log
 out/
 tmp/
+deps/
+
 _packages
 
 # Android/gradle

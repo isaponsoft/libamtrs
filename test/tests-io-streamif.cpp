@@ -24,19 +24,21 @@ AMTRS_TEST_F(_PRFX(0_setup))
 }
 
 
-AMTRS_TEST_F(_PRFX(fisteam_2_move))
+AMTRS_TEST_F(_PRFX(fisteam_1_move))
 {
 	std::ifstream	f("test.txt");
 	auto			i	= io::make_streamif(std::move(f));
+	AMTRS_TEST_EQ(12, i.size());
 	char			buf[100];
 	auto			r	= io::read(buf, i);
 	AMTRS_TEST_EQ("Hello world.", std::string_view(buf, r));
 }
 
-AMTRS_TEST_F(_PRFX(fisteam_2_ptr))
+AMTRS_TEST_F(_PRFX(fisteam_1_ptr))
 {
 	std::ifstream	f("test.txt");
 	auto			i	= io::make_streamif(&f);
+	AMTRS_TEST_EQ(12, i.size());
 	char			buf[100];
 	auto			r	= io::read(buf, i);
 	AMTRS_TEST_EQ("Hello world.", std::string_view(buf, r));
@@ -50,6 +52,63 @@ AMTRS_TEST_F(_PRFX(stdlib_1))
 	auto			r	= io::read(buf, i);
 	AMTRS_TEST_EQ("Hello world.", std::string_view(buf, r));
 }
+
+
+AMTRS_TEST_F(_PRFX(stringview))
+{
+	char			buf[1];
+	auto			i	= io::make_streamif(std::string_view("abcdefghijklmn"));
+
+	AMTRS_TEST_EQ(14, io::size(i))
+
+	AMTRS_TEST_EQ(1, io::read(buf, i, 1));
+	AMTRS_TEST_EQ(std::string_view("a"), std::string_view(buf, sizeof(buf)));
+	AMTRS_TEST_FALSE(i.eof());
+
+	io::seek(i, -1, std::ios::end);
+	AMTRS_TEST_EQ(13, io::tell(i));
+	AMTRS_TEST_EQ(1, io::read(buf, i, 1));
+	AMTRS_TEST_EQ(std::string_view("n"), std::string_view(buf, sizeof(buf)));
+	AMTRS_TEST_TRUE(i.eof());
+
+	i.clear();
+	AMTRS_TEST_TRUE(i.good());
+	AMTRS_TEST_FALSE(i.eof());
+
+	io::seek(i,  1, std::ios::beg);
+	AMTRS_TEST_EQ(1, io::read(buf, i, 1));
+	AMTRS_TEST_EQ(std::string_view("b"), std::string_view(buf, sizeof(buf)));
+
+	io::seek(i, 7, std::ios::beg);
+	io::read(buf, i, 1);
+	AMTRS_TEST_EQ(std::string_view("h"), std::string_view(buf, sizeof(buf)));
+
+	io::seek(i, -3, std::ios::cur);
+	io::read(buf, i, 1);
+	AMTRS_TEST_EQ(std::string_view("f"), std::string_view(buf, sizeof(buf)));
+
+	io::seek(i,  7, std::ios::cur);
+	io::read(buf, i, 1);
+	AMTRS_TEST_EQ(std::string_view("n"), std::string_view(buf, sizeof(buf)));
+	AMTRS_TEST_TRUE(i.eof());
+	i.clear();
+
+	io::seek(i,  -100, std::ios::cur);
+	io::read(buf, i, 1);
+	AMTRS_TEST_EQ(std::string_view("a"), std::string_view(buf, sizeof(buf)));
+
+	io::seek(i,   100, std::ios::cur);
+	AMTRS_TEST_EQ(0, io::read(buf, i, 1));
+	AMTRS_TEST_TRUE(i.eof());
+	i.clear();
+
+
+	char			buf4[4];
+	io::seek(i, 0, std::ios::beg);
+	AMTRS_TEST_EQ(4, io::read(buf4, i));
+	AMTRS_TEST_EQ(std::string_view("abcd"), std::string_view(buf4, sizeof(buf4)));
+}
+
 
 AMTRS_TEST_F(_PRFX(stringview_1))
 {
@@ -105,53 +164,13 @@ AMTRS_TEST_F(_PRFX(vstreamif_4))
 }
 
 
-AMTRS_TEST_F(_PRFX(stringview))
+AMTRS_TEST_F(_PRFX(vstreamif_5))
 {
-	char			buf[1];
-	auto			i	= io::make_streamif(std::string_view("abcdefghijklmn"));
-
-	AMTRS_TEST_EQ(14, io::size(i))
-
-	io::seek(i, -1, std::ios::end);
-	AMTRS_TEST_EQ(1, io::read(buf, i, 1));
-	AMTRS_TEST_EQ(std::string_view("n"), std::string_view(buf, sizeof(buf)));
-	AMTRS_TEST_TRUE(i.eof());
-
-	i.clear();
-	AMTRS_TEST_TRUE(i.good());
-	AMTRS_TEST_FALSE(i.eof());
-
-	io::seek(i,  1, std::ios::beg);
-	AMTRS_TEST_EQ(1, io::read(buf, i, 1));
-	AMTRS_TEST_EQ(std::string_view("b"), std::string_view(buf, sizeof(buf)));
-
-	io::seek(i, 7, std::ios::beg);
-	io::read(buf, i, 1);
-	AMTRS_TEST_EQ(std::string_view("h"), std::string_view(buf, sizeof(buf)));
-
-	io::seek(i, -3, std::ios::cur);
-	io::read(buf, i, 1);
-	AMTRS_TEST_EQ(std::string_view("f"), std::string_view(buf, sizeof(buf)));
-
-	io::seek(i,  7, std::ios::cur);
-	io::read(buf, i, 1);
-	AMTRS_TEST_EQ(std::string_view("n"), std::string_view(buf, sizeof(buf)));
-	AMTRS_TEST_TRUE(i.eof());
-	i.clear();
-
-	io::seek(i,  -100, std::ios::cur);
-	io::read(buf, i, 1);
-	AMTRS_TEST_EQ(std::string_view("a"), std::string_view(buf, sizeof(buf)));
-
-	io::seek(i,   100, std::ios::cur);
-	AMTRS_TEST_EQ(0, io::read(buf, i, 1));
-	AMTRS_TEST_TRUE(i.eof());
-	i.clear();
-
-
-	char			buf4[4];
-	io::seek(i, 0, std::ios::beg);
-	AMTRS_TEST_EQ(4, io::read(buf4, i));
-	AMTRS_TEST_EQ(std::string_view("abcd"), std::string_view(buf4, sizeof(buf4)));
+	std::ifstream	f("test.txt");
+	auto			i	= io::make_streamif(std::move(f));
+	auto			i2	= io::make_vstreamif(std::move(i));
+	AMTRS_TEST_EQ(12, i2.size());
+	char			buf[100];
+	auto			r	= io::read(buf, i2);
+	AMTRS_TEST_EQ("Hello world.", std::string_view(buf, r));
 }
-

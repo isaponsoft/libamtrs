@@ -50,7 +50,7 @@ constexpr auto filename(T&& _path) noexcept -> std::basic_string_view<chartype_t
 	auto		pos2	= path.find_last_of('\\');
 	if (pos1 == view_type::npos && pos2 == view_type::npos)
 	{
-		return	path.substr(0, 0);
+		return	path;
 	}
 	if (pos1 == view_type::npos)
 	{
@@ -61,21 +61,6 @@ constexpr auto filename(T&& _path) noexcept -> std::basic_string_view<chartype_t
 		return	path.substr(pos1+1);
 	}
 	return	path.substr(std::max(pos1, pos2)+1);
-}
-
-
-
-// ============================================================================
-//! ファイル名から拡張子を除いた部分を抜き出します。
-// ----------------------------------------------------------------------------
-template<class T>
-constexpr auto stem(T&& _path) noexcept -> std::basic_string_view<chartype_t<T>>
-{
-	using	char_type	= chartype_t<T>;
-	using	view_type	= std::basic_string_view<char_type>;
-	view_type	path(filename(_path));
-	auto	ext	= extension(path);
-	return	path.substr(0, path.size() - ext.size());
 }
 
 

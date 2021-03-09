@@ -3,6 +3,7 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__driver__unixdrv__system_process__hpp
 #define	__libamtrs__driver__unixdrv__system_process__hpp
+#include "../string.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -190,7 +191,7 @@ static int __exec(char const* _command)
 		end		= cursor;
 		if (begin != end)
 		{
-			args.push_back({begin, static_cast<std::size_t>(end - begin)});
+			args.push_back(std::string(trim(std::string_view(begin, static_cast<std::size_t>(end - begin)), "\"")));
 		}
 		begin	= end;
 	}

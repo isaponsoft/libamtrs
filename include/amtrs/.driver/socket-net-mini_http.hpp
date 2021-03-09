@@ -44,15 +44,16 @@ public:
 			psr	= net::http::parser(uinf.scheme == "https");
 
 			std::string		req = "GET ";
-			req += uinf.uri;
+			req	+= uinf.path;
+			req	+= uinf.query;
+			req	+= uinf.fragment;
 			req += " HTTP/1.1";
 			req += "\r\n";
 			req += "Host: ";
 			req += uinf.host;
 			req += "\r\n";
-			req += "User-Agent: libamtrs\r\n";
+			req += "User-Agent: libamtrs/0.1\r\n";
 			req += "Accept: */*\r\n";
-			req += "Connection: Close\r\n";
 			req += "\r\n";
 
 			// データを送信
@@ -102,8 +103,8 @@ public:
 						(*this->listener)(typename super_type::http_body_recieve_event{ string_view_type(buff.data(), rs) });
 					}
 				} while (io2.good() && !psr.empty());
-
 			}
+
 			if (this->listener)
 			{
 				(*this->listener)(typename super_type::http_body_complite_event{});
@@ -131,10 +132,10 @@ public:
 		}
 		retval->mtu	= sock.mtu();
 
-		#if	AMTRS_SSL_SUPPORTED && 0
+		#if	AMTRS_SSL_ENABLE
 		retval->io	= retval->uinf.scheme == "https"
-					? io::vstreamif(net::basic_ssl_stream<char, socket>(std::move(sock))
-					: io::vstreamif(io::make_streamif(net::socket_stream(std::move(sock))));
+					? io::make_vstreamif(io::make_streamif(net::ssl_stream(std::move(sock))))
+					: io::make_vstreamif(io::make_streamif(std::move(sock)));
 		#else
 		retval->io	= io::make_vstreamif(io::make_streamif(std::move(sock)));
 		#endif

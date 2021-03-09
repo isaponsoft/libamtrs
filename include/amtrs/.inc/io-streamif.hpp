@@ -69,6 +69,7 @@ public:
 	using	value_type	= typename traits_type::value_type;
 	using	char_type	= Elm;
 	using	fpos_type	= std::fpos<typename std::char_traits<Elm>::state_type>;
+	using	pos_type	= std::fpos<typename std::char_traits<Elm>::state_type>;
 	using	int_type	= typename std::char_traits<Elm>::int_type;
 	using	size_type	= std::streamsize;
 	using	iostate		= streamif_base::iostate;
@@ -99,46 +100,45 @@ public:
 	}
 
 
-	size_type read(char_type* _data, size_type _size)
+	basic_streamif& read(char_type* _data, size_type _size)
 	{
 		size_type	s	= 0;
+		mGCount	= 0;
 		if (good())
 		{
 			if constexpr (_read)
 			{
-				if (auto r = traits_type::read(value(), s, _data, _size); r != streamif_base::goodbit)
-				{
-					setstate(r);
-				}
+				auto r = traits_type::read(value(), s, _data, _size);
+				mGCount	= s;
+				setstate(r);
 			}
 			else
 			{
 				setstate(streamif_base::badbit);
 			}
 		}
-		return	s;
+		return	*this;
 	}
 
-	size_type write(char_type const* _data, size_type _size)
+	basic_streamif& write(char_type const* _data, size_type _size)
 	{
 		size_type	s	= 0;
+		mPCount	= 0;
 		if (good())
 		{
 			if constexpr (_write)
 			{
-				if (auto r = traits_type::write(value(), s, _data, _size); r != streamif_base::goodbit)
-				{
-					setstate(r);
-				}
+				auto r = traits_type::write(value(), s, _data, _size);
+				mPCount	= s;
+				setstate(r);
 			}
 			else
 			{
 				setstate(streamif_base::badbit);
 			}
 		}
-		return	s;
+		return	*this;
 	}
-
 
 	explicit operator bool() const { return good(); }
 
@@ -149,7 +149,17 @@ public:
 
 	iostate rdstate() const noexcept { return mStatus; }
 	void setstate(iostate _state) noexcept { clear(rdstate()|_state); }
-	void clear(iostate _state = std::ios::goodbit) noexcept { mStatus = _state; }
+	void clear(iostate _state = std::ios::goodbit) noexcept
+	{
+		mStatus = _state; 
+		if constexpr (_clear)
+		{
+			traits_type::clear(value(), mStatus);
+		}
+	}
+
+	size_type gcount() const noexcept { return mGCount; }
+	size_type pcount() const noexcept { return mPCount; }
 
 	basic_streamif& seek(fpos_type _pos) { return seek(_pos, beg); }
 	basic_streamif& seek(fpos_type _pos, seekdir _dir)
@@ -158,7 +168,7 @@ public:
 		{
 			if constexpr (_seek)
 			{
-				if (auto r = traits_type::seek(value(), _pos, _dir); r != streamif_base::goodbit)
+				if (auto r = traits_type::seek(value(), _pos, _dir); !((int)r & (int)streamif_base::goodbit))
 				{
 					setstate(r);
 				}
@@ -178,7 +188,7 @@ public:
 		{
 			if constexpr (_tell)
 			{
-				if (auto r = traits_type::tell(value(), pos); r != streamif_base::goodbit)
+				if (auto r = traits_type::tell(value(), pos); !((int)r & (int)streamif_base::goodbit))
 				{
 					setstate(r);
 				}
@@ -188,6 +198,7 @@ public:
 				setstate(streamif_base::badbit);
 			}
 		}
+
 		return	pos;
 	}
 
@@ -231,6 +242,8 @@ protected:
 
 	Source			mSource;
 	iostate			mStatus	= streamif_base::goodbit;
+	size_type		mGCount	= 0;
+	size_type		mPCount	= 0;
 
 private:
 	auto initparam()
@@ -253,7 +266,7 @@ private:
 	static constexpr auto has_seek(TestT& v) -> decltype(std::declval<basic_streamif*>()->TestT::seek(std::declval<value_type&>(), std::declval<fpos_type&>(), streamif_base::beg), std::true_type{});
 	static constexpr auto has_seek(...) -> std::false_type;
 	template<class TestT>
-	static constexpr auto has_tell(TestT& v) -> decltype(std::declval<basic_streamif*>()->TestT::tell(std::declval<value_type&>(), std::declval<size_type&>()), std::true_type{});
+	static constexpr auto has_tell(TestT& v) -> decltype(std::declval<basic_streamif*>()->TestT::tell(std::declval<value_type&>(), std::declval<fpos_type&>()), std::true_type{});
 	static constexpr auto has_tell(...) -> std::false_type;
 	template<class TestT>
 	static constexpr auto has_size(TestT& v) -> decltype(std::declval<basic_streamif*>()->TestT::size(std::declval<value_type&>(), std::declval<size_type&>()), std::true_type{});
@@ -264,6 +277,9 @@ private:
 	template<class TestT>
 	static constexpr auto has_write(TestT& v) -> decltype(std::declval<basic_streamif*>()->TestT::write(std::declval<value_type&>(), std::declval<size_type&>(), std::declval<char_type const*>(), std::declval<size_type&>()), std::true_type{});
 	static constexpr auto has_write(...) -> std::false_type;
+	template<class TestT>
+	static constexpr auto has_clear(TestT& v) -> decltype((decltype(std::declval<basic_streamif*>()->TestT::clear(std::declval<value_type&>(), std::declval<iostate&>()))*)nullptr, std::true_type{});
+	static constexpr auto has_clear(...) -> std::false_type;
 
 	static constexpr decltype(has_close(std::declval<Traits&>())())	_close	= decltype(has_close(std::declval<Traits&>()))::value;
 	static constexpr decltype(has_seek(std::declval<Traits&>())())	_seek	= decltype(has_seek(std::declval<Traits&>()))::value;
@@ -271,6 +287,7 @@ private:
 	static constexpr decltype(has_size(std::declval<Traits&>())())	_size	= decltype(has_size(std::declval<Traits&>()))::value;
 	static constexpr decltype(has_read(std::declval<Traits&>())())	_read	= decltype(has_read(std::declval<Traits&>()))::value;
 	static constexpr decltype(has_write(std::declval<Traits&>())())	_write	= decltype(has_write(std::declval<Traits&>()))::value;
+	static constexpr decltype(has_clear(std::declval<Traits&>())())	_clear	= decltype(has_clear(std::declval<Traits&>()))::value;
 };
 
 

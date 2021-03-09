@@ -230,14 +230,14 @@ public:
 	//!		受信したバイト数を返します。
 	int recv(void* _buf, std::size_t _buffSize, int _flags = 0)
 	{
-		return	::recv(get(), (char*)_buf, _buffSize, _flags);
+		return	(int)::recv(get(), (char*)_buf, (int)_buffSize, _flags);
 	}
 
 
 	//! データを受信します。
 	int send(const void* _buf, std::size_t _buffSize, int _flags = 0)
 	{
-		return	::send(get(), (const char*)_buf, _buffSize, _flags);
+		return	(int)::send(get(), (const char*)_buf, (int)_buffSize, _flags);
 	}
 
 

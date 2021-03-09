@@ -42,6 +42,7 @@ public:
 
 	static constexpr size_type	nlen	= static_cast<size_t>(-1);
 
+
 	basic_parser(bool _https = false)
 		: mHttps(_https)
 	{}
@@ -88,7 +89,8 @@ public:
 
 
 			// バッファの最後尾に読み込む
-			mTail	+= _in.read(mBuffer.data() + mTail, mBuffer.size() - mTail);
+			_in.read(mBuffer.data() + mTail, mBuffer.size() - mTail);
+			mTail += _in.gcount();
 			while ((mTail - mTop) > 0)
 			{
 				// 新しく読み取った部分に改行コードが含まれるかチェック
@@ -157,15 +159,15 @@ public:
 	// ------------------------------------------------------------------------
 	size_t read_chunk_size(size_t& _chunksize, char_type* _buffer, size_type _size)
 	{
-		auto		lp	= std::string_view(_buffer, _size).find_first_of("\n");
-		if (lp == std::string_view::npos)
+		auto		tl	= std::string_view(_buffer, _size);
+		auto		lp	= tl.find_first_of("\r\n");
+		if (lp == std::string_view::npos || (lp + 1 > tl.size()))
 		{
 			return	nlen;
 		}
 
-
 		// 改行コードが見つかったのでコールバックに通知
-		std::string_view	line(std::string_view(_buffer, lp + 1));
+		std::string_view	line(std::string_view(_buffer, lp));
 		size_t				chsz(0);
 		for (auto c : trim(line, "\r\n"))
 		{
@@ -182,9 +184,14 @@ public:
 			{
 				chsz += c - 'A' + 10;
 			}
+			else
+			{
+				AMTRS_WARN_LOG("Unkown chunked charactor 0x%02x", (unsigned int)c);
+				throw	std::runtime_error("Unkown chunked charactor");
+			}
 		}
 		_chunksize	= chsz;
-		return	lp + 1;
+		return	lp + 2;
 	}
 
 
@@ -201,7 +208,6 @@ public:
 		char_type*	out		= _buffer;
 		size_t		reqSize	= _size;
 
-
 		if (!mHeaderParsed)
 		{
 			header<In>(_in, [](char_type const* _line, size_t _size) -> bool
@@ -210,7 +216,15 @@ public:
 			});
 		}
 
-
+		if (mContentsLength != nlen)
+		{
+			if (mContentsLength == mContentsTransfer)
+			{
+				mDataFinish	= true;
+				return	0;
+			}
+			reqSize	= std::min<size_type>(mContentsLength - mContentsTransfer, reqSize);
+		}
 
 		if (transfer_encoding() == transfer_encoding_type::chunked)
 		{
@@ -222,12 +236,14 @@ public:
 					size_t	readSize	= read_chunk_size(chunkSize, mBuffer.data() + mTop, mTail - mTop);
 					if (readSize == nlen)
 					{
+						// チャンクを読み取るだけのバッファが足りない
 						if (!shift())
 						{
 							// バッファを拡張する
 							mBuffer.resize(mBuffer.size() + default_buffer_size);
 						}
-						mTail	+= _in.read(mBuffer.data() + mTail, mBuffer.size() - mTail);
+						_in.read(mBuffer.data() + mTail, mBuffer.size() - mTail);
+						mTail += _in.gcount();
 					}
 					else
 					{
@@ -256,6 +272,7 @@ public:
 			std::copy_n(mBuffer.data() + mTop, copySize, out);
 			out					+= copySize;
 			mTop				+= copySize;
+			mContentsTransfer	+= copySize;
 			if (mTop == mTail)
 			{
 				mTop	= 0;
@@ -266,13 +283,14 @@ public:
 		// まだコピーすべきデータが残っている場合はストリームから読み取りながら転送する
 		while ((reqSize > 0) && _in.good())
 		{
-			auto	rs	= _in.read(out, reqSize);
+			_in.read(out, reqSize);
+			auto	rs	= _in.gcount();
 			reqSize				-= rs;
 			retval				+= rs;
 			out					+= rs;
 			mChunkRead			+= rs;
+			mContentsTransfer	+= rs;
 		}
-
 
 		if (transfer_encoding() == transfer_encoding_type::chunked)
 		{
@@ -281,12 +299,26 @@ public:
 				// Line end skip.
 				char	le[2];
 				int		r	= 0;
-				size_t	rs;
-				do
+
+				while (mTop < mTail && r < 2)
 				{
-					rs = _in.read(le + r, 2 - r);
-					r += (int)rs;
-				} while (r != 2 && rs > 0);
+					le[r++] = mBuffer.data()[mTop++];
+				}
+				if (mTop == mTail)
+				{
+					mTop	= 0;
+					mTail	= 0;
+				}
+				if (r < 2)
+				{
+					size_t	rs;
+					do
+					{
+						_in.read(le + r, 2 - r);
+						rs = _in.gcount();
+						r += (int)rs;
+					} while (r != 2 && rs > 0);
+				}
 				if (mChunkSize == 0)
 				{
 					mDataFinish	= true;
@@ -327,6 +359,7 @@ private:
 	size_t					mTop				= 0;
 	size_t					mTail				= 0;
 	size_t					mContentsLength		= nlen;
+	size_t					mContentsTransfer	= 0;
 	size_t					mChunkSize			= 0;
 	size_t					mChunkRead			= 0;
 	transfer_encoding_type	mTransferEncofing	= transfer_encoding_type::identity;

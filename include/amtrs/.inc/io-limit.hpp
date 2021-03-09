@@ -32,17 +32,16 @@ class	limit<Stream&>
 public:
 	using	stream_type	= Stream;
 	using	char_type	= typename stream_type::char_type;
-	using	off_type	= typename stream_type::off_type;
-	using	pos_type	= typename stream_type::pos_type;
+	using	fpos_type	= typename stream_type::fpos_type;
 	using	iostate		= typename stream_type::iostate;
 
 
 	template<class In>
-	limit(In&& _in, pos_type _limitsize)
+	limit(In&& _in, fpos_type _limitsize)
 		: mStream(std::forward<In>(_in))
 		, mLimit(_limitsize)
 	{
-		mStart	= mStream.tellg();
+		mStart	= mStream.tell();
 	}
 
 
@@ -71,14 +70,14 @@ public:
 	void clear(iostate _state = iostate::goodbit) noexcept { mStream.clear(_state); }
 
 
-	pos_type tellg()
+	fpos_type tellg()
 	{
 		return	good()
 				? mCursor
-				: pos_type(-1);
+				: fpos_type(-1);
 	}
 
-	limit& seekg(off_type _off, std::ios_base::seekdir _dir)
+	limit& seekg(fpos_type _off, std::ios_base::seekdir _dir)
 	{
 		if (good())
 		{
@@ -122,9 +121,9 @@ public:
 
 private:
 	stream_type&	mStream;
-	pos_type		mStart;
-	pos_type		mCursor	= 0;
-	pos_type		mLimit;
+	fpos_type		mStart;
+	fpos_type		mCursor	= 0;
+	fpos_type		mLimit;
 };
 
 
@@ -136,13 +135,13 @@ public:
 	using	stream_type	= Stream;
 	using	char_type	= typename stream_type::char_type;
 	using	off_type	= typename stream_type::off_type;
-	using	pos_type	= typename stream_type::pos_type;
+	using	fpos_type	= typename stream_type::fpos_type;
 	using	iostate		= typename stream_type::iostate;
 
 
 	//! 読み込みサイズに制限を付けます。現在の読み取り位置からの相対位置になります。
 	template<class In>
-	limit(In&& _in, pos_type _limitsize)
+	limit(In&& _in, fpos_type _limitsize)
 		: mStream(std::forward<In>(_in))
 		, mLimit(_limitsize)
 	{
@@ -173,11 +172,11 @@ public:
 	void clear(iostate _state = iostate::goodbit) noexcept { mStream.clear(_state); }
 
 
-	pos_type tellg()
+	fpos_type tellg()
 	{
 		return	good()
 				? mCursor
-				: pos_type(-1);
+				: fpos_type(-1);
 	}
 
 	limit& seekg(off_type _off, std::ios_base::seekdir _dir)
@@ -224,9 +223,9 @@ public:
 
 private:
 	stream_type		mStream;
-	pos_type		mStart;
-	pos_type		mCursor	= 0;
-	pos_type		mLimit;
+	fpos_type		mStart;
+	fpos_type		mCursor	= 0;
+	fpos_type		mLimit;
 };
 
 

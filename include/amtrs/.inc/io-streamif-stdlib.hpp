@@ -57,7 +57,7 @@ protected:
 		int	org	= _org == streamif_base::beg	? SEEK_SET
 				: _org == streamif_base::end 	? SEEK_END
 				:								  SEEK_CUR;
-		if (auto pos = ::fseek(_value, _position, org); pos >= 0)
+		if (auto pos = ::fseek(_value, static_cast<long>(_position), org); pos >= 0)
 		{
 			_position	= pos;;
 		}

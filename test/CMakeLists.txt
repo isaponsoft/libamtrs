@@ -12,5 +12,6 @@ file(GLOB AMTRS_APPSRC
 	tests-string-wildcard.cpp
 )
 
+set(AMTRS_ZLIB_ENABLE 1)
 set(libAmtrs_DIR ..)
 include(${libAmtrs_DIR}/template.app-console.cmake)
