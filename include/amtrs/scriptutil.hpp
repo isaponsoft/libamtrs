@@ -180,5 +180,19 @@ bool cat(std::string_view _file);
 bool cat(std::initializer_list<std::string_view> _files);
 
 
+/*!
+ * PATHから指定されたコマンドを検索します。
+ */
+std::string which(std::string const& _cmd);
+
+
+
+/*!
+ * ファイルを列挙します。
+ */
+bool file_enumator(std::string const& _start_path, std::function<int(std::filesystem::directory_entry const&)> _callback)
+
+
+
 AMTRS_SCRIPTUTIL_NAMESPACE_END
 #endif

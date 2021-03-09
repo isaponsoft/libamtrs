@@ -662,10 +662,12 @@ bool ls(std::string const& _patturn)
 	return	local::listup(path, _patturn);
 }
 
+
 bool cat(std::string_view _file)
 {
 	return	cat({_file});
 }
+
 
 bool cat(std::initializer_list<std::string_view> _files)
 {
@@ -678,5 +680,37 @@ bool cat(std::initializer_list<std::string_view> _files)
 	return	true;
 }
 
+
+std::string which(std::string const& _cmd)
+{
+	std::string	PATH	= getenv<std::string>("PATH");
+
+#if	AMTRS_CURRENT_PLATFORM == AMTRS_PLATFORM_WIN32
+	char	sep	= ';';
+#else
+	char	sep	= ':';
+#endif
+	auto	cur	= PATH.begin();
+	auto	end	= PATH.end();
+	while (cur != end)
+	{
+		auto	beg		= cur;
+		while (cur != end && *cur != sep)
+		{
+			++cur;
+		}
+		auto	cmd	= std::string(filesystem::normalize_path(std::string(&*beg, cur - beg) + "/" + _cmd));
+		if (filesystem::exists(cmd))
+		{
+			return	cmd;
+		}
+		if (cur == end)
+		{
+			break;
+		}
+		++cur;
+	}
+	return	{};
+}
 
 AMTRS_SCRIPTUTIL_NAMESPACE_END
