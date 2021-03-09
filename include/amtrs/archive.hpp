@@ -5,8 +5,13 @@
 #define	__libamtrs__archive__archive_enumrator__hpp
 #include "io.hpp"
 #ifdef	AMTRS_ARCHIVE_ENABLE
+#if		__has_include(<libarchive/archive.h>)
 #include <libarchive/archive.h>
 #include <libarchive/archive_entry.h>
+#elif	__has_include(<archive.h>)
+#include <archive.h>
+#include <archive_entry.h>
+#endif
 AMTRS_NAMESPACE_BEGIN
 
 template<class Callback>

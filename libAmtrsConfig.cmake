@@ -538,21 +538,27 @@ endif()
 # Module Archive
 # -----------------------------------------------------------------------------
 if(AMTRS_ARCHIVE_ENABLE)
-	find_path(AMTRS_ARCHIVE_DIR libarchive/archive.h
-		PATHS			${LIBAMTRS_DEPS_SEARCH_DIR}
-		PATH_SUFFIXES 	libarchive
-		NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+	find_package(LibArchive QUIET)
+	if (LibArchive_FOUND)
+		set(libAmtrs_INCLUDES	"${libAmtrs_INCLUDES}" "${LibArchive_INCLUDE_DIR}")
+		set(libAmtrs_LIBS		"${libAmtrs_LIBS}" LibArchive::LibArchive)
+		message("libamtrs : Enable  ARCHIVE, Pacakage")
+	else ()
+		find_path(AMTRS_ARCHIVE_DIR libarchive/archive.h
+			PATHS			${LIBAMTRS_DEPS_SEARCH_DIR}
+			PATH_SUFFIXES 	libarchive
+			NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 
-	set(ENABLE_WERROR OFF CACHE BOOL "ENABLE_WERROR" FORCE)
-	add_subdirectory(${AMTRS_ARCHIVE_DIR} EXCLUDE_FROM_ALL  build-archive)
+		set(ENABLE_WERROR OFF CACHE BOOL "ENABLE_WERROR" FORCE)
+		add_subdirectory(${AMTRS_ARCHIVE_DIR} EXCLUDE_FROM_ALL  build-archive)
 
-	set(libAmtrs_INCLUDES	"${libAmtrs_INCLUDES}" "${AMTRS_ARCHIVE_DIR}")
-	message("libamtrs : Enable  ARCHIVE, ${AMTRS_ARCHIVE_DIR}")
-	set(libAmtrs_LIBS		"${libAmtrs_LIBS}" archive_static)
+		set(libAmtrs_INCLUDES	"${libAmtrs_INCLUDES}" "${AMTRS_ARCHIVE_DIR}")
+		message("libamtrs : Enable  ARCHIVE, ${AMTRS_ARCHIVE_DIR}")
+		set(libAmtrs_LIBS		"${libAmtrs_LIBS}" archive_static)
 
+	endif ()
 	add_definitions(-DAMTRS_ARCHIVE_ENABLE=1)
 	add_definitions(-DLIBARCHIVE_STATIC=1)
-
 else()
 	set(LIBAMTRS_DISABLE_MODULES_LOG	${LIBAMTRS_DISABLE_MODULES_LOG} "ARCHIVE")
 endif()
