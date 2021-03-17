@@ -137,11 +137,11 @@ ssu::update_result update_files_cmake(config& cnf)
 		}
 		if (m[1].str() == "SRCDIR")
 		{
-			return	std::string(filesystem::parent_path(cnf.scriptPath));
+			return	filesystem::to_slashpath(filesystem::parent_path(cnf.scriptPath));
 		}
 		if (m[1].str() == "LIAMTRSDIR")
 		{
-			return	cnf.libamtrsDir;
+			return	filesystem::to_slashpath(filesystem::parent_path(cnf.libamtrsDir));
 		}
 		return	m[0].str();
 	});
@@ -164,93 +164,52 @@ ssu::update_result update_files_cmake(config& cnf)
 
 ssu::update_result update_files_source(config& cnf)
 {
-	auto	outdata	= regex_replace_callback<std::string>(gMainCpp, "##_SCRIPTFILE_##", [&](auto&)
-	{
-		return	cnf.scriptPath;
-	});
-
+	std::string	outdata(gMainCpp);
 	std::string	includelist;
 
 	int		scriptline	= 1;
 	auto	scriptdata	= file_get_contents<std::string>(normalize_path(cnf.scriptPath));
+	if (starts_with(scriptdata, "#!"))
 	{
-		if (starts_with(scriptdata, "#!"))
+		auto	beg	= scriptdata.begin();
+		auto	end	= scriptdata.end();
+		while (beg != end && (*beg != '\n' && *beg != '\r'))
 		{
-			auto	beg	= scriptdata.begin();
-			auto	end	= scriptdata.end();
-			while (beg != end && (*beg != '\n' && *beg != '\r'))
+			++beg;
+		}
+		if (beg != end)
+		{
+			auto	c	= *beg++;
+			if ((*beg == '\n' && *beg == '\r') && (c != *beg))
 			{
 				++beg;
 			}
-			if (beg != end)
-			{
-				auto	c	= *beg++;
-				if ((*beg == '\n' && *beg == '\r') && (c != *beg))
-				{
-					++beg;
-				}
-			}
-			++scriptline;
-			scriptdata	= scriptdata.substr(beg - scriptdata.begin());
 		}
-
-		// include list
-		auto	beg	= scriptdata.begin();
-		auto	end	= scriptdata.end();
-		while (beg != end)
-		{
-			if (!starts_with(std::string_view(&*beg, end-beg), "#include"))
-			{
-				break;
-			}
-
-			// 改行まで抜き出す
-			auto	lbeg	= beg;
-			while (lbeg != end && (*lbeg != '\n' && *lbeg != '\r'))
-			{
-				++lbeg;
-			}
-			if (lbeg != end)
-			{
-				auto	c	= *lbeg++;
-				if ((*lbeg == '\n' && *lbeg == '\r') && (c != *lbeg))
-				{
-					++lbeg;
-				}
-			}
-			++scriptline;
-			includelist += std::string(&*beg, lbeg - beg);
-			beg	= lbeg;
-		}
+		++scriptline;
 		scriptdata	= scriptdata.substr(beg - scriptdata.begin());
 	}
 
-	outdata	= regex_replace_callback<std::string>(outdata, "##INCLUDELIST##", [&](auto&)
-	{
-		return	includelist;
-	});
-	outdata	= regex_replace_callback<std::string>(outdata, "##SCRIPTLINE##", [&](auto&)
-	{
-		return	format<std::string>("%d", scriptline);
-	});
-	outdata	= regex_replace_callback<std::string>(outdata, "##_SCRIPTDATA_##", [&](auto&)
-	{
-		return	scriptdata;
-	});
 
+	std::string	cppdata;
+	cppdata	= format<std::string>("#line %d \"", (int)scriptline);
+	cppdata += filesystem::to_slashpath(cnf.scriptPath);
+	cppdata += "\"\n";
+	cppdata += scriptdata;
 
-	auto	f	= normalize_path(cnf.cacheDir + "/main.cpp");
-	auto	up	= ssu::update(f, outdata, cnf.testMode);
+	auto	f1	= normalize_path(cnf.cacheDir + "/main.cpp");
+	auto	f2	= normalize_path(cnf.cacheDir + "/script.hpp");
+	auto	up1	= ssu::update(f1, outdata, cnf.testMode);
+	auto	up2	= ssu::update(f2, cppdata, cnf.testMode);
 	if (cnf.testMode)
 	{
-		if (up == ssu::update_modify)
+		if (up2 == ssu::update_modify)
 		{
-			std::cout << "Update source file : \"" << f << "\"." << std::endl;
+			std::cout << "Update source file : \"" << f2 << "\"." << std::endl;
 		}
-		if (up == ssu::update_skip)
+		if (up2 == ssu::update_skip)
 		{
-			std::cout << "No update source file : \"" << f << "\"." << std::endl;
+			std::cout << "No update source file : \"" << f2 << "\"." << std::endl;
 		}
 	}
-	return	up;
+	return	up2;
 }

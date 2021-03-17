@@ -17,8 +17,7 @@ using namespace amtrs::system;
 
 void clean(config& cnf);
 
-
-
+int buildrun(config& cnf);
 
 int main(int _argc, char** _args)
 {
@@ -33,13 +32,47 @@ int main(int _argc, char** _args)
 		clean(cnf);
 	}
 
+
+	if (cnf.scriptPath.empty())
+	{
+		return	0;
+	}
+
+	std::string	cd	= std::filesystem::current_path().string();
+	if (cnf.buildChangeDir)
+	{
+		try {
+			std::filesystem::create_directories(cnf.buildWorkDir);
+		} catch (...)
+		{}
+		std::filesystem::current_path(cnf.buildWorkDir);
+	}
+
+	int	r	= buildrun(cnf);
+	if (cnf.buildChangeDir)
+	{
+		std::filesystem::current_path(cd);
+	}
+	if (r)
+	{
+		return	r;
+	}
+
+std::cout << "Execute" << cnf.executePath << std::endl;
+	return	ssu::exec(cnf.executePath/* + cnf.srciptArgs*/);
+}
+
+
+int buildrun(config& cnf)
+{
 	auto	up	= update_files(cnf);
 	if (ssu::is_bad(up))
 	{
 		return	255;
 	}
 
-	if (up == ssu::update_modify)
+
+	if (up == ssu::update_modify || cnf.buildAlways)
 	{
 		std::string	curdir	= std::filesystem::current_path().string();
 		if (cnf.testMode)
@@ -63,6 +96,7 @@ int main(int _argc, char** _args)
 			SetEnvironmentVariableA(e.first.c_str(), e.second.c_str());
 		}
 #endif
+
 
 		if (!exec_cmake(cnf))
 		{
@@ -92,18 +126,8 @@ int main(int _argc, char** _args)
 			}
 		}
 	}
-	if (cnf.testMode)
-	{
-		std::cout << "Run : " << cnf.executePath + cnf.srciptArgs << std::endl;
-		return	0;
-	}
-	else
-	{
-		return	ssu::exec(cnf.executePath + cnf.srciptArgs);
-	}
+	return	0;
 }
-
-
 
 
 

@@ -5,6 +5,7 @@
 #include <amtrs/graphics.hpp>
 #include <amtrs/filesystem.hpp>
 #include <iostream>
+#if	0
 AMTRS_NAMESPACE_BEGIN
 
 
@@ -95,3 +96,4 @@ auto loadimage_traits<rgba<uint8_t>>::load(std::string_view _filename, filesyste
 
 
 AMTRS_NAMESPACE_END
+#endif

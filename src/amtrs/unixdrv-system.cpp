@@ -3,11 +3,25 @@
  * can be found in the LICENSE file.                                  */
 #include <amtrs/filesystem.hpp>
 #include <amtrs/system.hpp>
+#include <stdlib.h>
 
 AMTRS_NAMESPACE_BEGIN
 using namespace filesystem;
 
 static bool is_sep(char c) { return c == '\\' || c == '/'; }
+
+
+void setenv(std::string_view _key, std::string_view _value)
+{
+	std::string	k(_key);
+	std::string	v(_value);
+	::setenv(k.c_str(), v.c_str(), 1);
+/*	std::string	key(_key);
+	std::string	val(_value);
+	SetEnvironmentVariableA(key.c_str(), val.c_str());
+*/
+}
+
 
 static bool make(amtrs_bufferif_one_init _alloc, std::string _dir)
 {

@@ -120,6 +120,10 @@
 	#define	AMTRS_CURRENT_PLATFORM			AMTRS_PLATFORM_WIN32
 	#define	AMTRS_CURRENT_PLATFORM_NAME		win32
 
+	#if		!defined __WIN32__
+	#define	__WIN32__
+	#endif
+
 	/* Keep a include order. Include winwosk2 is fastest. */
 	#define	NOMINMAX		1
 	#include <winsock2.h>
@@ -173,6 +177,7 @@ AMTRS_OS_NAMESPACE_END
 
 // Basic headers
 #include <algorithm>
+#include <string_view>
 #include <system_error>
 #include ".inc/amtrs-bucket.hpp"
 #include ".inc/amtrs-endian.hpp"

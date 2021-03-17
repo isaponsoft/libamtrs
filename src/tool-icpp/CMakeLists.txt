@@ -1,20 +1,15 @@
-cmake_minimum_required(VERSION 3.0.2)
-project(icpp)
-
-set(AMTRS_APPNAME "icpp")
-
-file(GLOB AMTRS_APPSRC
-	main.cpp
+set(SRCS
 	arguments.cpp
 	build.cpp
+	icpp.hpp
+	icpp-wrap.hpp
+	main.cpp
 	setup.cpp
+	setup-visualstudio.cpp
 )
 
-set(AMTRS_SSL_ENABLE 1)
-set(AMTRS_ZLIB_ENABLE 1)
-set(AMTRS_ARCHIVE_ENABLE 1)
-set(AMTRS_CONSOLE_ENABLE 1)
-set(libAmtrs_DIR ../..)
-include(${libAmtrs_DIR}/template.app-console.cmake)
+add_executable(icpp ${SRCS})
+#set_property(TARGET icpp PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+target_link_libraries(icpp amtrs_static)
 install(TARGETS icpp DESTINATION bin)

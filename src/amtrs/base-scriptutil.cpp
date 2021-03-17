@@ -332,6 +332,7 @@ bool download(std::string const& _url, std::string const& _savename, std::string
 
 bool extract(io::vstreamif _in, std::string const& _saveto, bool _skiprootdir)
 {
+#if	AMTRS_LIBARCHIVE_USE
 	using namespace amtrs;
 	if (!_in.good())
 	{
@@ -417,6 +418,9 @@ bool extract(io::vstreamif _in, std::string const& _saveto, bool _skiprootdir)
 	});
 
 	return	true;
+#else
+	return	false;
+#endif
 }
 
 bool extract(std::string const& _file, std::string const& _saveto, bool _skiprootdir)
@@ -447,6 +451,7 @@ static std::string_view first_dir(std::string_view _name)
 
 bool extract(io::vstreamif _in, std::string const& _saveto, extract_params _info)
 {
+#if	AMTRS_LIBARCHIVE_USE
 	using namespace amtrs;
 	if (!_in.good())
 	{
@@ -584,6 +589,9 @@ bool extract(io::vstreamif _in, std::string const& _saveto, extract_params _info
 
 	console::progress_end();
 	return	true;
+#else
+	return	false;
+#endif
 }
 
 
@@ -666,6 +674,30 @@ bool cat(std::initializer_list<std::string_view> _files)
 		std::cout << s;
 	}
 	return	true;
+}
+
+
+std::string which(std::string_view _file)
+{
+#if	AMTRS_CURRENT_PLATFORM == AMTRS_PLATFORM_WIN32
+	std::string	PATH	= getenv<std::string>("Path");
+	char		delm[]	= ";";
+#else
+	std::string	PATH	= getenv<std::string>("PATH");
+	char		delm[]	= ":";
+#endif
+	for (auto path : split_chars(PATH, delm))
+	{
+		std::string	file(path);
+		file += "/";
+		file += _file;
+		file	= filesystem::normalize_path(file);
+		if (filesystem::exists(file))
+		{
+			return	file;
+		}
+	}
+	return	{};
 }
 
 

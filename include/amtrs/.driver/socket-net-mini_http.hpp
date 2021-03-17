@@ -132,7 +132,7 @@ public:
 		}
 		retval->mtu	= sock.mtu();
 
-		#if	AMTRS_SSL_ENABLE
+		#if	AMTRS_SSL_USE
 		retval->io	= retval->uinf.scheme == "https"
 					? io::make_vstreamif(io::make_streamif(net::ssl_stream(std::move(sock))))
 					: io::make_vstreamif(io::make_streamif(std::move(sock)));

@@ -3,7 +3,8 @@
  * can be found in the LICENSE file.                                  */
 #ifndef	__libamtrs__opt__net__ssl_stream__hpp
 #define	__libamtrs__opt__net__ssl_stream__hpp
-#if		AMTRS_SSL_ENABLE
+#if		__has_include(<openssl/ssl.h>)
+#define	AMTRS_SSL_USE	1
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 AMTRS_NET_NAMESPACE_BEGIN
@@ -72,10 +73,8 @@ public:
 
 	basic_ssl_stream& read(char_type* _buff, size_t _n)
 	{
-AMTRS_WARN_LOG("ssl recv");
 		auto	rs	= SSL_read(mSSL, _buff, static_cast<int>(_n));
 		auto	s	= SSL_get_error(mSSL, static_cast<int>(rs));
-AMTRS_WARN_LOG("ssl recv %d %d", (int)rs, (int)s);
 		mGCount	= rs >= 0
 				? rs
 				: 0;

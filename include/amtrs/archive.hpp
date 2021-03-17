@@ -4,9 +4,19 @@
 #ifndef	__libamtrs__archive__archive_enumrator__hpp
 #define	__libamtrs__archive__archive_enumrator__hpp
 #include "io.hpp"
-#ifdef	AMTRS_ARCHIVE_ENABLE
+
+
+#if		__has_include(<libarchive/archive.h>)
 #include <libarchive/archive.h>
 #include <libarchive/archive_entry.h>
+#define	AMTRS_LIBARCHIVE_USE	1
+#elif	__has_include(<libarchive/archive.h>)
+#include <archive.h>
+#include <archive_entry.h>
+#define	AMTRS_LIBARCHIVE_USE	1
+#endif
+
+#if		AMTRS_LIBARCHIVE_USE
 AMTRS_NAMESPACE_BEGIN
 
 template<class Callback>

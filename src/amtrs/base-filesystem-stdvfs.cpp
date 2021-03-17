@@ -48,7 +48,7 @@ protected:
 			// ファイルが見つからなかった
 			if (errno == ENOENT)
 			{
-				AMTRS_DEBUG_LOG("No such file \"%s\".", p.c_str());
+				//AMTRS_DEBUG_LOG("No such file \"%s\".", p.c_str());
 				_ec	= std::make_error_code(std::errc::no_such_file_or_directory);
 			}
 			return	file_status(file_type::not_found);

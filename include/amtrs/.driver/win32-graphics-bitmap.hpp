@@ -1,7 +1,6 @@
 ﻿/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
  * Use of this source code is governed by a BSD-style  license that   *
  * can be found in the LICENSE file.                                  */
-#if	0
 #ifndef	__libamtrs__bitmaps__bitmap_win32__hpp
 #define	__libamtrs__bitmaps__bitmap_win32__hpp
 #include <atomic>
@@ -210,5 +209,4 @@ const char* get_gdiplus_pixel_format_str(Gdiplus::PixelFormat _format)
 }
 
 AMTRS_NAMESPACE_END
-#endif
 #endif

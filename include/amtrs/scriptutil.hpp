@@ -180,5 +180,8 @@ bool cat(std::string_view _file);
 bool cat(std::initializer_list<std::string_view> _files);
 
 
+std::string which(std::string_view _file);
+
+
 AMTRS_SCRIPTUTIL_NAMESPACE_END
 #endif

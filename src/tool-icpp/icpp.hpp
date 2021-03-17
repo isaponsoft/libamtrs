@@ -23,11 +23,19 @@ struct	config
 	bool		cleanBuild			= false;
 	bool		testMode			= false;
 	bool		installAmtrs		= false;
+	bool		showConfig			= false;
+	bool		buildAlways			= false;
+	bool		noInstall			= false;
+	bool		updateMode			= false;
+
+	bool		buildChangeDir		= false;
 
 	std::string	appname;
-
 	std::string	scriptPath;
-	std::string	srciptArgs;
+	std::vector<std::string>	srciptArgs;
+
+	std::string	configPath;
+
 	std::string	libamtrsDir;
 	std::string	cacheDir;
 	std::string	installDir;
@@ -42,10 +50,7 @@ struct	config
 
 inline std::string absdir(std::string const& _path)
 {
-	return	amtrs::regex_replace_callback<std::string>(amtrs::filesystem::normalize_path(amtrs::filesystem::absolute_path(_path)), R"(\\)", [&](auto&)
-	{
-		return	"/";
-	});
+	return	amtrs::filesystem::normalize_path(amtrs::filesystem::absolute_path(_path));
 }
 
 
@@ -67,5 +72,8 @@ amtrs::ssu::update_result update_files_source(config& cnf);
 
 bool is_setuped(config& cnf);
 bool setup(config& cnf);
+
+// setup_visualstudio.cpp
+bool setup_visualstudio(bool _exec, config& cnf);
 
 #endif

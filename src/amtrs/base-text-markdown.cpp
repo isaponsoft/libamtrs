@@ -6,44 +6,15 @@
 #include <cstdlib>
 #include <iostream>
 #include <string_view>
-
-// cmark ... commonmark begin
-extern "C" {
-#define	CMARK_GFM_STATIC_DEFINE
-#define	CMARK_GFM_EXTENSIONS_STATIC_DEFINE
-#include <cmark_ctype.h>
-#include <config.h>
-#if		AMTRS_COMMONMARK_GFM_ENABLE
-#include <cmark-gfm.h>
-#include <syntax_extension.h>
-#include <cmark-gfm-core-extensions.h>
-#include <registry.h>
-#include <table.h>
-#elif	AMTRS_COMMONMARK_ENABLE
-#include <cmark.h>
+#define	CMARK_GFM_STATIC_DEFINE				1
+#define	CMARK_GFM_EXTENSIONS_STATIC_DEFINE	1
+#if		__has_include(<cmark/cmarklib.h>)
+#include <cmark/cmarklib.h>
+#define	AMTRS_CMARK_USE	1
 #endif
-#include <node.h>
-#include <buffer.h>
-#include <houdini.h>
-#include <scanners.h>
-}
-// cmark ... commonmark end
 
+#if		AMTRS_CMARK_USE
 AMTRS_NAMESPACE_BEGIN
-
-struct gfmext_node_table_row
-{
-	bool	is_header;
-};
-
-
-struct	gfmext_node_table
-{
-	uint16_t	n_columns;
-	uint8_t*	alignments;
-};
-
-
 
 struct	parsestatus
 {
@@ -52,29 +23,15 @@ struct	parsestatus
 };
 
 
-static bool parsing(commonmark::node& nd, cmark_strbuf& buff, cmark_node* n);
-static bool parsing_ext(parsestatus& _status, commonmark::node& nd, cmark_strbuf& buff, cmark_node* n);
+static bool parsing(parsestatus& _status, commonmark::node& nd, cmark_strbuf& buff, cmark_node* n);
 
 
 
 template<>
 void basic_commonmark<char>::parse(view_type _source, callback_func _callback, void* _userparam)
 {
-	cmark_gfm_core_extensions_ensure_registered();
-
 	cmark_mem*	mem		= cmark_get_default_mem_allocator();
-	auto*		parser	= cmark_parser_new(CMARK_OPT_TABLE_PREFER_STYLE_ATTRIBUTES);
-
-
-	// cmark-gfm extensions.
-	cmark_llist*	syntax_extensions	= cmark_list_syntax_extensions(mem);
-	for (cmark_llist* tmp = syntax_extensions; tmp; tmp = tmp->next)
-	{
-		cmark_syntax_extension*	ext = (cmark_syntax_extension*)tmp->data;
-		cmark_parser_attach_syntax_extension(parser, cmark_find_syntax_extension(ext->name));
-	}
-	cmark_llist_free(mem, syntax_extensions);
-
+	auto*		parser	= cmark_parser_ex_new(CMARK_OPT_TABLE_PREFER_STYLE_ATTRIBUTES);
 
 	// parse
 	cmark_parser_feed(parser, _source.data(), _source.size());
@@ -91,16 +48,9 @@ void basic_commonmark<char>::parse(view_type _source, callback_func _callback, v
 		};
 
 		cmark_node*		n		= cmark_iter_get_node(iter);
-		cmark_strbuf	buff	= CMARK_BUF_INIT(mem);
-
-		if (n->extension && n->extension->html_render_func)
-		{
-			parsing_ext(status, nd, buff, n);
-		}
-		else
-		{
-			parsing(nd, buff, n);
-		}
+		cmark_strbuf	buff;
+		cmark_strbuf_init(mem, &buff, 0);
+		parsing(status, nd, buff, n);
 		if (nd.type != nodetype::none)
 		{
 			_callback(nd, _userparam);
@@ -112,55 +62,9 @@ void basic_commonmark<char>::parse(view_type _source, callback_func _callback, v
 }
 
 
-bool parsing_ext(parsestatus& _status, commonmark::node& nd, cmark_strbuf& buff, cmark_node* n)
-{
-	using	view_type	= commonmark::view_type;
-	using	nodetype	= commonmark::nodetype;
-
-	if (n->type == CMARK_NODE_TABLE)
-	{
-		nd.type				= nodetype::table;
-		_status.in_header	= false;
-		_status.line_number	= -1;
-	}
-	else if (n->type == CMARK_NODE_TABLE_ROW)
-	{
-		_status.in_header	= ((gfmext_node_table_row*)n->as.opaque)->is_header ? true : false;
-		if (!_status.in_header && !nd.entering)
-		{
-			_status.line_number	= -1;
-		}
-		nd.type						= nodetype::table_row;
-		nd.table_row.header			= _status.in_header;
-		nd.table_row.line_number	= _status.line_number;
-		if (!_status.in_header && !nd.entering)
-		{
-			++_status.line_number;
-		}
-	}
-	else if (n->type == CMARK_NODE_TABLE_CELL)
-	{
-		uint8_t*	alignments	= ((gfmext_node_table*) n->parent->parent->as.opaque)->alignments;
-		int			colidx		= 0;
-		for (auto* c = n->parent->first_child; c; c = c->next, ++colidx)
-		{
-			if (c == n)
-			{
-				break;
-			}
-		}
-		nd.type						= nodetype::table_cell;
-		nd.table_cell.header		= _status.in_header;
-		nd.table_cell.line_number	= _status.line_number;
-		nd.table_cell.col_number	= colidx;
-		nd.table_cell.alignments	= alignments[colidx];
-	}
-	return	1;
-}
 
 
-
-bool parsing(commonmark::node& nd, cmark_strbuf& buff, cmark_node* n)
+bool parsing(parsestatus& _status, commonmark::node& nd, cmark_strbuf& buff, cmark_node* n)
 {
 	using	view_type	= commonmark::view_type;
 	using	nodetype	= commonmark::nodetype;
@@ -355,6 +259,50 @@ bool parsing(commonmark::node& nd, cmark_strbuf& buff, cmark_node* n)
 			break;
 		}
 
+		case CMARK_NODE_TABLE :
+		{
+			nd.type				= nodetype::table;
+			_status.in_header	= false;
+			_status.line_number	= -1;
+			break;
+		}
+
+		case CMARK_NODE_TABLE_ROW :
+		{
+			_status.in_header	= ((cmark_table_row*)n->as.opaque)->is_header ? true : false;
+			if (!_status.in_header && !nd.entering)
+			{
+				_status.line_number	= -1;
+			}
+			nd.type						= nodetype::table_row;
+			nd.table_row.header			= _status.in_header;
+			nd.table_row.line_number	= _status.line_number;
+			if (!_status.in_header && !nd.entering)
+			{
+				++_status.line_number;
+			}
+			break;
+		}
+
+		case CMARK_NODE_TABLE_CELL :
+		{
+			uint8_t*	alignments	= ((cmark_table*) n->parent->parent->as.opaque)->alignments;
+			int			colidx		= 0;
+			for (auto* c = n->parent->first_child; c; c = c->next, ++colidx)
+			{
+				if (c == n)
+				{
+					break;
+				}
+			}
+			nd.type						= nodetype::table_cell;
+			nd.table_cell.header		= _status.in_header;
+			nd.table_cell.line_number	= _status.line_number;
+			nd.table_cell.col_number	= colidx;
+			nd.table_cell.alignments	= alignments[colidx];
+			break;
+		}
+
 		default :
 		{
 			break;
@@ -364,3 +312,4 @@ bool parsing(commonmark::node& nd, cmark_strbuf& buff, cmark_node* n)
 }
 
 AMTRS_NAMESPACE_END
+#endif

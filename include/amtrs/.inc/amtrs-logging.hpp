@@ -4,6 +4,7 @@
 #ifndef	__libamtrs__basic__logging__hpp
 #define	__libamtrs__basic__logging__hpp
 #include <string>
+#include <string_view>
 #define	AMTRS_LOGGING_NAMESPACE_BEGIN	AMTRS_NAMESPACE_BEGIN namespace logging {
 #define	AMTRS_LOGGING_NAMESPACE_END		} AMTRS_NAMESPACE_END
 AMTRS_LOGGING_NAMESPACE_BEGIN
@@ -51,7 +52,7 @@ AMTRS_LOGGING_NAMESPACE_END
 	#if		defined(DEBUG) || defined(AMTRS_DEBUG_LOG_ENABLE)
 		#define	AMTRS_DEBUG_LOG_LEVEL	4
 	#else
-		#define	AMTRS_DEBUG_LOG_LEVEL	0
+		#define	AMTRS_DEBUG_LOG_LEVEL	1
 	#endif
 #endif
 

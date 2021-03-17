@@ -1,0 +1,45 @@
+AMTRS	libamtrs		PNG,ZLIB,JPEG,ARCHIVE,OGG,VORBIS,SSL,OPENCV
+https://raw.githubusercontent.com/isaponsoft/libamtrs/master/LICENSE
+
+# 画像系
+PNG		libpng			ZLIB
+http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
+
+JPEG	libjpeg-turbo
+https://raw.githubusercontent.com/libjpeg-turbo/libjpeg-turbo/master/README.ijg
+
+TIFF	libtiff	
+https://gitlab.com/libtiff/libtiff/-/raw/master/COPYRIGHT
+
+# 圧縮系
+
+ZLIB	zlib
+https://raw.githubusercontent.com/madler/zlib/master/README
+
+ARCHIVE	libarchive		ZLIB
+https://raw.githubusercontent.com/libarchive/libarchive/master/COPYING
+
+# サウンド系
+
+OGG		ogg	
+https://raw.githubusercontent.com/xiph/ogg/master/COPYING
+
+VORBIS	vorbis			OGG
+https://raw.githubusercontent.com/xiph/vorbis/master/COPYING
+
+# 通信系
+
+SSL		LibreSSL
+https://raw.githubusercontent.com/libressl/libressl/master/src/LICENSE
+
+OPENCV	OpenCV			ZTIFF,QUIRC,OPENEXR,ZLIB,PNG,JPEG
+https://raw.githubusercontent.com/opencv/opencv/master/LICENSE
+
+PROTBUF	protocolbuffers
+https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE
+
+QUIRC	quirc
+https://raw.githubusercontent.com/dlbeer/quirc/master/LICENSE
+
+OPENEXR	OpenEXR
+https://raw.githubusercontent.com/AcademySoftwareFoundation/openexr/master/LICENSE.md

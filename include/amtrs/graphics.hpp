@@ -8,6 +8,7 @@
 #include <tuple>
 #include <vector>
 #include "geometry.hpp"
+#include "io.hpp"
 #include ".inc/utility-array.hpp"
 #include ".inc/memory-shared_buffer.hpp"
 

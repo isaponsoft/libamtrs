@@ -52,38 +52,91 @@ icppはlibamtrsの一部として以下のディレクトリ内にファイル�
 
 ## スクリプトの書き方
 
-```main()``` 関数の無いc++ソースを書きます。最も簡単なスクリプトは次の通りです。```main()``` が無いことといくつかのヘッダを暗黙的にincludeする以外は普通のc++のソースコートドです。
+```main()``` 関数の代わりに ```imain()``` 関数を書きます。```imain()```は```main()```関数から直接呼ばれます。
 
 ```c++
-std::cout << "Hello world." << std::endl;
+int imain()
+{
+	std::cout << "Hello world." << std::endl;
+	return	0;
+}
 ```
 
 *シバン(shebang)* にも対応しています。 
 
 ```c++
 #!env icpp
-std::cout << "Hello world." << std::endl;
+int imain()
+{
+	std::cout << "Hello world." << std::endl;
+	return	0;
+}
 ```
 
-ヘッダをincludeしたい場合はソースコードの先頭に書くことが出来ます。
+```imain()``` は複数バージョンがあり、好きなものを定義して使用できます。単にコマンドライン引数をどのような形で受け取るか以外の差はありませんので好きなものを使用してください。
 
 ```c++
 #!env icpp
-#include <stdio.h>
-#include <stdlib.h>
 
-printf("Hello world\n");
+int imain();
+int imain(int c, char** v);
+int imain(int c, char* v[]);
+int imain(ssu::array<std::string> arg);
 ```
 
-## 仕組み
+## 依存モジュール
 
-1. スクリプトの先頭にシバンがあればそれを除去します。
-2. #include がある場合、連続する #include を抜き出します。
-3. 残ったソースコードを ```main()``` 関数で囲います。
-4. cmake と make または msbuild を使ってコンパイルします。
-5. コンパイルされた実行ファイルを実行します。
+```icpp``` ではOpenCVなどビルドに時間のかかる機能を拡張モジュールと呼び指定がない限りは使わないようになっています。使用したいモジュールは ```@depenence``` というディレクティブで書きます。icppは
+ ```@depenence``` を見つけると、ビルドシステムにモジュールのビルドを追加します。
+
+```c++
+#!env icpp
+@depenence Amtrs::OpenCV, Amtrs::CMark
+
+int imain()
+{
+	std::cout << "Hello world." << std::endl;
+	return	0;
+}
+
+```
+
+|Module|Note|
+|--|--|
+|```Amtrs::OpenCV```|OpenCV|
+|```Amtrs::CMark```|Commonmark gfm|
+|```Amtrs::Vorbis```|Ogg audio format|
+|```Amtrs::SSL```|LibreSSL|
+
+### 仕組み
+
+```@depenence``` を見つけると、モジュール名をリストアップしソースコードから除外します。続けてモジュール名に対応した cmake module を検出し、ビルドシステムにインポートします。
+
+また次のようにcmakeのコマンドを埋め込むことが出来ます。
+
+```c++
+#!env icpp --spec 1
+@cmake::external_module(mymodule foo.h foo http://github.com/foo/bar.git CMAKE_XYZ=Foo CMAKE_ABC=Bar)
+@cmake::include(mymodule2.cmake)
+@cmake::start
+set(MYLIB_INCLUDE_DIRS	mylib/include)
+set(MYLIB_LIBRARIES		mylib/lib/mylib${CMAKE_LIBRARY_POSTFIX})
+target_link_library(${ICPP_TARGET} ${MYLIB_LIBRARIES})
+target_include_directories(${ICPP_TARGET} PUBLIC ${MYLIB_INCLUDE_DIRS})
+@cmake::end
+int imain()
+{
+	std::cout << "Hello world." << std::endl;
+	return	0;
+}
+```
+
 
 ## そのほかのオプション
+
+### ```--spec```
+
+icppの仕様を選択します。省略時はicpp内での最新の状態です。
 
 ### ```--no-predelete```
 

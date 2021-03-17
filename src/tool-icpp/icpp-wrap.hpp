@@ -9,57 +9,74 @@ R"(/* Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved. *
 #include <amtrs/scriptutil.hpp>
 #include <list>
 #include <iostream>
-##INCLUDELIST##
 
 namespace ssu = AMTRS_SCRIPTUTIL_NAMESPACE;
 
-int script(ssu::global& __g__);
 
-int main(int _argc, char** _args)
+#include "script.hpp"
+
+
+template<class...>
+struct	_imain
+		: std::false_type
 {
-	ssu::global	g;
-	for (int i = 0; i < _argc; ++i)
+	static int invoke(...);
+};
+
+template<>
+struct	_imain<int()>
+		: std::true_type
+{
+	template<class F>
+	static int invoke(F f, int, char**)
 	{
-		g.argv.push_back(std::string(_args[i]));
+		return	f();
 	}
+};
+
+template<>
+struct	_imain<int(int, char**)>
+		: std::true_type
+{
+	template<class F>
+	static int invoke(F f, int c, char** a)
+	{
+		return	f(c, a);
+	}
+};
+
+
+int main(int c, char** a)
+{
+	int	e	= 255;
 	try
 	{
-		return	script(g);
+		static constexpr bool	imain_found	= _imain<decltype(imain)>::value;
+#line 0 "icpp"
+static_assert(imain_found, "NOT FOUND 'imain()', 'imain(int,char**)'.");
+			e	= _imain<decltype(imain)>::invoke(&imain, c, a);
 	}
 	catch (...)
 	{
-		std::cerr << _args[0] << " exception." << std::endl;
 	}
-	return	255;
+	return	e;
 }
-
-int script(ssu::global& __g__)
-{
-	auto&	argv(__g__.argv);
-#line ##SCRIPTLINE## "##_SCRIPTFILE_##"
-##_SCRIPTDATA_##
-	return	0;
-}
-
 )";
 
 
 static char const	gCMakeListsTxt[] = 
-R"(cmake_minimum_required(VERSION 3.0.2)
+R"(cmake_minimum_required(VERSION 3.10)
 project(##PRJNAME##)
 
 set(AMTRS_APPNAME "##PRJNAME##")
 
 file(GLOB AMTRS_APPSRC
 	main.cpp
+	script.hpp
 )
 
-set(AMTRS_SSL_ENABLE 1)
-set(AMTRS_ZLIB_ENABLE 1)
-set(AMTRS_ARCHIVE_ENABLE 1)
-set(AMTRS_CONSOLE_ENABLE 1)
 set(libAmtrs_DIR ##LIAMTRSDIR##)
-include(${libAmtrs_DIR}/template.app-console.cmake)
+include(${libAmtrs_DIR}/libamtrs/template.app-console.cmake)
 
 
 target_include_directories(##PRJNAME## PUBLIC "##SRCDIR##")

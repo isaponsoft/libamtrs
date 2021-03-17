@@ -34,13 +34,15 @@ S getenv(char const* _name)
 }
 
 
+void setenv(std::string_view _key, std::string_view _value);
+
 //! プラットフォームの特殊なファイルパスを取得します。
 bool special_path(amtrs_bufferif_one_init _destinate, specialpathtype _type, std::string_view _appname);
 
 
 
 template<class T>
-bool special_path(T& _destinate, specialpathtype _type, std::string_view _appname)
+bool special_path(T& _destinate, specialpathtype _type, std::string_view _appname = {})
 {
 	return	special_path(amtrs_bufferif_one_init
 	{
@@ -54,6 +56,14 @@ bool special_path(T& _destinate, specialpathtype _type, std::string_view _appnam
 	}, _type, _appname);
 }
 
+
+template<class T>
+T special_path(specialpathtype _type, std::string_view _appname = {})
+{
+	T	retval;
+	special_path(retval, _type, _appname);
+	return	retval;
+}
 
 AMTRS_NAMESPACE_END
 #define	AMTRS_PLIB_NAME	system-env.hpp
