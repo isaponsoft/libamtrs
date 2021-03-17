@@ -1,37 +1,8 @@
 # Welcome!
 
-c++17向けのクロスプラットフォームライブラリです. c++20 も視野に入れています.
+簡単に使える c++17 クロスプラットフォームライブラリ。
 
-# Build & install
-
-ビルドとインストール。
-
-## Windows (Microsoft Visual C++)
-
-```shell
-> git clone https://github.com/isaponsoft/libamtrs.git
-> cmake -DCMMAKE_INSTALL_PREFIX=.  .
-> nmake install
-```
-
-## Unix like (clang++ or gnuc++, compatibles)
-
-```shell
-% git clone https://github.com/isaponsoft/libamtrs.git
-% cmake -DCMMAKE_INSTALL_PREFIX=.  .
-% make install
-```
-
-## 生成されるファイル
-
-|path|note|
-|--|--|
-|```bin/```|amtrs contribute tools|
-|```include/```|libamtrs c++ header files|
-|```lib/amtrs_static(.lib\|.a)```|libamtrs static library|
-
-
-## 使用例
+## Example
 
 #### main.cpp
 
@@ -62,12 +33,8 @@ int main()
 ```cmake
 cmake_minimum_required(VERSION 3.0.2)
 project(helloworld)
+set(AMTRS_APPNAME "helloworld")
 
-add_execute(helloworld main.cpp)
-
-set(AMTRS_INSTALLED_DIR "path/to/libamtrs/install/directory")
-
-target_inclide_directories(helloworld PUBLIC ${AMTRS_INSTALLED_DIR}/install)
-target_link_libraries(helloworld ${AMTRS_INSTALLED_DIR}/lib/amtrs_static)
-
+# Please set libamtrs copied directory!
+set(libAmtrs_DIR ../libamtrs)
 ```
