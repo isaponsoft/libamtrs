@@ -24,7 +24,7 @@ amtrs_make_libname(__libname2	ssl${__ssl_suffix} "" "")
 amtrs_make_libname(__libname3	tls${__tls_suffix} "" "")
 
 
-amtrs_find_libraries(tls.h ${__libname1} ${__libname2} ${__libname3})
+amtrs_find_libraries(tls.h ${__libname3} ${__libname2} ${__libname1})
 if(_INCLUDE_DIR)
 	set(MODULE_INCLUDE_DIRS	${_INCLUDE_DIR})
 	set(MODULE_LIBRARIES	${_LIBRARIES})

@@ -120,6 +120,10 @@ struct	license
 {
 	char const*	name;
 	char const*	text;
+	license(char const* _n, char const* _t)
+		: name(_n)
+		, text(_t)
+	{}
 };
 #include <amtrs/amtrs-license.hpp>
 

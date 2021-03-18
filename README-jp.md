@@ -2,9 +2,29 @@
 
 簡単に使える c++17 クロスプラットフォームライブラリ。
 
-## Example
+tested, ```windows10```, ```FreeBSD 14-CURRENT```, ```Ubuntu 20.04.2 LTS```
 
-#### main.cpp
+# Build & install
+
+Build and install.
+
+## Windows (Microsoft Visual C++)
+
+```shell
+> git clone https://github.com/isaponsoft/libamtrs.git
+> cmake -G "NMake Makefiles" -DCMMAKE_INSTALL_PREFIX=. -DCMAKE_BUILD_TYPE=Release .
+> nmake install
+```
+
+## Unix like (clang++ or gnuc++, compatibles)
+
+```shell
+% git clone https://github.com/isaponsoft/libamtrs.git
+% cmake -DCMMAKE_INSTALL_PREFIX=. -DCMAKE_BUILD_TYPE=Release  .
+% make install
+```
+
+## Example
 
 ```c++
 #include <amtrs/filesystem.hpp>
@@ -31,10 +51,28 @@ int main()
 #### CMakeLists.txt
 
 ```cmake
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.16)
 project(helloworld)
-set(AMTRS_APPNAME "helloworld")
 
-# Please set libamtrs copied directory!
-set(libAmtrs_DIR ../libamtrs)
+set(AMTRS_INSTALLED_DIR "path/to/libamtrs/install/directory")
+
+if(MSVC)
+set(CMAKE_CXX_STANDARD			20)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+else()
+set(CMAKE_CXX_STANDARD			17)
+endif()
+
+
+add_executable(helloworld main.cpp)
+
+
+target_include_directories(helloworld PUBLIC ${AMTRS_INSTALLED_DIR}/include)
+target_link_libraries(helloworld ${AMTRS_INSTALLED_DIR}/lib/amtrs_static.lib)
+```
+
+#### Helloworld.txt
+
+```
+Hello world!
 ```

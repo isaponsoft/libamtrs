@@ -5,16 +5,13 @@ cmake_minimum_required(VERSION 3.16.0)
 cmake_policy(SET CMP0091 NEW)
 project(amtrs)
 
-#set(CMAKE_VERBOSE_MAKEFILE 1)
+set(CMAKE_MODULE_PATH	"${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(amtrs-utils)
 
-if (NOT libAmtrs_FOUND)
 
-set(libAmtrs_DIR						${CMAKE_CURRENT_SOURCE_DIR})
+amtrs_make_libname(AMTRS_LIBRARY		amtrs _static d)
+set(AMTRS_INCLUDE_DIR					"${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-set(libAmtrs_LIB						amtrs_static)
-set(libAmtrs_LIBS						"")
-set(libAmtrs_INCLUDES					${libAmtrs_DIR}/include)
-set(CMAKE_MODULE_PATH					"${CMAKE_MODULE_PATH}" "${libAmtrs_DIR}/cmake")
 
 option(AMTRS_ALL_ENABLE					"Enable all module." ON)
 option(AMTRS_USE_MSVC_RUNTIME_STATIC	"Sugger option. Set CMAKE_MSVC_RUNTIME_LIBRARY = MultiThreaded$<$<CONFIG:Debug>:Debug>." OFF)
@@ -33,39 +30,31 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 
-if (NOT LIBAMTRS_DEPS_SEARCH_DIR)
-	set(LIBAMTRS_DEPS_SEARCH_DIR
-		${libAmtrs_DIR}/deps/
-		${libAmtrs_DIR}/../
-		${libAmtrs_DIR}/../libs/
-		${libAmtrs_DIR}/../../
-		${libAmtrs_DIR}/../../libs/
-		${libAmtrs_DIR}/../../../
-		${libAmtrs_DIR}/../../../libs
-	)
-endif ()
-
 if(NOT AMTRS_DEPENENCY_INSTALL_DIR)
 	set(AMTRS_DEPENENCY_INSTALL_DIR	${CMAKE_BINARY_DIR})
 endif()
 
 
-add_library(${libAmtrs_LIB} STATIC)
+add_library(${AMTRS_LIBRARY} STATIC)
 
 file(GLOB _AMTRS_BASESRCS
 	src/amtrs/base-*.cpp
 )
 
 file(GLOB _AMTRS_HEADERS
-	include/amtrs/*
-	include/amtrs/*/*
-	include/amtrs/*/*/*
+	include/amtrs/*.h
+	include/amtrs/*.hpp
+	include/amtrs/*/*.h
+	include/amtrs/*/*.hpp
+	include/amtrs/*/*/*.h
+	include/amtrs/*/*/*.hpp
 )
-target_sources(${libAmtrs_LIB} PUBLIC ${_AMTRS_BASESRCS} ${_AMTRS_HEADERS})
+target_sources(${AMTRS_LIBRARY} PRIVATE ${_AMTRS_BASESRCS})
+target_sources(${AMTRS_LIBRARY} PUBLIC ${_AMTRS_HEADERS})
+set_target_properties(${AMTRS_LIBRARY} PROPERTIES PUBLIC_HEADER "${_AMTRS_HEADERS}")
 
 
-
-set(LICENSES				AMTRS)
+set(AMTRS_ADD_LICENCES		AMTRS)
 set(AMTRS_AMTRS_NAME		"libAmtrs")
 set(AMTRS_AMTRS_LICENSE_URL	"https://raw.githubusercontent.com/isaponsoft/libamtrs/master/LICENSE")
 
@@ -76,11 +65,9 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
 	add_definitions(-DAMTRS_DEBUG_LOG_LEVEL=7)
 endif()
 
-
-set(AMTRS_INCLUDE_DIRECTORIES	"${AMTRS_DEPENENCY_INSTALL_DIR}/include")
+set(AMTRS_DEPENENCY_INCLUDE_DIRS	"${AMTRS_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/include" "${AMTRS_DEPENENCY_INSTALL_DIR}/include")
 set(AMTRS_LINK_LIBRARIES)
 
-include(amtrs-utils)
 
 # Platform
 include(base-Android)		# Google Android
@@ -110,42 +97,37 @@ configure_file(include/amtrs/amtrs-config.hpp.in amtrs-config.hpp)
 
 # Override c++ version flags.
 if(MSVC)
-set_property(TARGET ${libAmtrs_LIB} PROPERTY  CXX_STANDARD	20)
+set_property(TARGET ${AMTRS_LIBRARY} PROPERTY  CXX_STANDARD	20)
 set(CMAKE_CXX_STANDARD	20	CACHE INTERNAL	"libamtrs c++ std" FORCE)
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
 else()
 set(CMAKE_CXX_STANDARD	17	CACHE INTERNAL	"libamtrs c++ std" FORCE)
-set_property(TARGET ${libAmtrs_LIB} PROPERTY  CXX_STANDARD	17)
+set_property(TARGET ${AMTRS_LIBRARY} PROPERTY  CXX_STANDARD	17)
 endif()
 
 
-list(APPEND AMTRS_INCLUDE_DIRECTORIES	${libAmtrs_INCLUDES})
-list(APPEND AMTRS_LINK_LIBRARIES		${libAmtrs_LIBS} ${libAmtrs_PLATFORM_LIBS})
-
-include_directories		(${libAmtrs_LIB} SYSTEM BEFORE PUBLIC ${AMTRS_INCLUDE_DIRECTORIES})
-target_link_libraries	(${libAmtrs_LIB}                      ${AMTRS_LINK_LIBRARIES})
-set(libAmtrs_LIBS ${libAmtrs_LIB} ${libAmtrs_LIBS} ${libAmtrs_PLATFORM_LIBS})
 
 
-list(REMOVE_DUPLICATES AMTRS_INCLUDE_DIRECTORIES)
+list(REMOVE_DUPLICATES AMTRS_DEPENENCY_INCLUDE_DIRS)
 list(REMOVE_DUPLICATES AMTRS_LINK_LIBRARIES)
 
-message("AMTRS_INCLUDE_DIRECTORIES: ${AMTRS_INCLUDE_DIRECTORIES}")
-message("AMTRS_LINK_LIBRARIES: ${AMTRS_LINK_LIBRARIES}")
-
-endif ()	# (NOT libAmtrs_FOUND)
+set(AMTRS_INCLUDE_DIRS	${AMTRS_INCLUDE_DIR} ${AMTRS_DEPENENCY_INCLUDE_DIRS})
+set(AMTRS_LIBRARIES		${AMTRS_LIBRARY} ${AMTRS_LINK_LIBRARIES})
+include_directories		(${AMTRS_LIBRARY} SYSTEM BEFORE PUBLIC ${AMTRS_INCLUDE_DIRS})
+target_link_libraries	(${AMTRS_LIBRARY}                      ${AMTRS_LINK_LIBRARIES})
+message("Link libraries ${AMTRS_LINK_LIBRARIES}")
 
 
 # ===================================================================
 # License file generate.
 # -------------------------------------------------------------------
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/include/amtrs/amtrs-license.hpp)
-	list(REMOVE_DUPLICATES LICENSES)
+	list(REMOVE_DUPLICATES AMTRS_ADD_LICENCES)
 	set(LFILE		${CMAKE_BINARY_DIR}/include/amtrs/amtrs-license.hpp)
 	set(LFILERAW	${CMAKE_BINARY_DIR}/include/amtrs/LICENSE.txt)
 	set(LLINK)
-	foreach (name ${LICENSES})
-	message("LICENSE Tag=${name}, Url=${AMTRS_${name}_LICENSE_URL}")
+	foreach (name ${AMTRS_ADD_LICENCES})
+	message("LICENSE Tag=${name}, Name=${AMTRS_${name}_NAME}, Url=${AMTRS_${name}_LICENSE_URL}")
 
 
 	file(APPEND "${LFILE}" "license ${name}(\"${AMTRS_${name}_NAME}\", R\"***(")
@@ -163,7 +145,7 @@ if(NOT EXISTS ${CMAKE_BINARY_DIR}/include/amtrs/amtrs-license.hpp)
 	endforeach()
 
 	file(APPEND "${LFILE}" "license* licenses[] = {")
-	foreach (name ${LICENSES})
+	foreach (name ${AMTRS_ADD_LICENCES})
 	file(APPEND "${LFILE}" "&${name},")
 	endforeach()
 
@@ -172,11 +154,13 @@ endif()
 # -------------------------------------------------------------------
 
 
-install(TARGETS	${libAmtrs_LIB}
-				RUNTIME DESTINATION bin
-				ARCHIVE DESTINATION lib
-				LIBRARY DESTINATION lib)
+install(TARGETS			${AMTRS_LIBRARY}
+		RUNTIME			DESTINATION bin
+		ARCHIVE			DESTINATION lib
+		LIBRARY			DESTINATION lib
+		)
 install(DIRECTORY include/amtrs DESTINATION include)
+
 install(FILES ${CMAKE_BINARY_DIR}/amtrs-config.hpp DESTINATION include/amtrs)
 install(FILES ${CMAKE_BINARY_DIR}/include/amtrs/amtrs-license.hpp DESTINATION include/amtrs)
 install(FILES ${CMAKE_BINARY_DIR}/include/amtrs/LICENSE.txt DESTINATION include/amtrs)

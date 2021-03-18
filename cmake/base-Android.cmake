@@ -11,7 +11,7 @@ if (Android)
 	endif()
 
 	target_link_libraries(
-		${libAmtrs_LIB}
+		${AMTRS_LIBRARY}
 			android camera2ndk cpufeatures log jnigraphics OpenSLES EGL GLESv3		
 	)
 endif ()

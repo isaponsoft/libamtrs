@@ -2,25 +2,20 @@
 
 Cross platform library for c++17. c++20 ready.
 
+tested, ```windows10```, ```FreeBSD 14-CURRENT```, ```Ubuntu 20.04.2 LTS```
+
 # Build & install
 
 Build and install.
 
-## Windows (Microsoft Visual C++)
 
-```shell
-> git clone https://github.com/isaponsoft/libamtrs.git
-> cmake -DCMMAKE_INSTALL_PREFIX=.  .
-> nmake install
+```bash
+git clone https://github.com/isaponsoft/libamtrs.git
+cmake -DCMMAKE_INSTALL_PREFIX=. -DCMAKE_BUILD_TYPE=Release .
+msbuild.exe INSTALL.vcxproj # Windows(MSVC)
+make install                # Unix like
 ```
 
-## Unix like (clang++ or gnuc++, compatibles)
-
-```shell
-% git clone https://github.com/isaponsoft/libamtrs.git
-% cmake -DCMMAKE_INSTALL_PREFIX=.  .
-% make install
-```
 
 ## Generated files.
 
@@ -32,6 +27,12 @@ Build and install.
 
 
 ## Example
+
+```shell
+> cd helloworld
+> cmake . -DCMAKE_PREFIX_PATH=/path/to/amtrs/install
+```
+has ```/path/to/amtrs/install/include/amtrs```, ```/path/to/amtrs/install/lib/amtrs(.a|_static.lib)```
 
 #### main.cpp
 
@@ -60,14 +61,26 @@ int main()
 #### CMakeLists.txt
 
 ```cmake
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.16)
 project(helloworld)
 
-add_execute(helloworld main.cpp)
+if(MSVC)
+set(CMAKE_CXX_STANDARD			20)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+else()
+set(CMAKE_CXX_STANDARD			17)
+endif()
 
-set(AMTRS_INSTALLED_DIR "path/to/libamtrs/install/directory")
+set(Amtrs_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+find_package(Amtrs)
 
-target_inclide_directories(helloworld PUBLIC ${AMTRS_INSTALLED_DIR}/install)
-target_link_libraries(helloworld ${AMTRS_INSTALLED_DIR}/lib/amtrs_static)
+add_executable(helloworld main.cpp)
+target_include_directories(helloworld PUBLIC ${AMTRS_INCLUDE_DIRS})
+target_link_libraries(helloworld ${AMTRS_LIBRARY})
+```
 
+#### Helloworld.txt
+
+```
+Hello world!
 ```

@@ -35,5 +35,5 @@ target_include_directories(
 	${libAmtrs_INCLUDES}
 )
 
-target_link_libraries(${AMTRS_APPNAME} ${libAmtrs_LIBS})
+target_link_libraries(${AMTRS_APPNAME} ${AMTRS_LIBRARIES})
 

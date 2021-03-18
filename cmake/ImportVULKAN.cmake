@@ -14,5 +14,5 @@ endif()
 
 
 if (__amtrs__vulkan__inc)
-	target_include_directories(${libAmtrs_LIB}	PUBLIC ${__amtrs__vulkan__inc})
+	target_include_directories(${AMTRS_LIBRARY}	PUBLIC ${__amtrs__vulkan__inc})
 endif()
