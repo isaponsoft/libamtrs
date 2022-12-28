@@ -1,7 +1,0 @@
-#foreach(I, VAL, ";")	One;Two;Thee
-#if	((I+1)%2) == 0
-Even VAL
-#else
-Odd VAL
-#endif
-#endfor

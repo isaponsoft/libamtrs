@@ -1,6 +1,0 @@
-#define	TEST2	3
-#define	TEST	1 + 2 + TEST2
-#define	XYZ		%{1 ? 0 : 1}
-
-
-%{TEST2}

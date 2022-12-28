@@ -1,6 +1,0 @@
-﻿#ifndef	__libamtrs__compati__variant__hpp
-#define	__libamtrs__compati__variant__hpp
-#include ".inc/variant-unsafed_variant.hpp"
-#include ".inc/variant-variant.hpp"
-#include ".inc/variant-variant-stl.hpp"
-#endif

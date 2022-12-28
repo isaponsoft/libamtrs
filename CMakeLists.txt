@@ -1,168 +1,149 @@
 # Copyright (c) 2019, isaponsoft (Isao Shibuya) All rights reserved.
 # Use of this source code is governed by a BSD-style  license that
 # can be found in the LICENSE file.
-cmake_minimum_required(VERSION 3.16.0)
-cmake_policy(SET CMP0091 NEW)
+# ======================================================================
+# g3d library:
+#	$ENV{VULKAN_SDK}
+#
+# ----------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.10.0)
 project(amtrs)
-
+include(GNUInstallDirs)
 set(CMAKE_MODULE_PATH	"${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(amtrs-utils)
-
-
-amtrs_make_libname(AMTRS_LIBRARY		amtrs _static d)
-set(AMTRS_INCLUDE_DIR					"${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-
-option(AMTRS_ALL_ENABLE					"Enable all module." ON)
-option(AMTRS_USE_MSVC_RUNTIME_STATIC	"Sugger option. Set CMAKE_MSVC_RUNTIME_LIBRARY = MultiThreaded$<$<CONFIG:Debug>:Debug>." OFF)
-option(AMTRS_USE_STATIC_LIBRARY			"Link library priority static." ON)
-option(AMTRS_NO_COPYLEFT				"No use copyleft libraries." ON)
-
-if (AMTRS_USE_STATIC_LIBRARY)
-	if (MSVC)
-	else()
-	set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
-	endif()
-endif()
-
-if(AMTRS_USE_MSVC_RUNTIME_STATIC)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-endif()
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-
-if(NOT AMTRS_DEPENENCY_INSTALL_DIR)
-	set(AMTRS_DEPENENCY_INSTALL_DIR	${CMAKE_BINARY_DIR})
-endif()
-
-
-add_library(${AMTRS_LIBRARY} STATIC)
-
-file(GLOB _AMTRS_BASESRCS
-	src/amtrs/base-*.cpp
+set(AMTRS_SRCES
+	src/amtrs/core.cpp
+	src/amtrs/console.cpp
+	src/amtrs/net.cpp
+	src/amtrs/lang-passion.cpp
+	src/amtrs/system.cpp
 )
 
-file(GLOB _AMTRS_HEADERS
-	include/amtrs/*.h
-	include/amtrs/*.hpp
-	include/amtrs/*/*.h
-	include/amtrs/*/*.hpp
-	include/amtrs/*/*/*.h
-	include/amtrs/*/*/*.hpp
+if (ENABLE_GUI)
+set(AMTRS_GUI_SRCES
+	src/amtrs/g3d.cpp
+	src/amtrs/gui.cpp
 )
-target_sources(${AMTRS_LIBRARY} PRIVATE ${_AMTRS_BASESRCS})
-target_sources(${AMTRS_LIBRARY} PUBLIC ${_AMTRS_HEADERS})
-set_target_properties(${AMTRS_LIBRARY} PROPERTIES PUBLIC_HEADER "${_AMTRS_HEADERS}")
-
-
-set(AMTRS_ADD_LICENCES		AMTRS)
-set(AMTRS_AMTRS_NAME		"libAmtrs")
-set(AMTRS_AMTRS_LICENSE_URL	"https://raw.githubusercontent.com/isaponsoft/libamtrs/master/LICENSE")
-
-# =============================================================================
-# DEBUG LOG
-# -----------------------------------------------------------------------------
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-	add_definitions(-DAMTRS_DEBUG_LOG_LEVEL=7)
-endif()
-
-set(AMTRS_DEPENENCY_INCLUDE_DIRS	"${AMTRS_INCLUDE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/include" "${AMTRS_DEPENENCY_INSTALL_DIR}/include")
-set(AMTRS_LINK_LIBRARIES)
-
-
-# Platform
-include(base-Android)		# Google Android
-include(base-Darwin)		# Darwin and Apple osx
-include(base-iOS)			# Apple iOS/iPadOS
-include(base-Unix)			# Unix like OS, *BSD, Linux base OS
-include(base-Win32)			# Microsoft Windows WIN32 API
-
-
-# Modules
-amtrs_import(Zlib)			# zlib link
-amtrs_import(PNG)			# libpng link
-amtrs_import(JPEG)			# libjpeg-turbo link
-amtrs_import(SSL)			# libressl or openssl link
-amtrs_import(Archive)		# libarchive link
-amtrs_import(OpenCV)		# OpenCV link
-amtrs_import(OGG)			# ogg link
-amtrs_import(Vorbis)		# vorbis link
-amtrs_import(Cmark)			# cmark link
-amtrs_import(VULKAN)		# vulkan link
-amtrs_import(Threads)		# threads link
-
-
-configure_file(include/amtrs/amtrs-config.hpp.in amtrs-config.hpp)
-
-
-
-# Override c++ version flags.
-if(MSVC)
-set_property(TARGET ${AMTRS_LIBRARY} PROPERTY  CXX_STANDARD	20)
-set(CMAKE_CXX_STANDARD	20	CACHE INTERNAL	"libamtrs c++ std" FORCE)
-set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
 else()
-set(CMAKE_CXX_STANDARD	17	CACHE INTERNAL	"libamtrs c++ std" FORCE)
-set_property(TARGET ${AMTRS_LIBRARY} PROPERTY  CXX_STANDARD	17)
+set(AMTRS_GUI)
+endif ()
+
+#set(PSNVM_SRCES
+#	src/psnvm/core.cpp
+#	src/psnvm/lang.cpp
+#	src/psnvm/term.cpp
+#)
+
+set(INCLUDE_DIRS	${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(LIBRARIES		${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# $ENV{VULKAN_SDK}
+find_package(Vulkan)
+if (Vulkan_FOUND)
+	set(INCLUDE_DIRS	${CMAKE_CURRENT_SOURCE_DIR}/include ${Vulkan_INCLUDE_DIRS})
 endif()
 
 
-
-
-list(REMOVE_DUPLICATES AMTRS_DEPENENCY_INCLUDE_DIRS)
-list(REMOVE_DUPLICATES AMTRS_LINK_LIBRARIES)
-
-set(AMTRS_INCLUDE_DIRS	${AMTRS_INCLUDE_DIR} ${AMTRS_DEPENENCY_INCLUDE_DIRS})
-set(AMTRS_LIBRARIES		${AMTRS_LIBRARY} ${AMTRS_LINK_LIBRARIES})
-include_directories		(${AMTRS_LIBRARY} SYSTEM BEFORE PUBLIC ${AMTRS_INCLUDE_DIRS})
-target_link_libraries	(${AMTRS_LIBRARY}                      ${AMTRS_LINK_LIBRARIES})
-message("Link libraries ${AMTRS_LINK_LIBRARIES}")
-
-
-# ===================================================================
-# License file generate.
-# -------------------------------------------------------------------
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/include/amtrs/amtrs-license.hpp)
-	list(REMOVE_DUPLICATES AMTRS_ADD_LICENCES)
-	set(LFILE		${CMAKE_BINARY_DIR}/include/amtrs/amtrs-license.hpp)
-	set(LFILERAW	${CMAKE_BINARY_DIR}/include/amtrs/LICENSE.txt)
-	set(LLINK)
-	foreach (name ${AMTRS_ADD_LICENCES})
-	message("LICENSE Tag=${name}, Name=${AMTRS_${name}_NAME}, Url=${AMTRS_${name}_LICENSE_URL}")
-
-
-	file(APPEND "${LFILE}" "license ${name}(\"${AMTRS_${name}_NAME}\", R\"***(")
-
-	if(NOT EXISTS "${CMAKE_BINARY_DIR}/LICENSE-${name}")
-		file(DOWNLOAD ${AMTRS_${name}_LICENSE_URL} "${CMAKE_BINARY_DIR}/LICENSE-${name}")
-	endif()
-	file(READ "${CMAKE_BINARY_DIR}/LICENSE-${name}" CONTENTS)
-	file(APPEND "${LFILE}" "${CONTENTS}")
-	file(APPEND "${LFILERAW}" "${CONTENTS}\n\n")
-
-	file(APPEND "${LFILE}" ")***\");\n\n\n")
-	list(APPEND LLINK ${name})
-
-	endforeach()
-
-	file(APPEND "${LFILE}" "license* licenses[] = {")
-	foreach (name ${AMTRS_ADD_LICENCES})
-	file(APPEND "${LFILE}" "&${name},")
-	endforeach()
-
-	file(APPEND "${LFILE}" "nullptr};\n\n")
+if(MSVC)
+add_compile_options("$<$<CONFIG:Debug>:/DDEBUG /D_DEBUG>")
+add_compile_options("/DAMTRS_EXPORT_DLL")
+else()
+add_compile_options("$<$<CONFIG:Debug>:-DDEBUG -D_DEBUG>")
 endif()
-# -------------------------------------------------------------------
+
+# amtrs static library
+add_library(amtrs_static STATIC ${AMTRS_SRCES} ${AMTRS_GUI_SRCES})
+set_property(TARGET amtrs_static PROPERTY CXX_STANDARD 17)
+target_include_directories(amtrs_static BEFORE PUBLIC ${INCLUDE_DIRS})
+if(NOT MSVC)
+	target_link_libraries(amtrs_static dl ${LIBRARIES})
+endif()
+set_target_properties(amtrs_static PROPERTIES PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/amtrs)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/amtrs TYPE INCLUDE)
 
 
-install(TARGETS			${AMTRS_LIBRARY}
-		RUNTIME			DESTINATION bin
-		ARCHIVE			DESTINATION lib
-		LIBRARY			DESTINATION lib
-		)
-install(DIRECTORY include/amtrs DESTINATION include)
+# psnvm static library
+#add_library(psnvm_static STATIC ${PSNVM_SRCES})
+#set_property(TARGET psnvm_static PROPERTY CXX_STANDARD 17)
+#target_include_directories(psnvm_static BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+#target_link_libraries(psnvm_static amtrs_static)
 
-install(FILES ${CMAKE_BINARY_DIR}/amtrs-config.hpp DESTINATION include/amtrs)
-install(FILES ${CMAKE_BINARY_DIR}/include/amtrs/amtrs-license.hpp DESTINATION include/amtrs)
-install(FILES ${CMAKE_BINARY_DIR}/include/amtrs/LICENSE.txt DESTINATION include/amtrs)
 
-add_subdirectory(src/tool-icpp)
+# BUILD: psnvm
+if (NOT DISABLE_PSNVM)
+	add_executable(psnvm src/cmd/psnvm.cpp ${PSNVM_SRCES})
+	target_include_directories(psnvm BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+	set_property(TARGET psnvm PROPERTY CXX_STANDARD 17)
+	target_link_libraries(psnvm amtrs_static)
+
+	install(TARGETS psnvm)
+endif()
+
+
+# BUILD: slsh
+#if (NOT DISABLE_SLSH)
+#	add_executable(slsh src/cmd/slsh.cpp ${PSNVM_SRCES})
+#	target_include_directories(slsh BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+#	set_property(TARGET slsh PROPERTY CXX_STANDARD 17)
+#	target_link_libraries(slsh psnvm_static amtrs_static)
+#
+#	install(TARGETS slsh)
+#endif()
+
+
+# BUILD: psnvm modules
+#if (NOT DISABLE_PSNVM_MODULE)
+#	add_library(console SHARED src/psnvm/modules/mod-console.cpp)
+#	target_include_directories(console BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+#	set_property(TARGET console PROPERTY CXX_STANDARD 17)
+#	SET_TARGET_PROPERTIES(console PROPERTIES PREFIX "")
+#	target_link_libraries(console amtrs_static)
+#	install(TARGETS console)
+#
+#	add_library(compiler SHARED src/psnvm/modules/mod-compiler.cpp)
+#	target_include_directories(compiler BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+#	set_property(TARGET compiler PROPERTY CXX_STANDARD 17)
+#	SET_TARGET_PROPERTIES(compiler PROPERTIES PREFIX "")
+#	target_link_libraries(compiler amtrs_static psnvm_static)
+#	install(TARGETS compiler)
+#
+#	add_library(process SHARED src/psnvm/modules/mod-process.cpp)
+#	target_include_directories(process BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+#	set_property(TARGET process PROPERTY CXX_STANDARD 17)
+#	SET_TARGET_PROPERTIES(process PROPERTIES PREFIX "")
+#	target_link_libraries(process amtrs_static psnvm_static)
+#	install(TARGETS process)
+#endif()
+
+
+if (NOT DISABLE_BIN2H)
+	add_executable(bin2h src/cmd/bin2h.cpp)
+	set_property(TARGET bin2h PROPERTY CXX_STANDARD 17)
+	target_link_libraries(bin2h amtrs_static)
+endif()
+
+if (NOT DISABLE_LSON)
+	add_executable(lson src/cmd/lson.cpp)
+	set_property(TARGET lson PROPERTY CXX_STANDARD 17)
+	target_link_libraries(lson amtrs_static)
+endif()
+
+if (NOT DISABLE_STH)
+	add_executable(sth src/cmd/sth.cpp)
+	set_property(TARGET sth PROPERTY CXX_STANDARD 17)
+	target_link_libraries(sth amtrs_static)
+endif()
+
+
+# BUILD: test
+if (ENABLE_TEST)
+	add_subdirectory(tests)
+endif()
+
+if (ENABLE_EXAMPLE)
+	add_subdirectory(examples/echosrv)
+	add_subdirectory(examples/g3d)
+endif()
+
